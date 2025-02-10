@@ -41,7 +41,7 @@ def get_sale_orders(date_range=None, order_names=None):
         sale_order_ids = models.execute_kw(db, uid, password,
             'sale.order', 'search',
             [domain])
-
+#Información de cabecera
         if sale_order_ids:
             header_fields = [
                 'name', 'state', 'project_id', 'construction_company', 'decorator', 
