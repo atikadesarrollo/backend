@@ -1,0 +1,1 @@
+# Este archivo inicializa el paquete odoo_api. Puede contener configuraciones iniciales y la creación de la aplicación Flask.
