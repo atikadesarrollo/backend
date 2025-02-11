@@ -24,7 +24,7 @@ Backend_Atika
 1. Clona el repositorio:
    ```
    git clone <URL_DEL_REPOSITORIO>
-   cd Backend_Atika
+   cd backend
    ```
 
 2. Crea un entorno virtual:
