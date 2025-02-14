@@ -34,7 +34,21 @@ def get_models():
 
 
 @datalake_bp.route('/sales_order', methods=['GET'])
-def get_analisis_venta():
+@datalake_bp.route('/sales_order/<string:date_range>', methods=['GET'])
+def get_analisis_venta(date_range=None):
+    
+    if date_range:
+            params = date_range.split('&')
+            if len(params) != 2 or not all(len(p) == 10 and p.count('-') == 2 for p in params):
+                return jsonify({"error": "Para búsqueda por fechas usa: YYYY-MM-DD&YYYY-MM-DD"}), 400
+            domain = [
+                ['date_order', '>=', params[0]],
+                ['date_order', '<=', params[1]]
+            ]
+    else:
+        return jsonify({"error": "Parámetros de búsqueda no proporcionados"}), 400
+    
+    
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()

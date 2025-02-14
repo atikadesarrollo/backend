@@ -231,3 +231,66 @@ def get_sales_order_status(search_params):
             return jsonify({"error": "No sale orders found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@odoo_bp.route('/analisis_proyectos', methods=['GET'])
+def get_projects_info():
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+
+        # Busca las órdenes de venta que tienen un project_id asociado y fecha >= 2025-02-13
+        sale_order_ids = models.execute_kw(db, uid, password,
+            'sale.order', 'search',
+            [[('project_id', '!=', False), ('date_order', '>=', '2025-01-01')]])
+
+        if sale_order_ids:
+            sale_orders = models.execute_kw(db, uid, password,
+                'sale.order', 'read',
+                [sale_order_ids],
+                {'fields': ['name', 'state', 'project_id', 'amount_total']})
+
+            # Se obtienen los campos adicionales del modelo custom.projects para cada project_id
+            project_ids = [order['project_id'][0] for order in sale_orders if order['project_id']]
+            projects = models.execute_kw(db, uid, password,
+                'custom.projects', 'read',
+                [project_ids],
+                {'fields': [
+                    'principal', 'project_name', 'project_creator', 'real_estate_specifier', 
+                    'arch_specifier', 'start_date', 'closing_date', 'np_canal', 
+                    'custom_project_type', 'contract_value', 'project_type', 
+                    'business_value', 'sale_status', 'foreclosed_seller', 'decorator', 'architect', 'construction_company'
+                ]})
+
+            project_dict = {project['id']: project for project in projects}
+
+            for order in sale_orders:
+                project_id = order.get('project_id')
+                if project_id:
+                    project_data = project_dict.get(project_id[0], {})
+                    order.update({
+                        'Mandante': project_data.get('principal', ''),
+                        'Nombre_Proyecto': project_data.get('project_name', ''),
+                        'Creador_Proyecto': project_data.get('project_creator', ''),
+                        'Especificador_Inmobiliaria': project_data.get('real_estate_specifier', ''),
+                        'Especificador_Arquitectura': project_data.get('arch_specifier', ''),
+                        'Fecha_Inicio': project_data.get('start_date', ''),
+                        'Fecha Termino': project_data.get('closing_date', ''),
+                        'Canal_Venta': project_data.get('np_canal', ''),
+                        'Tipo_Proyecto': project_data.get('custom_project_type', ''),
+                        'Valor_Contrato': project_data.get('contract_value', ''),
+                        'Tipo_Obra': project_data.get('project_type', ''),
+                        'Valor_Negocio': project_data.get('business_value', ''),
+                        'Estatus_Venta': project_data.get('sale_status', ''),
+                        'Vendedor_Adjudicado': project_data.get('foreclosed_seller', ''),
+                        'Interiorista': project_data.get('decorator', ''),
+                        'Arquitecto': project_data.get('architect', ''),
+                        'construction_company': project_data.get('construction_company', '')
+                        
+                    })
+
+            return jsonify({"Pedidos Odoo con Proyecto asociado": sale_orders})
+        else:
+            return jsonify({"error": "No se encontraron órdenes de venta con project_id"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
