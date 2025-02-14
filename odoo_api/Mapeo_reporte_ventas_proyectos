@@ -6,7 +6,7 @@
  
 | Campo                      | Campo                                    | Mostrar 
 |----------------------------|--------------------------------------------------|
-| ID del Proyecto = name     |  name                                    | ok
+| ID del Proyecto = name     |  name   modelo:custom.project            | ok
 | Nombre Proyecto            |  project_name                            | ok 
 | Creador Proyecto =         |  project_creator                         | ok
 | Especificador Inmobiliaria |  real_estate_specifier                   | ok
@@ -38,8 +38,10 @@ Origen del proyecto:
 | comuna        |  comuna_id                      |
 
 Canal:
-Grupo de venta 
-Vendedor**
+
+| Grupo de Venta        |  np_sei_gventas                 |
+| Vendedor              |  user_id                        |
+
 
 
 
@@ -48,12 +50,16 @@ Vendedor**
 
 | Campo                    | Descripción                                      |
 |--------------------------|--------------------------------------------------|
-| Presupuesto              | Lista de pedidos asociados al proyecto           | ok
-| Orden de venta           | Lista de pedidos asociados al proyecto           | ok
+| Presupuesto              | name                                             | ok
+| Orden de venta           | name                                             | ok
+| Status Pedido            | status                                           | Se agregó
 | Líneas de Pedido         | Detalles de las líneas de cada pedido            | crear dos vistas, detallado y consolidado.
-| Vendedor                 | Usuario que realizó la venta                     | ok
-| Creador Documento Pedidos | Usuario que creó los pedidos                    | ok
+| Vendedor                 | user_id                                          | ok
+| Creador Documento Pedidos| Usuario que creó los pedidos                    | ok
 | OVs por Proyecto         | Órdenes de venta asociadas al proyecto           | ok
+| Monto Pedido Venta       | tax_totals_json           | ok
+
+
 
 
 
@@ -141,3 +147,9 @@ linea_pedido = LineaPedido(1, 1, "Producto1", 10, 100, 5)
 proyecto.pedidos.append(pedido)
 # Asociamos línea de pedido al pedido
 pedido.lineas_pedido.append(linea_pedido)
+
+
+
+
+name   modelo:custom.project            
+  project_name, project_creator, real_estate_specifier, arch_specifier, start_date, closing_date,np_canal, custom_project_type, contract_value, project_type, business_value,sale_status,foreclosed_seller 
