@@ -231,53 +231,6 @@ def get_sales_order_status(search_params):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@odoo_bp.route('/sale_orders_status2/<string:search_params>', methods=['GET'])
-def get_sales_order_status2(search_params):
-    try:
-        domain = []
-        params = search_params.split('&')
-        
-        # Detectar si son fechas (si el primer parámetro tiene formato YYYY-MM-DD)
-        if len(params[0]) == 10 and params[0].count('-') == 2:
-            if len(params) != 2:
-                
-                return jsonify({"error": "Para búsqueda por fechas use: YYYY-MM-DD&YYYY-MM-DD"}), 400
-            # Agregar horas para cubrir todo el rango del día al que corresponda. 
-            domain = [
-                ('write_date', '>=', f"{params[0]} 00:00:00"),
-                ('write_date', '<=', f"{params[1]} 23:59:59")
-            ]
-        # Si no son fechas, buscar por códigos
-        else:
-            domain = [('name', 'in', params)]
-
-     
-
-        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-        uid = common.authenticate(db, username, password, {})
-        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
-
-        sale_order_ids = models.execute_kw(db, uid, password,
-            'sale.order', 'search',
-            [domain])
-
-        # Registrar los IDs encontrados
-
-        if sale_order_ids:
-            sale_orders = models.execute_kw(db, uid, password,
-                'sale.order', 'read',
-                [sale_order_ids],
-                {'fields': ['name', 'state', 'write_date', 'date_order', 'create_date', 'validity_date']})
-
-          
-
-            return jsonify({"orders_status": sale_orders})
-        else:
-            
-            return jsonify({"error": "No se encontraron órdenes de venta"}), 404
-    except Exception as e:
-        logger
-        return jsonify({"error": str(e)}), 500
 
 
 #endpoint para actualización de campos
