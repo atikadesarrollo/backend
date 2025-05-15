@@ -231,6 +231,58 @@ def get_sales_order_status(search_params):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@odoo_bp.route('/sale_orders_status_2/<string:search_params>', methods=['GET'])
+def get_sales_order_status_2(search_params):
+    try:
+        domain = []
+        params = search_params.split('&')
+        
+        # Detectar si son fechas (si el primer parámetro tiene formato YYYY-MM-DD)
+        if len(params[0]) == 10 and params[0].count('-') == 2:
+            if len(params) != 2:
+                logger.warning("Formato incorrecto para búsqueda por fechas: %s", search_params)
+                return jsonify({"error": "Para búsqueda por fechas use: YYYY-MM-DD&YYYY-MM-DD"}), 400
+            # Agregar horas para cubrir todo el rango del día al que corresponda. 
+            domain = [
+                ('write_date', '>=', f"{params[0]} 00:00:00"),
+                ('write_date', '<=', f"{params[1]} 23:59:59")
+            ]
+        # Si no son fechas, buscar por códigos
+        else:
+            domain = [('name', 'in', params)]
+
+        # Registrar el dominio de búsqueda
+        logger.debug("Dominio de búsqueda: %s", domain)
+
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+
+        sale_order_ids = models.execute_kw(db, uid, password,
+            'sale.order', 'search',
+            [domain])
+
+        # Registrar los IDs encontrados
+        logger.debug("IDs de órdenes de venta encontrados: %s", sale_order_ids)
+
+        if sale_order_ids:
+            sale_orders = models.execute_kw(db, uid, password,
+                'sale.order', 'read',
+                [sale_order_ids],
+                {'fields': ['name', 'state', 'write_date', 'date_order', 'create_date', 'validity_date']})
+
+            # Registrar las órdenes de venta obtenidas
+            logger.debug("Órdenes de venta obtenidas: %s", sale_orders)
+
+            return jsonify({"orders_status": sale_orders})
+        else:
+            logger.info("No se encontraron órdenes de venta para el dominio: %s", domain)
+            return jsonify({"error": "No se encontraron órdenes de venta"}), 404
+    except Exception as e:
+        logger.error("Error al buscar órdenes de venta: %s", str(e))
+        return jsonify({"error": str(e)}), 500
+
+
 #endpoint para actualización de campos
 @odoo_bp.route('/sale_orders_status2/<string:search_params>', methods=['GET'])
 def get_sales_order_status2(search_params):

@@ -34,32 +34,57 @@ def get_models():
 
 
 @datalake_bp.route('/sales_order', methods=['GET'])
-@datalake_bp.route('/sales_order/<string:date_range>', methods=['GET'])
-def get_analisis_venta(date_range=None):
-    
-    if date_range:
-            params = date_range.split('&')
-            if len(params) != 2 or not all(len(p) == 10 and p.count('-') == 2 for p in params):
-                return jsonify({"error": "Para búsqueda por fechas usa: YYYY-MM-DD&YYYY-MM-DD"}), 400
-            domain = [
-                ['date_order', '>=', params[0]],
-                ['date_order', '<=', params[1]]
-            ]
-    else:
-        return jsonify({"error": "Parámetros de búsqueda no proporcionados"}), 400
-    
-    
+def get_analisis_venta():
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM DL_Analisis_Venta_v WHERE YEAR([Fecha de oferta]) = 2025 ORDER BY [Fecha de oferta] DESC")
-            # Busca desde el modelo de Analisis de Venta los registros del año 2025 y los ordena en orden descendiente.
+            query = """
+                SELECT * FROM DL_Analisis_Venta_v 
+                WHERE [Fecha de oferta] >= DATEADD(day, -5, GETDATE()) 
+                ORDER BY [Fecha de oferta] DESC
+            """
+            cursor.execute(query)
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
             data = [dict(zip(columns, row)) for row in rows]
             return jsonify({"data": data}), 200
     except Exception as e:
         return jsonify({"message": "Error al obtener los datos de la vista", "error": str(e)}), 500
+
+
+
+@datalake_bp.route('/sales_order/<start_date>&<end_date>', methods=['GET'])
+def get_analisis_venta_fechas(start_date, end_date):
+    try:
+        with pyodbc.connect(connection_string) as conn:
+            cursor = conn.cursor()
+            query = """
+                SELECT * FROM DL_Analisis_Venta_v 
+                WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+                ORDER BY [Fecha de oferta] DESC
+            """
+            cursor.execute(query, start_date, end_date)
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            data = [dict(zip(columns, row)) for row in rows]
+            return jsonify({"data": data}), 200
+    except Exception as e:
+        return jsonify({"message": "Error al obtener los datos de la vista", "error": str(e)}), 500
+
+
+@datalake_bp.route('/revision', methods=['GET'])
+def get_ultimas_cargas():
+    try:
+        with pyodbc.connect(connection_string) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT TOP 1 * FROM DL_Analisis_Venta_v ORDER BY [Fecha de oferta] DESC")
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            data = [dict(zip(columns, row)) for row in rows]
+            return jsonify({"data": data}), 200
+    except Exception as e:
+        return jsonify({"message": "Error al obtener los datos de la tabla", "error": str(e)}), 500
+
 
 
 @datalake_bp.route('/fields', methods=['GET'])
@@ -73,6 +98,71 @@ def get_fields():
             return jsonify({"fields": fields}), 200
     except Exception as e:
         return jsonify({"message": "Error al obtener los campos técnicos", "error": str(e)}), 500
+
+
+@datalake_bp.route('/facturacion/<start_date>&<end_date>', methods=['GET'])
+def get_facturacion_fechas(start_date, end_date):
+    try:
+        with pyodbc.connect(connection_string) as conn:
+            cursor = conn.cursor()
+            query = """
+                SELECT 
+                    [Tipo documento] as 'Tipo_documento'
+                    ,[Numero de documento] as 'Numero_documento'
+                    ,[Orden de compra] as 'Orden_compra'
+                    ,[Indicador] 
+                    ,[Folio SII] as 'Folio_SII'
+                    ,[Fecha documento] as 'Fecha_documento'
+                    ,[RUT]
+                    ,[Razon social] as 'Razon_social'
+                    --,[Categoria cliente] as 'Categoria_cliente'
+                    ,CASE [Grupo de ventas] 
+                        WHEN 'Venta Empresa' THEN 'Venta Empresas'
+                        WHEN 'Planta Marmol' THEN 'Planta Mármol'
+                        WHEN 'Showroom Pto. Varas' THEN 'Showroom Puerto Varas'
+                        WHEN 'Showroom Viña' THEN 'Showroom Viña del Mar'
+                        WHEN 'Showroom Concepcion' THEN 'Showroom Concepción'
+                        ELSE [Grupo de ventas] 
+                        END AS 'Grupo_de_Ventas'
+                    ,[Codigo]
+                    ,[Descripcion]
+                    ,[Inventariable]
+                    ,[Rubro]
+                    ,[Familia]
+                    ,[Formato]
+                    ,[Marca]
+                    ,[Serie]
+                    ,[Look]
+                    ,[Moneda]
+                    ,CASE 
+                        WHEN [Tasa de cambio] IS NULL THEN 0
+                        ELSE [Tasa de cambio]
+                        END AS 'Tasa_cambio'
+                    ,[Cantidad]
+                    ,[Precio base] as 'Precio_base'
+                    ,[Precio unitario] as 'Precio_unitario'
+                    ,[Precio unitario descuentos aplicados] as 'Precio_unitario_descuento'
+                    ,[Porcentaje descuentos] as 'Porcentaje_descuento'
+                    ,[Porcentaje adicional oferta] as 'Porcentaje_adicional'
+                    ,[Flete unitario] as 'Flete_unitario'
+                    ,[Venta neta] as 'Venta_neta'
+                    ,[Vendedor factura] as 'Vendedor_factura'
+                    ,[Numero oferta] as 'Numero_oferta'
+                    ,[Vendedor oferta] as 'Vendedor_oferta'
+                    ,[Arquitecto] 
+                    ,[Inmobiliaria]
+                    ,[Nombre obra] as 'Nombre_obra'
+                FROM DL_Facturacion_v 
+                WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+                ORDER BY [Fecha documento] DESC;
+            """
+            cursor.execute(query, start_date, end_date)
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            data = [dict(zip(columns, row)) for row in rows]
+            return jsonify({"data": data}), 200
+    except Exception as e:
+        return jsonify({"message": "Error al obtener los datos de la vista", "error": str(e)}), 500
 
 
 if __name__ == '__main__':
