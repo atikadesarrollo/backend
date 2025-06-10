@@ -1,8 +1,15 @@
 .env
 .venv
 venv
-# Ignorar caché de Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+.pyc
+.pyo
+.pyd
+
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+odoo_api/__pycache__/__init__.cpython-313.pyc
+odoo_api/__pycache__/routes.cpython-313.pyc
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+odoo_api/__pycache__/__init__.cpython-313.pyc
+odoo_api/__pycache__/routes.cpython-313.pyc
