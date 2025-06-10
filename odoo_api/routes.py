@@ -429,7 +429,7 @@ def get_latest_projects_info(date_range=None):
                 'arch_specifier', 'start_date', 'closing_date', 'np_canal',
                 'custom_project_type', 'contract_value', 'project_type', 
                 'business_value', 'sale_status', 'foreclosed_seller', 
-                'decorator', 'architect', 'construction_company','np_canal','name', 'state_id', 'contract_balance', 
+                'decorator', 'architect', 'construction_company','np_canal','name', 'state_id', 'contract_balance', 'create_date' 
             ], 'order': 'create_date desc', 'limit': limit})
 
         if projects:
@@ -520,6 +520,7 @@ def get_latest_projects_info(date_range=None):
                     'Ordenes_de_Venta': project_to_sale_orders.get(project['id'], []),
                     'Region': project.get('state_id', [])[1] if project.get('state_id') else '',
                     'Saldo_Contrato': project.get('contract_balance', ''),
+                    'Fecha_Creación': project.get('create_date', '')
                     
                 }
                 formatted_projects.append(formatted_project)
