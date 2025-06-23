@@ -134,6 +134,14 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Serie]
                     ,[Look]
                     ,[Moneda]
+                    ,[CDP Producto] as 'Cdp_producto'
+                    ,[CDP Linea] as 'Cdp_linea'
+                    ,[Ancho]
+                    ,[Altura]
+                    ,[Peso]
+                    ,[Moneda]
+                    ,[Email vendedor factura] as 'Email_vendedor_factura'
+                    ,[Email vendedor oferta] as 'Email_vendedor_oferta'
                     ,CASE 
                         WHEN [Tasa de cambio] IS NULL THEN 0
                         ELSE [Tasa de cambio]
