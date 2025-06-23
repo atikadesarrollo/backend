@@ -1,7 +1,9 @@
 import xmlrpc.client
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
+import base64
 from dotenv import load_dotenv
 import os
+from io import BytesIO
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
@@ -441,7 +443,7 @@ def get_latest_projects_info(date_range=None):
                 employees = models.execute_kw(db, uid, password,
                     'hr.employee', 'search_read',
                     [[('user_id', 'in', user_ids)]],
-                    {'fields': ['user_id', 'department_id']})
+                    {'fields': ['user_id', 'department_id', 'work_email']})
 
                 # Crear un diccionario para mapear user_id a department_id
                 user_to_department = {employee['user_id'][0]: employee['department_id'][1] if employee['department_id'] else '' for employee in employees}
@@ -553,5 +555,125 @@ def obtener_ultimo_proyecto ():
             return jsonify({"ultimo_proyecto": projects[0]})
         else:
             return jsonify({"error": "No se encontraron proyectos"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
+@odoo_bp.route('/DescargaOC/<string:order_name>', methods=['GET'])
+def descarga_oc(order_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Buscar la orden de venta por nombre
+        sale_order_ids = models.execute_kw(db, uid, password,
+            'sale.order', 'search',
+            [[('name', '=', order_name)]],
+            {'limit': 1})
+
+        if not sale_order_ids:
+            return jsonify({"error": "Orden de venta no encontrada"}), 404
+
+        # Leer el campo np_oc_file
+        sale_orders = models.execute_kw(db, uid, password,
+            'sale.order', 'read',
+            [sale_order_ids],
+            {'fields': ['np_oc_file']})
+
+        np_oc_file = sale_orders[0].get('np_oc_file')
+        if not np_oc_file:
+            return jsonify({"error": "No existe archivo OC para esta orden"}), 404
+
+        # Decodificar el archivo base64
+        pdf_data = base64.b64decode(np_oc_file)
+        pdf_stream = BytesIO(pdf_data)
+
+        return send_file(
+            pdf_stream,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'OC_{order_name}.pdf'
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@odoo_bp.route('/factura/<string:factura_name>', methods=['GET'])
+def obtener_factura(factura_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Buscar la factura por su nombre (número)
+        factura_ids = models.execute_kw(db, uid, password,
+            'account.move', 'search',
+            [[('name', '=', factura_name), ('move_type', 'in', ['out_invoice', 'out_refund'])]], 
+            {'limit': 1})
+
+        if not factura_ids:
+            return jsonify({"error": "Factura no encontrada"}), 404
+
+        # Obtener todos los campos disponibles del modelo account.move
+        fields_data = models.execute_kw(db, uid, password, 
+            'account.move', 'fields_get', 
+            [], {'attributes': ['string', 'type', 'required']})
+        
+        # Extraer solo los nombres de los campos
+        all_fields = list(fields_data.keys())
+
+        # Obtener datos completos de la factura con todos los campos
+        factura = models.execute_kw(db, uid, password,
+            'account.move', 'read',
+            [factura_ids[0]],
+            {'fields': all_fields})
+
+        if not factura:
+            return jsonify({"error": "Error al leer la factura"}), 500
+
+        # Obtener todos los campos disponibles de las líneas de factura
+        line_fields_data = models.execute_kw(db, uid, password, 
+            'account.move.line', 'fields_get', 
+            [], {'attributes': ['string', 'type', 'required']})
+        
+        line_all_fields = list(line_fields_data.keys())
+
+        # Obtener datos de las líneas de la factura
+        line_ids = factura[0].get('invoice_line_ids', [])
+        lines = []
+        
+        if line_ids:
+            lines = models.execute_kw(db, uid, password,
+                'account.move.line', 'read',
+                [line_ids],
+                {'fields': line_all_fields})
+
+        # Obtener información del cliente (partner)
+        partner_id = factura[0].get('partner_id', [0])[0]
+        partner_info = {}
+        
+        if partner_id:
+            partner_fields_data = models.execute_kw(db, uid, password, 
+                'res.partner', 'fields_get', 
+                [], {'attributes': ['string', 'type', 'required']})
+            
+            partner_all_fields = list(partner_fields_data.keys())
+            
+            partner_data = models.execute_kw(db, uid, password,
+                'res.partner', 'read',
+                [partner_id],
+                {'fields': partner_all_fields})
+                
+            if partner_data:
+                partner_info = partner_data[0]
+
+        # Preparar la respuesta
+        response = {
+            "factura": factura[0],
+            "lineas": lines,
+            "cliente": partner_info
+        }
+
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
