@@ -77,7 +77,7 @@ def get_ultimas_cargas():
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT TOP 1 [Fecha de oferta] FROM DL_Analisis_Venta_v ORDER BY [Fecha de oferta] DESC")
+            cursor.execute("SELECT MAX([Fecha de oferta]) AS FechaUltimaOferta FROM [DATALAKE].[dbo].[DL_Analisis_Venta_v]")
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
             data = [dict(zip(columns, row)) for row in rows]
