@@ -77,7 +77,7 @@ def get_ultimas_cargas():
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT TOP 1 * FROM DL_Analisis_Venta_v ORDER BY [Fecha de oferta] DESC")
+            cursor.execute("SELECT TOP 1 [Fecha de oferta] FROM DL_Analisis_Venta_v ORDER BY [Fecha de oferta] DESC")
             rows = cursor.fetchall()
             columns = [column[0] for column in cursor.description]
             data = [dict(zip(columns, row)) for row in rows]
@@ -115,7 +115,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Fecha documento] as 'Fecha_documento'
                     ,[RUT]
                     ,[Razon social] as 'Razon_social'
-                    --,[Categoria cliente] as 'Categoria_cliente'
+                    ,[Categoria cliente] as 'Categoria_cliente'
                     ,CASE [Grupo de ventas] 
                         WHEN 'Venta Empresa' THEN 'Venta Empresas'
                         WHEN 'Planta Marmol' THEN 'Planta Mármol'
@@ -124,8 +124,11 @@ def get_facturacion_fechas(start_date, end_date):
                         WHEN 'Showroom Concepcion' THEN 'Showroom Concepción'
                         ELSE [Grupo de ventas] 
                         END AS 'Grupo_de_Ventas'
+                    ,[Tipo de despacho]
+                    ,[Comuna]
                     ,[Codigo]
                     ,[Descripcion]
+                    ,[Unidad de medida] as 'Unidad_medida'
                     ,[Inventariable]
                     ,[Rubro]
                     ,[Familia]
@@ -159,6 +162,10 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Vendedor oferta] as 'Vendedor_oferta'
                     ,[Arquitecto] 
                     ,[Inmobiliaria]
+                    ,[Arquitecto 2] as 'Arquitecto_2'
+                    ,[Geografica]
+                    ,[Unidad de negocios] as 'Unidad_negocio'
+                    ,[Area]
                     ,[Nombre obra] as 'Nombre_obra'
                 FROM DL_Facturacion_v 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)

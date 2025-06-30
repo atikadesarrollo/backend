@@ -443,17 +443,26 @@ def get_latest_projects_info(date_range=None):
                 employees = models.execute_kw(db, uid, password,
                     'hr.employee', 'search_read',
                     [[('user_id', 'in', user_ids)]],
-                    {'fields': ['user_id', 'department_id', 'work_email']})
-
-                # Crear un diccionario para mapear user_id a department_id
+                    {'fields': ['user_id', 'department_id', 'np_sei_geo']})
+                # obtiuene los emails (login) de los project_creators
+                users = models.execute_kw(db, uid, password,
+                    'res.users', 'read',
+                    [user_ids],
+                    {'fields': ['login']})  
+                
+                # Crear un diccionario para mapear user_id a department_id y los nuevos campos del modelo hr.employee
                 user_to_department = {employee['user_id'][0]: employee['department_id'][1] if employee['department_id'] else '' for employee in employees}
-
+                user_to_email = {user['id']: user['login'] for user in users}
+                user_to_geo = {employee['user_id'][0]: employee.get('np_sei_geo', '') for employee in employees}
+                
                 # Asignar el department_id a cada proyecto
                 for project in projects:
                     project_creator = project.get('project_creator')
                     if project_creator:
                         project['department_id'] = user_to_department.get(project_creator[0], '')
-
+                        project['creator_email'] = user_to_email.get(project_creator[0], '')
+                        project['np_sei_geo'] = user_to_geo.get(project_creator[0], '')
+            
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
             sale_orders = models.execute_kw(db, uid, password,
@@ -522,8 +531,9 @@ def get_latest_projects_info(date_range=None):
                     'Ordenes_de_Venta': project_to_sale_orders.get(project['id'], []),
                     'Region': project.get('state_id', [])[1] if project.get('state_id') else '',
                     'Saldo_Contrato': project.get('contract_balance', ''),
-                    'Fecha_Creación': project.get('create_date', '')
-                    
+                    'Fecha_Creación': project.get('create_date', ''),
+                    'Email_Creador': project.get('creator_email', ''),
+                    'Geo_Creador': project.get('np_sei_geo', '')
                 }
                 formatted_projects.append(formatted_project)
 
@@ -677,3 +687,6 @@ def obtener_factura(factura_name):
         return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+    

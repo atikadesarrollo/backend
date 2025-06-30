@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)  # Habilitar CORS para toda la aplicación
+    CORS(app, origins=["http://localhost:8080", "https://app.atika.cl","http://localhost:3000"])  # Habilitar CORS para toda la aplicación
 
     # Registrar blueprints
     app.register_blueprint(odoo_bp, url_prefix='/odoo')
