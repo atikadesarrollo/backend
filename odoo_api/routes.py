@@ -688,6 +688,5 @@ def obtener_factura(factura_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@odoo_bp.route('/revision_refolio', methods=['GET'])
-def get_invoices(): 
+
     
