@@ -124,7 +124,7 @@ def get_facturacion_fechas(start_date, end_date):
                         WHEN 'Showroom Concepcion' THEN 'Showroom Concepción'
                         ELSE [Grupo de ventas] 
                         END AS 'Grupo_de_Ventas'
-                    ,[Tipo de despacho]
+                    ,[Tipo de despacho] as 'Tipo_despacho'
                     ,[Comuna]
                     ,[Codigo]
                     ,[Descripcion]
