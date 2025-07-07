@@ -98,7 +98,8 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_fecha_de_entrega', 'np_rpt_base_price', 'np_mo_price_unit', 'source_currency_id',
                 'np_rate_currency', 'discount', 'tax_id', 'price_subtotal', 
                 'discount', 'np_original_discount',
-                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp'
+                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit'
+
             ]
 
             order_line_ids = [line_id for order in sale_orders for line_id in order['order_line']]
@@ -708,7 +709,7 @@ def get_factura_refoliar(factura_name):
         factura = models.execute_kw(db, uid, password,
             'account.move', 'read',
             [factura_ids[0]],
-            {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos']})
+            {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
 
         if not factura:
             return jsonify({"error": "Error al leer la factura"}), 500
@@ -722,7 +723,8 @@ def get_factura_refoliar(factura_name):
             "Seguimiento Febos": factura[0].get('seguimiento_febos', ''),
             "Codigo Febos": factura[0].get('codigo_febos', ''),
             "Errores Febos": factura[0].get('errores_febos', ''),
-            "Internal ID Febos": factura[0].get('internal_id_febos', '')
+            "Internal ID Febos": factura[0].get('internal_id_febos', ''),
+            "Display Name": factura[0].get('display_name', '')
         }
 
         return jsonify(response)
@@ -759,7 +761,8 @@ def update_factura_refoliar(factura_name):
             'seguimiento_febos': 'seguimiento_febos',
             'codigo_febos': 'codigo_febos',
             'errores_febos': 'errores_febos',
-            'internal_id_febos': 'internal_id_febos'
+            'internal_id_febos': 'internal_id_febos',
+            'display_name': 'display_name'
         }
 
         # Construir el diccionario de valores a actualizar
@@ -780,7 +783,7 @@ def update_factura_refoliar(factura_name):
             updated_factura = models.execute_kw(db, uid, password,
                 'account.move', 'read',
                 [factura_ids[0]],
-                {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos']})
+                {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
 
             response = {
                 "message": "Factura actualizada exitosamente",
@@ -792,7 +795,8 @@ def update_factura_refoliar(factura_name):
                     "Seguimiento Febos": updated_factura[0].get('seguimiento_febos', ''),
                     "Codigo Febos": updated_factura[0].get('codigo_febos', ''),
                     "Errores Febos": updated_factura[0].get('errores_febos', ''),
-                    "Internal ID Febos": updated_factura[0].get('internal_id_febos', '')
+                    "Internal ID Febos": updated_factura[0].get('internal_id_febos', ''),
+                    "Display Name": updated_factura[0].get('display_name', '') 
                 }
             }
             return jsonify(response)
@@ -801,3 +805,5 @@ def update_factura_refoliar(factura_name):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500   
+    
+    
