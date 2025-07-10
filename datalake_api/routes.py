@@ -63,10 +63,10 @@ def get_analisis_venta_fechas(start_date, end_date):
                 [Referencia de pedido] as 'Referencia_de_pedido'
                 ,[Proyecto] 
                 ,[Fecha de oferta] as 'Fecha_de_oferta'
-                ,[Cotización final] as  'Cotizacion_final'
+                ,[Cotización final] as 'Cotizacion_final'
                 ,[Venta anticipada] as 'Venta_anticipada'
-                ,[DocNum oferta] as  'DocNum_oferta'
-                ,[DocNum OV] as   'DocNum_OV'
+                ,[DocNum oferta] as 'DocNum_oferta'
+                ,[DocNum OV] as 'DocNum_OV'
                 ,[Tipo despacho] as 'Tipo_despacho'
                 ,[Comuna]
                 ,[RUT Cliente] as 'RUT_Cliente'
@@ -80,7 +80,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[CDP Producto] as 'Cdp_producto'
                 ,[Familia]
                 ,[SKU]
-                ,[Descipción]
+                ,[Descipción] as 'Descripcion'
                 ,[Unidad de medida] as 'Unidad_Medida'
                 ,[Inventariable]
                 ,[Rubro]
@@ -113,7 +113,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[RPT Flete Unitario MO] as 'RPT_Flete_Unitario_MO' 
                 ,[RPT Substotal] as 'RPT_Substotal'
                 ,[Total]
-                ,[U_SEI_CotFin]
+                ,[U_SEI_CotFin] 
                 ,[Estado]
                 ,[EstadoOdoo]
                 ,[Tasa de cambio USD] as 'Tasa_de_cambio_USD' 
