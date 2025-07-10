@@ -167,6 +167,10 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Unidad de negocios] as 'Unidad_negocio'
                     ,[Area]
                     ,[Nombre obra] as 'Nombre_obra'
+                    ,[Especificador Arquitectura] as 'Especificador_arquitectura'
+                    ,[Email Esp Arquitectura] as 'Email_esp_Ar'
+                    ,[Especificador Inmobiliario] as 'Especificador_inmobiliario'
+                    ,[Email Esp Inmobiliario] as 'Email_esp_In'
                 FROM DL_Facturacion_v 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
