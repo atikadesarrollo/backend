@@ -689,4 +689,116 @@ def obtener_factura(factura_name):
         return jsonify({"error": str(e)}), 500
     
 
+<<<<<<< Updated upstream
     
+=======
+        # Buscar la factura por su nombre (número)
+        factura_ids = models.execute_kw(db, uid, password,
+            'account.move', 'search',
+            [[('name', '=', factura_name), ('move_type', 'in', ['out_invoice', 'out_refund'])]], 
+            {'limit': 1})
+
+        if not factura_ids:
+            return jsonify({"error": "Factura no encontrada"}), 404
+
+        # Obtener los campos específicos solicitados
+        factura = models.execute_kw(db, uid, password,
+            'account.move', 'read',
+            [factura_ids[0]],
+            {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
+
+        if not factura:
+            return jsonify({"error": "Error al leer la factura"}), 500
+
+        # Preparar la respuesta con los campos específicos
+        response = {
+            "Codigo Odoo Factura": factura[0].get('name', ''),
+            "Folio DTE": factura[0].get('folio_dte', ''),
+            "ID Febos": factura[0].get('febos_id', ''),
+            "Mensaje Febos": factura[0].get('mensaje_febos', ''),
+            "Seguimiento Febos": factura[0].get('seguimiento_febos', ''),
+            "Codigo Febos": factura[0].get('codigo_febos', ''),
+            "Errores Febos": factura[0].get('errores_febos', ''),
+            "Internal ID Febos": factura[0].get('internal_id_febos', ''),
+            "Display Name": factura[0].get('display_name', '')
+        }
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@odoo_bp.route('/factura_refoliar/<string:factura_name>', methods=['PUT'])
+def update_factura_refoliar(factura_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Buscar la factura por su nombre (número)
+        factura_ids = models.execute_kw(db, uid, password,
+            'account.move', 'search',
+            [[('name', '=', factura_name), ('move_type', 'in', ['out_invoice', 'out_refund'])]], 
+            {'limit': 1})
+
+        if not factura_ids:
+            return jsonify({"error": "Factura no encontrada"}), 404
+
+        # Obtener los datos del request JSON
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
+
+        # Mapear los campos del JSON a los campos de Odoo
+        update_values = {}
+        field_mapping = {
+            'folio_dte': 'folio_dte',
+            'febos_id': 'febos_id', 
+            'mensaje_febos': 'mensaje_febos',
+            'seguimiento_febos': 'seguimiento_febos',
+            'codigo_febos': 'codigo_febos',
+            'errores_febos': 'errores_febos',
+            'internal_id_febos': 'internal_id_febos',
+            'display_name': 'display_name'
+        }
+
+        # Construir el diccionario de valores a actualizar
+        for json_field, odoo_field in field_mapping.items():
+            if json_field in data:
+                update_values[odoo_field] = data[json_field]
+
+        if not update_values:
+            return jsonify({"error": "No se encontraron campos válidos para actualizar"}), 400
+
+        # Actualizar la factura
+        result = models.execute_kw(db, uid, password,
+            'account.move', 'write',
+            [factura_ids, update_values])
+
+        if result:
+            # Obtener los datos actualizados para confirmar
+            updated_factura = models.execute_kw(db, uid, password,
+                'account.move', 'read',
+                [factura_ids[0]],
+                {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
+
+            response = {
+                "message": "Factura actualizada exitosamente",
+                "factura_actualizada": {
+                    "Codigo Odoo Factura": updated_factura[0].get('name', ''),
+                    "Folio DTE": updated_factura[0].get('folio_dte', ''),
+                    "ID Febos": updated_factura[0].get('febos_id', ''),
+                    "Mensaje Febos": updated_factura[0].get('mensaje_febos', ''),
+                    "Seguimiento Febos": updated_factura[0].get('seguimiento_febos', ''),
+                    "Codigo Febos": updated_factura[0].get('codigo_febos', ''),
+                    "Errores Febos": updated_factura[0].get('errores_febos', ''),
+                    "Internal ID Febos": updated_factura[0].get('internal_id_febos', ''),
+                    "Display Name": updated_factura[0].get('display_name', '') 
+                }
+            }
+            return jsonify(response)
+        else:
+            return jsonify({"error": "Error al actualizar la factura"}), 500
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+>>>>>>> Stashed changes

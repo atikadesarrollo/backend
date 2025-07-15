@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Automática ETL - Todos los Períodos - API ATIKA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .period-selector {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .period-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .period-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .period-btn.available {
+            background-color: #3498db;
+            color: white;
+        }
+        .period-btn.available:hover {
+            background-color: #2980b9;
+        }
+        .period-btn.unavailable {
+            background-color: #bdc3c7;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+        .period-btn.active {
+            background-color: #27ae60;
+            color: white;
+        }
+        .period-btn .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card.summary {
+            background-color: #9b59b6;
+        }
+        .stat-card.daily {
+            background-color: #e67e22;
+        }
+        .stat-card.weekly {
+            background-color: #1abc9c;
+        }
+        .stat-card.monthly {
+            background-color: #f39c12;
+        }
+        .stat-card.quarterly {
+            background-color: #34495e;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .data-table {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ecf0f1;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e8f4f8;
+        }
+        .period-info {
+            display: block;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .period-info.auto-selected {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 1px solid #28a745;
+        }
+        .endpoint-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Consulta Automática ETL - Todos los Períodos</h1>
+        
+        <div class="endpoint-info">
+            <strong>API Base:</strong> http://localhost:5000/api/analytics/<br>
+            <strong>Modo:</strong> Selección automática inteligente de períodos<br>
+            <strong>Períodos:</strong> daily, weekly, monthly, quarterly, summary
+        </div>
+
+        <!-- Selector de período -->
+        <div class="period-selector">
+            <h3>🤖 Sistema Automático Inteligente</h3>
+            <div style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <strong>🚀 FUNCIONAMIENTO SIMPLE:</strong><br>
+                1. Haz clic en "Activar Sistema" ⬇️<br>
+                2. Selecciona fechas en los filtros abajo<br>
+                3. ¡El sistema hace todo automáticamente! 🎯
+            </div>
+            <div class="period-buttons" id="periodButtons">
+                <button class="period-btn" onclick="loadPeriods()" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; font-size: 16px; padding: 15px 30px;">
+                    🔄 Activar Sistema Automático
+                </button>
+            </div>
+        </div>
+
+        <!-- Información del período seleccionado -->
+        <div id="periodInfo" class="period-info">
+            <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                <strong>💡 Para comenzar:</strong><br>
+                Haz clic en "Activar Sistema Automático" arriba ⬆️
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="fecha_desde">🎯 Fecha desde:</label>
+                <input type="date" id="fecha_desde" title="Selecciona la fecha de inicio (¡El sistema elegirá la tabla automáticamente!)">
+            </div>
+            <div class="filter-group">
+                <label for="fecha_hasta">🎯 Fecha hasta:</label>
+                <input type="date" id="fecha_hasta" title="Selecciona la fecha final (¡El sistema elegirá la tabla automáticamente!)">
+            </div>
+            <div class="filter-group">
+                <label for="limit">Límite de registros:</label>
+                <input type="number" id="limit" value="50" min="1" max="1000">
+            </div>
+            <div class="filter-group">
+                <label for="vendedor">Vendedor:</label>
+                <input type="text" id="vendedor" placeholder="Ej: Loreto">
+            </div>
+            <div class="filter-group">
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" placeholder="Ej: MARIA JOSE">
+            </div>
+            <div class="filter-group">
+                <label for="estado">Estado:</label>
+                <select id="estado">
+                    <option value="">Todos</option>
+                    <option value="sale">sale</option>
+                    <option value="OK">OK</option>
+                    <option value="sent">sent</option>
+                    <option value="draft">draft</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="familia">Familia de producto:</label>
+                <input type="text" id="familia" placeholder="Ej: Porcelanatos">
+            </div>
+            <div class="filter-group">
+                <label for="canal">Canal:</label>
+                <input type="text" id="canal" placeholder="Ej: Showroom">
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons">
+            <button id="exportBtn" onclick="exportToCSV()" class="secondary" disabled>📊 Exportar CSV</button>
+            <button onclick="clearFilters()" class="secondary">🧹 Limpiar Filtros</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="messages"></div>
+
+        <!-- Estadísticas -->
+        <div id="stats" class="stats" style="display: none;"></div>
+
+        <!-- Tabla de datos -->
+        <div id="loadingDiv" class="loading" style="display: none;">
+            🤖 Analizando datos automáticamente...
+        </div>
+        
+        <div id="dataContainer" class="data-table" style="display: none;">
+            <table id="dataTable">
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentPeriod = '';
+        let currentData = null;
+        let availablePeriods = [];
+        let isProcessingDates = false;
+        let autoModeEnabled = false;
+
+        // Cargar períodos disponibles y activar sistema automático
+        async function loadPeriods() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics/periods/available');
+                const result = await response.json();
+                
+                if (result.success) {
+                    availablePeriods = result.data;
+                    autoModeEnabled = true;
+                    displayAutoSystem(result.data);
+                    setupAutoDateHandlers();
+                    showMessage('🚀 Sistema automático activado. Selecciona un rango de fechas para comenzar.', 'success');
+                } else {
+                    showMessage('Error al cargar períodos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            }
+        }
+
+        // Mostrar sistema automático activado
+        function displayAutoSystem(periods) {
+            const container = document.getElementById('periodButtons');
+            container.innerHTML = '';
+            
+            // Indicador de sistema activado
+            const statusDiv = document.createElement('div');
+            statusDiv.style.cssText = 'background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
+            statusDiv.innerHTML = `
+                <strong>✅ SISTEMA AUTOMÁTICO ACTIVADO</strong><br>
+                <small>Bases de datos disponibles: ${periods.filter(p => p.available).length} de ${periods.length}</small>
+            `;
+            container.appendChild(statusDiv);
+            
+            // Mostrar períodos disponibles
+            const periodsContainer = document.createElement('div');
+            periodsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px;';
+            
+            periods.forEach(period => {
+                const btn = document.createElement('button');
+                btn.className = `period-btn ${period.available ? 'available' : 'unavailable'}`;
+                btn.style.cssText = period.available ? 
+                    'background: #ecf0f1; color: #2c3e50; border: 2px solid #27ae60; cursor: default; font-size: 12px;' :
+                    'background: #bdc3c7; color: #7f8c8d; cursor: not-allowed; font-size: 12px;';
+                
+                let periodName = period.display_name;
+                if (period.period === 'summary') periodName += ' 📊';
+                else if (period.period === 'daily') periodName += ' 📅';
+                else if (period.period === 'weekly') periodName += ' 📆';
+                else if (period.period === 'monthly') periodName += ' 🗓️';
+                else if (period.period === 'quarterly') periodName += ' 📋';
+                
+                btn.innerHTML = periodName;
+                
+                if (period.available) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.style.background = '#27ae60';
+                    badge.textContent = period.record_count > 1000 ? 
+                        Math.round(period.record_count / 1000) + 'K' : 
+                        period.record_count;
+                    btn.appendChild(badge);
+                }
+                
+                periodsContainer.appendChild(btn);
+            });
+            
+            container.appendChild(periodsContainer);
+            
+            // Configurar fechas por defecto
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('fecha_hasta').value = today.toISOString().split('T')[0];
+            document.getElementById('fecha_desde').value = lastWeek.toISOString().split('T')[0];
+        }
+
+        // Configurar manejadores automáticos para los campos de fecha
+        function setupAutoDateHandlers() {
+            const fechaDesde = document.getElementById('fecha_desde');
+            const fechaHasta = document.getElementById('fecha_hasta');
+            
+            function handleDateChange() {
+                if (autoModeEnabled && fechaDesde.value && fechaHasta.value) {
+                    clearTimeout(window.dateChangeTimeout);
+                    window.dateChangeTimeout = setTimeout(() => {
+                        autoSelectAndQuery(fechaDesde.value, fechaHasta.value);
+                    }, 1000);
+                }
+            }
+            
+            fechaDesde.addEventListener('change', handleDateChange);
+            fechaHasta.addEventListener('change', handleDateChange);
+            
+            // Disparar automáticamente si ya hay fechas
+            if (fechaDesde.value && fechaHasta.value) {
+                handleDateChange();
+            }
+        }
+
+        // Selección automática de período y consulta
+        async function autoSelectAndQuery(fechaDesde, fechaHasta) {
+            if (!fechaDesde || !fechaHasta || isProcessingDates) {
+                return;
+            }
+
+            isProcessingDates = true;
+
+            try {
+                const startDate = new Date(fechaDesde);
+                const endDate = new Date(fechaHasta);
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                // Determinar período óptimo
+                let selectedPeriod = '';
+                let periodName = '';
+                let emoji = '';
+                let explanation = '';
+
+                if (diffDays <= 7) {
+                    selectedPeriod = 'daily';
+                    periodName = 'Daily';
+                    emoji = '📅';
+                    explanation = 'Rango corto (≤7 días): Datos diarios para máximo detalle';
+                } else if (diffDays <= 30) {
+                    selectedPeriod = 'weekly';
+                    periodName = 'Weekly';
+                    emoji = '📆';
+                    explanation = 'Rango medio (8-30 días): Datos semanales, balance entre detalle y rendimiento';
+                } else if (diffDays <= 90) {
+                    selectedPeriod = 'monthly';
+                    periodName = 'Monthly';
+                    emoji = '🗓️';
+                    explanation = 'Rango extendido (31-90 días): Datos mensuales para eficiencia';
+                } else {
+                    selectedPeriod = 'quarterly';
+                    periodName = 'Quarterly';
+                    emoji = '📋';
+                    explanation = 'Rango largo (90+ días): Datos trimestrales para rendimiento óptimo';
+                }
+
+                // Verificar disponibilidad
+                let periodData = availablePeriods.find(p => p.period === selectedPeriod && p.available);
+                
+                if (!periodData) {
+                    // Buscar fallback
+                    const fallbackOrder = ['quarterly', 'monthly', 'weekly', 'daily'];
+                    for (const fallback of fallbackOrder) {
+                        const available = availablePeriods.find(p => p.period === fallback && p.available);
+                        if (available) {
+                            selectedPeriod = fallback;
+                            periodData = available;
+                            explanation += ` (Usando ${fallback} como alternativa disponible)`;
+                            break;
+                        }
+                    }
+                }
+
+                if (!periodData) {
+                    showMessage('❌ No hay datos disponibles para el rango seleccionado.', 'error');
+                    return;
+                }
+
+                // Actualizar UI
+                currentPeriod = selectedPeriod;
+                showAutoSelection(selectedPeriod, periodData, diffDays, fechaDesde, fechaHasta, explanation);
+
+                // Ejecutar consulta automáticamente
+                showMessage(`🤖 Ejecutando consulta automática en ${periodName.toUpperCase()}...`, 'success');
+                setTimeout(async () => {
+                    await executeQuery();
+                }, 500);
+
+            } finally {
+                isProcessingDates = false;
+            }
+        }
+
+        // Mostrar selección automática
+        function showAutoSelection(period, periodData, days, fechaDesde, fechaHasta, explanation) {
+            const periodInfo = document.getElementById('periodInfo');
+            
+            const emoji = period === 'daily' ? '📅' : 
+                         period === 'weekly' ? '📆' :
+                         period === 'monthly' ? '🗓️' : '📋';
+            
+            periodInfo.innerHTML = `
+                <div style="text-align: center;">
+                    <strong>🤖 SELECCIÓN AUTOMÁTICA COMPLETADA</strong><br><br>
+                    <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                        <div style="font-size: 24px; margin-bottom: 10px;">${emoji}</div>
+                        <strong>Período: ${period.toUpperCase()}</strong><br>
+                        <strong>Registros: ${periodData.record_count.toLocaleString()}</strong><br>
+                        <strong>Rango: ${days} días (${fechaDesde} → ${fechaHasta})</strong><br>
+                        <strong>Base: ${periodData.table_name}</strong>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>💡 ¿Por qué esta selección?</strong><br>
+                        <small>${explanation}</small>
+                    </div>
+                </div>
+            `;
+            periodInfo.className = 'period-info auto-selected';
+        }
+
+        // Ejecutar consulta
+        async function executeQuery() {
+            if (!currentPeriod) return;
+
+            const params = new URLSearchParams();
+            
+            // Agregar todos los filtros
+            const filters = {
+                limit: document.getElementById('limit').value,
+                vendedor: document.getElementById('vendedor').value,
+                cliente: document.getElementById('cliente').value,
+                estado: document.getElementById('estado').value,
+                familia: document.getElementById('familia').value,
+                canal: document.getElementById('canal').value,
+                fecha_desde: document.getElementById('fecha_desde').value,
+                fecha_hasta: document.getElementById('fecha_hasta').value
+            };
+
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value) params.append(key, value);
+            });
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/analytics/${currentPeriod}/complete?${params}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentData = result.data;
+                    displayData(result.data, currentPeriod);
+                    showStats(result, currentPeriod);
+                    
+                    const diffDays = filters.fecha_desde && filters.fecha_hasta ? 
+                        Math.ceil(Math.abs(new Date(filters.fecha_hasta) - new Date(filters.fecha_desde)) / (1000 * 60 * 60 * 24)) : 0;
+                    
+                    showMessage(
+                        `🎉 ¡Consulta automática exitosa! ${currentPeriod.toUpperCase()} (${diffDays} días): ${result.data.length} de ${result.total_records.toLocaleString()} registros`, 
+                        'success'
+                    );
+                    
+                    document.getElementById('exportBtn').disabled = false;
+                } else {
+                    showMessage('Error al cargar datos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Mostrar datos en tabla
+        function displayData(data, period) {
+            if (!data || data.length === 0) {
+                document.getElementById('dataContainer').style.display = 'none';
+                showMessage('No se encontraron datos con los filtros aplicados', 'error');
+                return;
+            }
+
+            const headers = Object.keys(data[0]);
+            const headerRow = headers.map(h => `<th>${h}</th>`).join('');
+            document.getElementById('tableHeader').innerHTML = headerRow;
+
+            const rows = data.map(row => {
+                const cells = headers.map(header => {
+                    let value = row[header];
+                    
+                    if (header.includes('total') || header.includes('Total') || header.includes('Precio') || header.includes('monto')) {
+                        value = typeof value === 'number' ? `$${value.toLocaleString()}` : value;
+                    } else if (header.includes('Fecha') || header.includes('fecha')) {
+                        value = value ? new Date(value).toLocaleDateString('es-CL') : value;
+                    } else if (header.includes('Descuento %')) {
+                        value = typeof value === 'number' ? `${value}%` : value;
+                    } else if (header.includes('cantidad') || header.includes('ofertas')) {
+                        value = typeof value === 'number' ? value.toLocaleString() : value;
+                    }
+                    
+                    return `<td>${value || ''}</td>`;
+                }).join('');
+                return `<tr>${cells}</tr>`;
+            }).join('');
+
+            document.getElementById('tableBody').innerHTML = rows;
+            document.getElementById('dataContainer').style.display = 'block';
+        }
+
+        // Mostrar estadísticas
+        function showStats(result, period) {
+            const stats = document.getElementById('stats');
+            const data = result.data;
+            
+            if (data.length > 0) {
+                let totalAmount = 0;
+                let uniqueVendors = 0;
+                let uniqueClients = 0;
+                
+                if (period === 'summary') {
+                    totalAmount = data.reduce((sum, row) => sum + (parseFloat(row.monto_total) || 0), 0);
+                    uniqueVendors = data.length;
+                    uniqueClients = data.reduce((sum, row) => sum + (parseInt(row.total_ofertas) || 0), 0);
+                } else {
+                    totalAmount = data.reduce((sum, row) => sum + (parseFloat(row.Total) || 0), 0);
+                    uniqueVendors = new Set(data.map(row => row.Vendedor)).size;
+                    uniqueClients = new Set(data.map(row => row.Cliente)).size;
+                }
+                
+                stats.innerHTML = `
+                    <div class="stat-card ${period}">
+                        <div class="stat-value">${data.length}</div>
+                        <div class="stat-label">Registros Mostrados</div>
+                    </div>
+                    <div class="stat-card ${period}">
+                        <div class="stat-value">$${(totalAmount / 1000000).toFixed(2)}M</div>
+                        <div class="stat-label">Monto Filtrado</div>
+                    </div>
+                    <div class="stat-card ${period}">
+                        <div class="stat-value">${uniqueVendors}</div>
+                        <div class="stat-label">${period === 'summary' ? 'Vendedores' : 'Vendedores Únicos'}</div>
+                    </div>
+                    <div class="stat-card ${period}">
+                        <div class="stat-value">${uniqueClients}</div>
+                        <div class="stat-label">${period === 'summary' ? 'Total Ofertas' : 'Clientes Únicos'}</div>
+                    </div>
+                `;
+                stats.style.display = 'grid';
+            }
+        }
+
+        // Exportar a CSV
+        function exportToCSV() {
+            if (!currentData || currentData.length === 0) {
+                showMessage('No hay datos para exportar', 'error');
+                return;
+            }
+
+            const headers = Object.keys(currentData[0]);
+            const csv = [
+                headers.join(','),
+                ...currentData.map(row => 
+                    headers.map(header => {
+                        const value = row[header];
+                        return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                    }).join(',')
+                )
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${currentPeriod}_data_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('📊 Archivo CSV descargado exitosamente', 'success');
+        }
+
+        // Limpiar filtros
+        function clearFilters() {
+            document.getElementById('limit').value = '50';
+            document.getElementById('vendedor').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('estado').value = '';
+            document.getElementById('familia').value = '';
+            document.getElementById('canal').value = '';
+            document.getElementById('fecha_desde').value = '';
+            document.getElementById('fecha_hasta').value = '';
+            
+            // Limpiar información
+            document.getElementById('periodInfo').innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                    <strong>💡 Selecciona un rango de fechas para consultar automáticamente</strong>
+                </div>
+            `;
+            document.getElementById('dataContainer').style.display = 'none';
+            document.getElementById('stats').style.display = 'none';
+            document.getElementById('exportBtn').disabled = true;
+            currentPeriod = '';
+            currentData = null;
+            
+            showMessage('🧹 Filtros limpiados', 'success');
+        }
+
+        // Funciones de utilidad
+        function showLoading(show) {
+            document.getElementById('loadingDiv').style.display = show ? 'block' : 'none';
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageClass = type === 'error' ? 'error' : 'success';
+            messagesDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
+            setTimeout(() => messagesDiv.innerHTML = '', 5000);
+        }
+    </script>
+</body>
+</html>
