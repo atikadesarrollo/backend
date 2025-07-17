@@ -26,3 +26,4 @@ ETL/__pycache__/utils.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 
+logs/requests.log

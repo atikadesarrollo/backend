@@ -464,6 +464,28 @@ def get_latest_projects_info(date_range=None):
                         project['creator_email'] = user_to_email.get(project_creator[0], '')
                         project['np_sei_geo'] = user_to_geo.get(project_creator[0], '')
             
+            # Obtener los work_emails de los arch_specifier
+            arch_specifier_ids = []
+            for project in projects:
+                if project.get('arch_specifier'):
+                    arch_specifier_ids.append(project['arch_specifier'][0])
+            
+            employee_to_work_email = {}
+            if arch_specifier_ids:
+                arch_employees = models.execute_kw(db, uid, password,
+                    'hr.employee', 'read',
+                    [arch_specifier_ids],
+                    {'fields': ['work_email']})
+                
+                employee_to_work_email = {employee['id']: employee.get('work_email', '') for employee in arch_employees}
+            
+            # Asignar el work_email a cada proyecto
+            for project in projects:
+                if project.get('arch_specifier'):
+                    project['arch_specifier_email'] = employee_to_work_email.get(project['arch_specifier'][0], '')
+                else:
+                    project['arch_specifier_email'] = ''
+            
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
             sale_orders = models.execute_kw(db, uid, password,
@@ -515,6 +537,7 @@ def get_latest_projects_info(date_range=None):
                     'Creador_Proyecto': project.get('project_creator', [])[1] if project.get('project_creator') else '',
                     'Especificador_Inmobiliaria': project.get('real_estate_specifier', [])[1] if project.get('real_estate_specifier') else '',
                     'Especificador_Arquitectura': project.get('arch_specifier', [])[1] if project.get('arch_specifier') else '',
+                    'Email_Especificador_Arquitectura': project.get('arch_specifier_email', ''),
                     'Fecha_Inicio': project.get('start_date', ''),
                     'Fecha_Termino': project.get('closing_date', ''),
                     'Canal_Venta': project.pop('np_canal', ''),
@@ -568,8 +591,6 @@ def obtener_ultimo_proyecto ():
             return jsonify({"error": "No se encontraron proyectos"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-    
 @odoo_bp.route('/DescargaOC/<string:order_name>', methods=['GET'])
 def descarga_oc(order_name):
     try:
