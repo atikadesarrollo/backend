@@ -98,7 +98,8 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_fecha_de_entrega', 'np_rpt_base_price', 'np_mo_price_unit', 'source_currency_id',
                 'np_rate_currency', 'discount', 'tax_id', 'price_subtotal', 
                 'discount', 'np_original_discount',
-                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp'
+                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit'
+
             ]
 
             order_line_ids = [line_id for order in sale_orders for line_id in order['order_line']]
@@ -688,10 +689,14 @@ def obtener_factura(factura_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@odoo_bp.route('/factura_refoliar/<string:factura_name>', methods=['GET'])
+def get_factura_refoliar(factura_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
 
-<<<<<<< Updated upstream
-    
-=======
+
         # Buscar la factura por su nombre (número)
         factura_ids = models.execute_kw(db, uid, password,
             'account.move', 'search',
@@ -801,4 +806,4 @@ def update_factura_refoliar(factura_name):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
->>>>>>> Stashed changes
+

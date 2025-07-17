@@ -13,8 +13,6 @@ datalake_api/__pycache__/__init__.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 odoo_api/__pycache__/__init__.cpython-313.pyc
 odoo_api/__pycache__/routes.cpython-313.pyc
-<<<<<<< Updated upstream
-=======
 odoo_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 /datalake_api/__pycache__
@@ -27,4 +25,4 @@ ETL/__pycache__/pipeline.cpython-313.pyc
 ETL/__pycache__/utils.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
->>>>>>> Stashed changes
+
