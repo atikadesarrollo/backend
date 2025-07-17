@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - API Monthly Endpoint</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .data-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 16px;
+        }
+        
+        .export-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .response-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Demo - API Análisis Mensual</h1>
+        
+        <div id="stats" class="stats">
+            <!-- Las estadísticas se cargarán aquí -->
+        </div>
+        
+        <div class="response-info" id="responseInfo">
+            Endpoint: <strong>GET /api/analytics/monthly/complete</strong><br>
+            Estado: <span id="apiStatus">Conectando...</span><br>
+            Registros totales: <span id="totalRecords">-</span><br>
+            Última consulta: <span id="lastQuery">-</span>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Límite:</label>
+                <select id="limitSelect">
+                    <option value="10">10 registros</option>
+                    <option value="25" selected>25 registros</option>
+                    <option value="50">50 registros</option>
+                    <option value="100">100 registros</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Vendedor:</label>
+                <input type="text" id="vendedorFilter" placeholder="Nombre del vendedor">
+            </div>
+            
+            <div class="control-group">
+                <label>Cliente:</label>
+                <input type="text" id="clienteFilter" placeholder="Nombre del cliente">
+            </div>
+            
+            <div class="control-group">
+                <label>Estado:</label>
+                <select id="estadoFilter">
+                    <option value="">Todos</option>
+                    <option value="draft">Draft</option>
+                    <option value="sent">Sent</option>
+                    <option value="Entregado">Entregado</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Fecha desde:</label>
+                <input type="date" id="fechaDesde">
+            </div>
+            
+            <div class="control-group">
+                <label>Fecha hasta:</label>
+                <input type="date" id="fechaHasta">
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button onclick="loadData()">🔍 Buscar</button>
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button onclick="clearFilters()">🔄 Limpiar</button>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Cargando datos...
+        </div>
+        
+        <table id="dataTable" class="data-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Vendedor</th>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="dataBody">
+            </tbody>
+        </table>
+        
+        <div id="pagination" class="pagination"></div>
+        
+        <div class="export-section">
+            <h3>📊 Exportación y API Info</h3>
+            <button onclick="exportToCSV()">📥 Exportar a CSV</button>
+            <button onclick="showAPIInfo()">📖 Ver Info API</button>
+            <button onclick="testConnection()">🔧 Test Conexión</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/analytics/monthly';
+        let currentData = [];
+        let currentOffset = 0;
+        let totalRecords = 0;
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadData();
+            
+            // Configurar fecha por defecto (últimos 7 días)
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('fechaHasta').value = today.toISOString().split('T')[0];
+            document.getElementById('fechaDesde').value = lastWeek.toISOString().split('T')[0];
+        });
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/info`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data.general_info;
+                    const statsContainer = document.getElementById('stats');
+                    
+                    statsContainer.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.total_registros.toLocaleString()}</div>
+                            <div>Registros Totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$${(stats.monto_total / 1000000).toFixed(1)}M</div>
+                            <div>Monto Total</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.vendedores_unicos}</div>
+                            <div>Vendedores</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.clientes_unicos}</div>
+                            <div>Clientes</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadData(offset = 0) {
+            const loading = document.getElementById('loading');
+            const table = document.getElementById('dataTable');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            
+            try {
+                const params = new URLSearchParams({
+                    limit: document.getElementById('limitSelect').value,
+                    offset: offset
+                });
+                
+                // Agregar filtros
+                const vendedor = document.getElementById('vendedorFilter').value;
+                const cliente = document.getElementById('clienteFilter').value;
+                const estado = document.getElementById('estadoFilter').value;
+                const fechaDesde = document.getElementById('fechaDesde').value;
+                const fechaHasta = document.getElementById('fechaHasta').value;
+                
+                if (vendedor) params.append('vendedor', vendedor);
+                if (cliente) params.append('cliente', cliente);
+                if (estado) params.append('estado', estado);
+                if (fechaDesde) params.append('fecha_desde', fechaDesde);
+                if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+                
+                const response = await fetch(`${API_BASE}/complete?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentData = data.data;
+                    totalRecords = data.total_records;
+                    currentOffset = offset;
+                    
+                    renderTable(data.data);
+                    renderPagination();
+                    updateResponseInfo(data);
+                    
+                    document.getElementById('apiStatus').textContent = '✅ Conectado';
+                    document.getElementById('totalRecords').textContent = totalRecords.toLocaleString();
+                    document.getElementById('lastQuery').textContent = new Date().toLocaleTimeString();
+                } else {
+                    throw new Error(data.message);
+                }
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('apiStatus').textContent = '❌ Error';
+                alert('Error cargando datos: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('dataBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(record => {
+                const row = document.createElement('tr');
+                const fecha = record['Fecha de oferta'] ? new Date(record['Fecha de oferta']).toLocaleDateString() : 'N/A';
+                const producto = record['Descipción'] ? record['Descipción'].substring(0, 30) + '...' : 'N/A';
+                const total = record['Total'] ? `$${record['Total'].toLocaleString()}` : 'N/A';
+                
+                row.innerHTML = `
+                    <td>${fecha}</td>
+                    <td>${record['Vendedor'] || 'N/A'}</td>
+                    <td>${record['Cliente'] || 'N/A'}</td>
+                    <td title="${record['Descipción'] || 'N/A'}">${producto}</td>
+                    <td>${record['Cant. producto'] || 'N/A'}</td>
+                    <td>${total}</td>
+                    <td>${record['Estado'] || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const limit = parseInt(document.getElementById('limitSelect').value);
+            const totalPages = Math.ceil(totalRecords / limit);
+            const currentPage = Math.floor(currentOffset / limit) + 1;
+            
+            pagination.innerHTML = '';
+            
+            // Botón anterior
+            if (currentPage > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.textContent = '← Anterior';
+                prevBtn.onclick = () => loadData((currentPage - 2) * limit);
+                pagination.appendChild(prevBtn);
+            }
+            
+            // Páginas
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.style.backgroundColor = i === currentPage ? '#2c3e50' : '';
+                pageBtn.onclick = () => loadData((i - 1) * limit);
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Botón siguiente
+            if (currentPage < totalPages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = 'Siguiente →';
+                nextBtn.onclick = () => loadData(currentPage * limit);
+                pagination.appendChild(nextBtn);
+            }
+        }
+
+        function updateResponseInfo(data) {
+            const info = document.getElementById('responseInfo');
+            const showing = data.data.length;
+            const from = currentOffset + 1;
+            const to = currentOffset + showing;
+            
+            info.innerHTML = `
+                Endpoint: <strong>GET /api/analytics/monthly/complete</strong><br>
+                Estado: <span id="apiStatus">✅ Conectado</span><br>
+                Registros totales: <span id="totalRecords">${totalRecords.toLocaleString()}</span><br>
+                Mostrando: ${from}-${to} de ${totalRecords.toLocaleString()}<br>
+                Última consulta: <span id="lastQuery">${new Date().toLocaleTimeString()}</span>
+            `;
+        }
+
+        function clearFilters() {
+            document.getElementById('vendedorFilter').value = '';
+            document.getElementById('clienteFilter').value = '';
+            document.getElementById('estadoFilter').value = '';
+            document.getElementById('fechaDesde').value = '';
+            document.getElementById('fechaHasta').value = '';
+            loadData();
+        }
+
+        function exportToCSV() {
+            if (currentData.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            const csv = convertToCSV(currentData);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `monthly_data_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
+            const headers = Object.keys(data[0]);
+            const csvContent = [
+                headers.join(','),
+                ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+            ].join('\n');
+            
+            return csvContent;
+        }
+
+        function showAPIInfo() {
+            const info = `
+🔗 API ENDPOINTS DISPONIBLES:
+
+📊 Información General:
+GET ${API_BASE}/info
+
+📋 Datos Completos:
+GET ${API_BASE}/complete
+  Parámetros:
+  - limit: número de registros (defecto: 100)
+  - offset: desde qué registro (defecto: 0)
+  - vendedor: filtrar por vendedor
+  - cliente: filtrar por cliente
+  - estado: filtrar por estado
+  - fecha_desde: filtrar desde fecha (YYYY-MM-DD)
+  - fecha_hasta: filtrar hasta fecha (YYYY-MM-DD)
+  - categoria: filtrar por categoría
+  - familia: filtrar por familia de productos
+
+📈 Períodos Disponibles:
+GET http://localhost:5000/api/analytics/periods/available
+
+💡 Ejemplos de uso:
+- Todos los datos: ${API_BASE}/complete
+- Paginación: ${API_BASE}/complete?limit=50&offset=100
+- Por vendedor: ${API_BASE}/complete?vendedor=Juan
+- Por fecha: ${API_BASE}/complete?fecha_desde=2025-07-01
+- Combinado: ${API_BASE}/complete?vendedor=Juan&estado=Entregado&limit=25
+
+📚 Documentación completa: API_MONTHLY_GUIDE.md
+            `;
+            alert(info);
+        }
+
+        async function testConnection() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics/health');
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ Conexión exitosa!\n\n' + 
+                          'Estado: ' + (data.database_connection ? 'DB Conectada' : 'DB Desconectada') + '\n' +
+                          'Mensaje: ' + data.message);
+                } else {
+                    alert('❌ Error en la conexión:\n' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error de conexión:\n' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -696,6 +696,7 @@ def get_factura_refoliar(factura_name):
         uid = common.authenticate(db, username, password, {})
         models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
 
+
         # Buscar la factura por su nombre (número)
         factura_ids = models.execute_kw(db, uid, password,
             'account.move', 'search',
@@ -804,6 +805,5 @@ def update_factura_refoliar(factura_name):
             return jsonify({"error": "Error al actualizar la factura"}), 500
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500   
-    
-    
+        return jsonify({"error": str(e)}), 500
+

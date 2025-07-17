@@ -16,3 +16,13 @@ odoo_api/__pycache__/routes.cpython-313.pyc
 odoo_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 /datalake_api/__pycache__
+logs/app.log
+etl_pipeline.log
+ETL/__pycache__/config.cpython-313.pyc
+ETL/__pycache__/__init__.cpython-313.pyc
+ETL/__pycache__/database_connection.cpython-313.pyc
+ETL/__pycache__/pipeline.cpython-313.pyc
+ETL/__pycache__/utils.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+

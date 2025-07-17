@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta DL_Analisis_Venta_Quarterly - API ATIKA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .info-section {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .data-table {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ecf0f1;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e8f4f8;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 8px 15px;
+        }
+        .endpoint-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Consulta DL_Analisis_Venta_Quarterly</h1>
+        
+        <div class="endpoint-info">
+            <strong>Endpoint:</strong> http://localhost:5000/api/analytics/quarterly/complete<br>
+            <strong>Método:</strong> GET<br>
+            <strong>Documentación:</strong> API_QUARTERLY_GUIDE.md
+        </div>
+
+        <!-- Información general -->
+        <div class="info-section">
+            <h3>📊 Información General de la Tabla</h3>
+            <button onclick="loadTableInfo()">Cargar Información</button>
+            <div id="tableInfo"></div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="limit">Límite de registros:</label>
+                <input type="number" id="limit" value="50" min="1" max="1000">
+            </div>
+            <div class="filter-group">
+                <label for="offset">Offset (paginación):</label>
+                <input type="number" id="offset" value="0" min="0">
+            </div>
+            <div class="filter-group">
+                <label for="vendedor">Vendedor:</label>
+                <input type="text" id="vendedor" placeholder="Ej: Loreto">
+            </div>
+            <div class="filter-group">
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" placeholder="Ej: MARIA JOSE">
+            </div>
+            <div class="filter-group">
+                <label for="estado">Estado:</label>
+                <select id="estado">
+                    <option value="">Todos</option>
+                    <option value="sale">sale</option>
+                    <option value="OK">OK</option>
+                    <option value="sent">sent</option>
+                    <option value="draft">draft</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="trimestre">Trimestre:</label>
+                <select id="trimestre">
+                    <option value="">Todos</option>
+                    <option value="1">Q1</option>
+                    <option value="2">Q2</option>
+                    <option value="3">Q3</option>
+                    <option value="4">Q4</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="año">Año:</label>
+                <input type="number" id="año" value="2025" min="2020" max="2030">
+            </div>
+            <div class="filter-group">
+                <label for="familia">Familia de producto:</label>
+                <input type="text" id="familia" placeholder="Ej: Porcelanatos">
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons">
+            <button onclick="loadData()">🔍 Consultar Datos</button>
+            <button onclick="exportToCSV()" class="secondary">📊 Exportar CSV</button>
+            <button onclick="clearFilters()" class="secondary">🧹 Limpiar Filtros</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="messages"></div>
+
+        <!-- Estadísticas -->
+        <div id="stats" class="stats" style="display: none;"></div>
+
+        <!-- Tabla de datos -->
+        <div id="loadingDiv" class="loading" style="display: none;">
+            Cargando datos...
+        </div>
+        
+        <div id="dataContainer" class="data-table" style="display: none;">
+            <table id="dataTable">
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div id="pagination" class="pagination" style="display: none;"></div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let currentPage = 0;
+        const pageSize = 50;
+
+        // Cargar información general de la tabla
+        async function loadTableInfo() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics/quarterly/info');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const info = result.data.general_info;
+                    const distribution = result.data.trimestre_distribution;
+                    
+                    let html = `
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-value">${info.total_registros.toLocaleString()}</div>
+                                <div class="stat-label">Total Registros</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$${(info.monto_total / 1000000000).toFixed(2)}B</div>
+                                <div class="stat-label">Monto Total CLP</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${info.vendedores_unicos}</div>
+                                <div class="stat-label">Vendedores</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${info.clientes_unicos}</div>
+                                <div class="stat-label">Clientes</div>
+                            </div>
+                        </div>
+                        <h4>Distribución por Trimestre:</h4>
+                        <table style="width: 100%; margin-top: 10px;">
+                            <tr>
+                                <th>Año</th>
+                                <th>Trimestre</th>
+                                <th>Registros</th>
+                                <th>Monto Total</th>
+                                <th>Vendedores</th>
+                                <th>Clientes</th>
+                            </tr>
+                            ${distribution.map(d => `
+                                <tr>
+                                    <td>${d.año}</td>
+                                    <td>Q${d.trimestre}</td>
+                                    <td>${d.total_registros.toLocaleString()}</td>
+                                    <td>$${(d.monto_total / 1000000).toFixed(2)}M</td>
+                                    <td>${d.vendedores_unicos}</td>
+                                    <td>${d.clientes_unicos}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    `;
+                    
+                    document.getElementById('tableInfo').innerHTML = html;
+                    showMessage('Información cargada correctamente', 'success');
+                } else {
+                    showMessage('Error al cargar información: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            }
+        }
+
+        // Cargar datos con filtros
+        async function loadData() {
+            const params = new URLSearchParams();
+            
+            // Agregar parámetros de filtros
+            const limit = document.getElementById('limit').value;
+            const offset = document.getElementById('offset').value;
+            const vendedor = document.getElementById('vendedor').value;
+            const cliente = document.getElementById('cliente').value;
+            const estado = document.getElementById('estado').value;
+            const trimestre = document.getElementById('trimestre').value;
+            const año = document.getElementById('año').value;
+            const familia = document.getElementById('familia').value;
+            
+            if (limit) params.append('limit', limit);
+            if (offset) params.append('offset', offset);
+            if (vendedor) params.append('vendedor', vendedor);
+            if (cliente) params.append('cliente', cliente);
+            if (estado) params.append('estado', estado);
+            if (trimestre) params.append('trimestre', trimestre);
+            if (año) params.append('año', año);
+            if (familia) params.append('familia', familia);
+            
+            showLoading(true);
+            clearMessages();
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/analytics/quarterly/complete?${params}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentData = result.data;
+                    displayData(result.data);
+                    showStats(result);
+                    showMessage(`Datos cargados: ${result.data.length} de ${result.total_records} registros`, 'success');
+                } else {
+                    showMessage('Error al cargar datos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Mostrar datos en tabla
+        function displayData(data) {
+            if (!data || data.length === 0) {
+                document.getElementById('dataContainer').style.display = 'none';
+                showMessage('No se encontraron datos con los filtros aplicados', 'error');
+                return;
+            }
+
+            // Crear encabezados
+            const headers = Object.keys(data[0]);
+            const headerRow = headers.map(h => `<th>${h}</th>`).join('');
+            document.getElementById('tableHeader').innerHTML = headerRow;
+
+            // Crear filas de datos
+            const rows = data.map(row => {
+                const cells = headers.map(header => {
+                    let value = row[header];
+                    
+                    // Formatear valores especiales
+                    if (header.includes('Total') || header.includes('Precio')) {
+                        value = typeof value === 'number' ? `$${value.toLocaleString()}` : value;
+                    } else if (header.includes('Fecha')) {
+                        value = value ? new Date(value).toLocaleDateString('es-CL') : value;
+                    } else if (header.includes('Descuento %')) {
+                        value = typeof value === 'number' ? `${value}%` : value;
+                    }
+                    
+                    return `<td>${value || ''}</td>`;
+                }).join('');
+                return `<tr>${cells}</tr>`;
+            }).join('');
+
+            document.getElementById('tableBody').innerHTML = rows;
+            document.getElementById('dataContainer').style.display = 'block';
+        }
+
+        // Mostrar estadísticas
+        function showStats(result) {
+            const stats = document.getElementById('stats');
+            const data = result.data;
+            
+            if (data.length > 0) {
+                const totalAmount = data.reduce((sum, row) => sum + (parseFloat(row.Total) || 0), 0);
+                const uniqueVendors = new Set(data.map(row => row.Vendedor)).size;
+                const uniqueClients = new Set(data.map(row => row.Cliente)).size;
+                
+                stats.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${data.length}</div>
+                        <div class="stat-label">Registros Mostrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$${(totalAmount / 1000000).toFixed(2)}M</div>
+                        <div class="stat-label">Monto Filtrado</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${uniqueVendors}</div>
+                        <div class="stat-label">Vendedores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${uniqueClients}</div>
+                        <div class="stat-label">Clientes</div>
+                    </div>
+                `;
+                stats.style.display = 'grid';
+            }
+        }
+
+        // Exportar a CSV
+        function exportToCSV() {
+            if (!currentData || currentData.length === 0) {
+                showMessage('No hay datos para exportar', 'error');
+                return;
+            }
+
+            const headers = Object.keys(currentData[0]);
+            const csv = [
+                headers.join(','),
+                ...currentData.map(row => 
+                    headers.map(header => {
+                        const value = row[header];
+                        return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                    }).join(',')
+                )
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `quarterly_data_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('Archivo CSV descargado', 'success');
+        }
+
+        // Limpiar filtros
+        function clearFilters() {
+            document.getElementById('limit').value = '50';
+            document.getElementById('offset').value = '0';
+            document.getElementById('vendedor').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('estado').value = '';
+            document.getElementById('trimestre').value = '';
+            document.getElementById('año').value = '2025';
+            document.getElementById('familia').value = '';
+            
+            showMessage('Filtros limpiados', 'success');
+        }
+
+        // Funciones de utilidad
+        function showLoading(show) {
+            document.getElementById('loadingDiv').style.display = show ? 'block' : 'none';
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => messagesDiv.innerHTML = '', 5000);
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        // Cargar información inicial al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTableInfo();
+        });
+    </script>
+</body>
+</html>

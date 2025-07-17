@@ -1,24 +1,133 @@
 import pyodbc
 from flask import Blueprint, Flask, jsonify, request
+import os
+from dotenv import load_dotenv
+import logging
+
+# Cargar variables de entorno
+load_dotenv()
 
 app = Flask(__name__)
 datalake_bp = Blueprint('datalake_api', __name__)
 
-# Configuración de la conexión a la base de datos datalake bluehosting
-server = 'DATALAKE'
-database = 'DATALAKE'
-connection_string = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+# Configurar logging
+logger = logging.getLogger(__name__)
+
+def get_connection_string():
+    """Obtener string de conexión según el entorno"""
+    server = os.getenv('DATALAKE_SERVER', 'DATALAKE')
+    database = os.getenv('DATALAKE_DATABASE', 'DATALAKE')
+    username = os.getenv('DATALAKE_USERNAME')
+    password = os.getenv('DATALAKE_PASSWORD')
+    port = os.getenv('DATALAKE_PORT', '1433')
+    
+    # Si hay credenciales específicas, usar autenticación SQL
+    if username and password:
+        connection_string = (
+            f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+            f'SERVER={server},{port};'
+            f'DATABASE={database};'
+            f'UID={username};'
+            f'PWD={password};'
+            f'Encrypt=yes;'
+            f'TrustServerCertificate=yes;'
+            f'Connection Timeout=30;'
+        )
+        logger.info(f"Usando autenticación SQL para conectar a {server}")
+    else:
+        # Usar autenticación Windows (solo para conexiones locales)
+        connection_string = (
+            f'DRIVER={{ODBC Driver 17 for SQL Server}};'
+            f'SERVER={server};'
+            f'DATABASE={database};'
+            f'Trusted_Connection=yes;'
+        )
+        logger.info(f"Usando autenticación Windows para conectar a {server}")
+    
+    return connection_string
+
+# Obtener string de conexión
+connection_string = get_connection_string()
 
 @datalake_bp.route('/connect_db', methods=['GET'])
 def connect_db():
     try:
-        with pyodbc.connect(connection_string) as conn:
+        current_connection_string = get_connection_string()
+        logger.info(f"Intentando conectar con: {current_connection_string.replace(os.getenv('DATALAKE_PASSWORD', ''), '***')}")
+        
+        with pyodbc.connect(current_connection_string) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT @@VERSION")
+            cursor.execute("SELECT @@VERSION, @@SERVERNAME, DB_NAME()")
             row = cursor.fetchone()
-            return jsonify({"message": "Conexión exitosa", "version": row[0]}), 200
+            
+            response = {
+                "message": "Conexión exitosa",
+                "server_version": row[0],
+                "server_name": row[1],
+                "database_name": row[2],
+                "connection_type": "SQL Authentication" if os.getenv('DATALAKE_USERNAME') else "Windows Authentication"
+            }
+            
+            logger.info(f"Conexión exitosa a {row[1]}")
+            return jsonify(response), 200
+            
     except Exception as e:
-        return jsonify({"message": "Error al conectar a la base de datos", "error": str(e)}), 500
+        error_msg = str(e)
+        logger.error(f"Error de conexión: {error_msg}")
+        
+        # Sugerencias basadas en el tipo de error
+        suggestions = []
+        if "Login failed" in error_msg:
+            suggestions.append("Verificar credenciales de usuario y contraseña")
+        elif "server was not found" in error_msg:
+            suggestions.append("Verificar nombre del servidor y puerto")
+        elif "SSL connection is required" in error_msg:
+            suggestions.append("Verificar configuración SSL/TLS")
+        elif "timeout" in error_msg.lower():
+            suggestions.append("Verificar conectividad de red y firewall")
+        
+        return jsonify({
+            "message": "Error al conectar a la base de datos",
+            "error": error_msg,
+            "suggestions": suggestions,
+            "connection_type": "SQL Authentication" if os.getenv('DATALAKE_USERNAME') else "Windows Authentication"
+        }), 500
+
+@datalake_bp.route('/test_connection', methods=['GET'])
+def test_connection():
+    """Endpoint para probar diferentes configuraciones de conexión"""
+    results = []
+    
+    # Configuraciones a probar
+    test_configs = [
+        {
+            "name": "Conexión local (Windows Auth)",
+            "connection_string": f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER=DATALAKE;DATABASE=DATALAKE;Trusted_Connection=yes;'
+        },
+        {
+            "name": "Conexión remota (SQL Auth)",
+            "connection_string": get_connection_string()
+        }
+    ]
+    
+    for config in test_configs:
+        try:
+            with pyodbc.connect(config["connection_string"]) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                results.append({
+                    "config": config["name"],
+                    "status": "SUCCESS",
+                    "message": "Conexión exitosa"
+                })
+        except Exception as e:
+            results.append({
+                "config": config["name"],
+                "status": "FAILED",
+                "error": str(e)
+            })
+    
+    return jsonify({"connection_tests": results}), 200
 
 @datalake_bp.route('/get_models', methods=['GET'])
 def get_models():
