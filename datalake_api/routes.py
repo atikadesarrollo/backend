@@ -256,7 +256,18 @@ def get_ultimas_cargas():
     except Exception as e:
         return jsonify({"message": "Error al obtener los datos de la tabla", "error": str(e)}), 500
 
-
+@datalake_bp.route('/date_last_bill', methods=['GET'])
+def get_ultimas_cargas():
+    try:
+        with pyodbc.connect(connection_string) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT MAX([Fecha documento]) AS FechaUltimaFactura FROM [DATALAKE].[dbo].[DL_Facturacion_v]")
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            data = [dict(zip(columns, row)) for row in rows]
+            return jsonify({"data": data}), 200
+    except Exception as e:
+        return jsonify({"message": "Error al obtener los datos de la tabla", "error": str(e)}), 500
 
 @datalake_bp.route('/fields', methods=['GET'])
 def get_fields():
