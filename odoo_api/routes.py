@@ -486,6 +486,28 @@ def get_latest_projects_info(date_range=None):
                 else:
                     project['arch_specifier_email'] = ''
             
+            # Obtener los work_emails de los real_estate_specifier
+            real_estate_specifier_ids = []
+            for project in projects:
+                if project.get('real_estate_specifier'):
+                    real_estate_specifier_ids.append(project['real_estate_specifier'][0])
+            
+            real_estate_employee_to_work_email = {}
+            if real_estate_specifier_ids:
+                real_estate_employees = models.execute_kw(db, uid, password,
+                    'hr.employee', 'read',
+                    [real_estate_specifier_ids],
+                    {'fields': ['work_email']})
+                
+                real_estate_employee_to_work_email = {employee['id']: employee.get('work_email', '') for employee in real_estate_employees}
+            
+            # Asignar el work_email del real_estate_specifier a cada proyecto
+            for project in projects:
+                if project.get('real_estate_specifier'):
+                    project['real_estate_specifier_email'] = real_estate_employee_to_work_email.get(project['real_estate_specifier'][0], '')
+                else:
+                    project['real_estate_specifier_email'] = ''
+            
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
             sale_orders = models.execute_kw(db, uid, password,
@@ -536,6 +558,7 @@ def get_latest_projects_info(date_range=None):
                     'Nombre_Proyecto': project.get('project_name', ''),
                     'Creador_Proyecto': project.get('project_creator', [])[1] if project.get('project_creator') else '',
                     'Especificador_Inmobiliaria': project.get('real_estate_specifier', [])[1] if project.get('real_estate_specifier') else '',
+                    'Email_Especificador_Inmobiliaria': project.get('real_estate_specifier_email', ''),
                     'Especificador_Arquitectura': project.get('arch_specifier', [])[1] if project.get('arch_specifier') else '',
                     'Email_Especificador_Arquitectura': project.get('arch_specifier_email', ''),
                     'Fecha_Inicio': project.get('start_date', ''),

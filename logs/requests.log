@@ -768,3 +768,15 @@
 2025-07-11 14:59:22,859 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/api/analytics/periods/available - Duration: 0.313s
 2025-07-11 14:59:31,470 - requests - INFO - REQUEST: GET http://localhost:5000/api/analytics/periods/available - IP: 127.0.0.1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
 2025-07-11 14:59:35,714 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/api/analytics/periods/available - Duration: 4.244s
+2025-07-21 10:02:03,304 - requests - INFO - REQUEST: GET http://localhost:5000/odoo/analisis_proyectos2 - IP: 127.0.0.1 - User-Agent: python-requests/2.32.3
+2025-07-21 10:02:05,971 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/odoo/analisis_proyectos2 - Duration: 2.668s
+2025-07-21 10:02:18,959 - requests - INFO - REQUEST: GET http://localhost:5000/odoo/debug_real_estate_email - IP: 127.0.0.1 - User-Agent: python-requests/2.32.3
+2025-07-21 10:02:21,369 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/odoo/debug_real_estate_email - Duration: 2.410s
+2025-07-21 10:04:36,383 - requests - INFO - REQUEST: GET http://localhost:5000/odoo/analisis_proyectos2 - IP: 127.0.0.1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
+2025-07-21 10:04:38,999 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/odoo/analisis_proyectos2 - Duration: 2.616s
+2025-07-21 10:04:39,645 - requests - INFO - REQUEST: GET http://localhost:5000/favicon.ico - IP: 127.0.0.1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
+2025-07-21 10:04:39,645 - requests - INFO - RESPONSE: 404 - GET http://localhost:5000/favicon.ico - Duration: 0.001s
+2025-07-21 10:06:27,211 - requests - INFO - REQUEST: GET http://localhost:5000/odoo/analisis_proyectos2 - IP: 127.0.0.1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0
+2025-07-21 10:06:30,110 - requests - INFO - RESPONSE: 200 - GET http://localhost:5000/odoo/analisis_proyectos2 - Duration: 2.899s
+2025-07-21 10:06:30,195 - requests - INFO - REQUEST: GET http://localhost:5000/favicon.ico - IP: 127.0.0.1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0
+2025-07-21 10:06:30,197 - requests - INFO - RESPONSE: 404 - GET http://localhost:5000/favicon.ico - Duration: 0.002s
