@@ -257,7 +257,7 @@ def get_ultimas_cargas():
         return jsonify({"message": "Error al obtener los datos de la tabla", "error": str(e)}), 500
 
 @datalake_bp.route('/date_last_bill', methods=['GET'])
-def get_ultimas_cargas():
+def get_ultima_factura():
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
