@@ -342,6 +342,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Vendedor factura] as 'Vendedor_factura'
                     ,[Numero oferta] as 'Numero_oferta'
                     ,[Vendedor oferta] as 'Vendedor_oferta'
+                    ,[Nombre Obra] as 'Nombre_obra'
                     ,[Arquitecto] 
                     ,[Inmobiliaria]
                     ,[Arquitecto 2] as 'Arquitecto_2'
