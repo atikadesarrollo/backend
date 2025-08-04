@@ -226,6 +226,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Estado]
                 ,[EstadoOdoo]
                 ,[Tasa de cambio USD] as 'Tasa_de_cambio_USD' 
+                ,[Nombre Obra] as 'Nombre_obra'
                 ,[Especificador Arquitectura] as 'Especificador_arquitectura' 
                 ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                 ,[Especificador Inmobiliario] as 'Especificador_inmobiliario' 
@@ -342,7 +343,6 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Vendedor factura] as 'Vendedor_factura'
                     ,[Numero oferta] as 'Numero_oferta'
                     ,[Vendedor oferta] as 'Vendedor_oferta'
-                    ,[Nombre Obra] as 'Nombre_obra'
                     ,[Arquitecto] 
                     ,[Inmobiliaria]
                     ,[Arquitecto 2] as 'Arquitecto_2'
