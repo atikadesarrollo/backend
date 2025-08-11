@@ -243,7 +243,7 @@ def get_analisis_venta_fechas(start_date, end_date):
     except Exception as e:
         return jsonify({"message": "Error al obtener los datos de la vista", "error": str(e)}), 500
     
-@datalake_bp.route('/sales_order/prueba<start_date>&<end_date>', methods=['GET'])
+@datalake_bp.route('/sales_order/prueba/<start_date>&<end_date>', methods=['GET'])
 def get_analisis_venta_fechas(start_date, end_date):
     try:
         with pyodbc.connect(connection_string) as conn:
@@ -447,7 +447,7 @@ def get_facturacion_fechas(start_date, end_date):
     except Exception as e:
         return jsonify({"message": "Error al obtener los datos de la vista", "error": str(e)}), 500
     
-@datalake_bp.route('/facturacion/prueba<start_date>&<end_date>', methods=['GET'])
+@datalake_bp.route('/facturacion/prueba/<start_date>&<end_date>', methods=['GET'])
 def get_facturacion_fechas(start_date, end_date):
     try:
         with pyodbc.connect(connection_string) as conn:
