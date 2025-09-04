@@ -8,6 +8,7 @@ ENV/
 
 ########################
 # Secretos / configuración local
+#TEST
 ########################
 .env
 **/.env
