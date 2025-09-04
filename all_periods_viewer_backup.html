@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Datos ETL - Todos los Períodos - API ATIKA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .period-selector {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .period-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .period-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .period-btn.available {
+            background-color: #3498db;
+            color: white;
+        }
+        .period-btn.available:hover {
+            background-color: #2980b9;
+        }
+        .period-btn.unavailable {
+            background-color: #bdc3c7;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+        .period-btn.active {
+            background-color: #27ae60;
+            color: white;
+        }
+        .period-btn .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        .info-section {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .buttons {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card.summary {
+            background-color: #9b59b6;
+        }
+        .stat-card.daily {
+            background-color: #e67e22;
+        }
+        .stat-card.weekly {
+            background-color: #1abc9c;
+        }
+        .stat-card.monthly {
+            background-color: #f39c12;
+        }
+        .stat-card.quarterly {
+            background-color: #34495e;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .data-table {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ecf0f1;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e8f4f8;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 8px 15px;
+        }
+        .endpoint-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .period-info {
+            display: block;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .period-info.auto-selected {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 1px solid #28a745;
+        }
+        .period-info.show {
+            display: block;
+        }
+        .temporal-distribution {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .unavailable-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Consulta de Datos ETL - Todos los Períodos</h1>
+        
+        <div class="endpoint-info">
+            <strong>API Base:</strong> http://localhost:5000/api/analytics/<br>
+            <strong>Endpoints:</strong> /{period}/complete, /{period}/info<br>
+            <strong>Períodos:</strong> daily, weekly, monthly, quarterly, summary
+        </div>
+
+        <!-- Selector de período -->
+        <div class="period-selector">
+            <h3>🤖 Consulta Automática por Fechas</h3>
+            <div style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <strong>🚀 MODO AUTOMÁTICO COMPLETO:</strong><br>
+                1. Selecciona un rango de fechas abajo ⬇️<br>
+                2. La aplicación elegirá la tabla óptima automáticamente<br>
+                3. Ejecutará la consulta inmediatamente<br>
+                4. Mostrará los resultados sin intervención manual
+            </div>
+            <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <strong>📋 Criterios Automáticos:</strong><br>
+                • 1-7 días → Base Daily 📅<br>
+                • 8-30 días → Base Weekly 📆<br>
+                • 31-90 días → Base Monthly 🗓️<br>
+                • 91+ días → Base Quarterly 📋
+            </div>
+            <div class="period-buttons" id="periodButtons">
+                <button class="period-btn" onclick="loadPeriods()" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
+                    🔄 Inicializar Sistema Automático
+                </button>
+            </div>
+        </div>
+
+        <!-- Información del período seleccionado -->
+        <div id="periodInfo" class="period-info">
+            <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                <strong>💡 Paso 1:</strong> Haz clic en "Inicializar Sistema Automático" arriba ⬆️<br>
+                <strong>💡 Paso 2:</strong> Selecciona un rango de fechas abajo ⬇️<br>
+                <strong>💡 Paso 3:</strong> ¡La aplicación hará todo automáticamente! 🚀
+            </div>
+        </div>
+
+        <!-- Mensaje para períodos no disponibles -->
+        <div id="unavailableMessage" class="unavailable-message" style="display: none;">
+            <strong>⚠️ Período no disponible</strong><br>
+            Esta tabla no existe o no tiene datos. Ejecuta el pipeline ETL correspondiente para generar los datos.
+        </div>
+
+        <!-- Información general -->
+        <div class="info-section">
+            <h3 id="infoTitle">📊 Información General</h3>
+            <button id="loadInfoBtn" onclick="loadTableInfo()" disabled>Cargar Información</button>
+            <div id="tableInfo"></div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="limit">Límite de registros:</label>
+                <input type="number" id="limit" value="50" min="1" max="1000">
+            </div>
+            <div class="filter-group">
+                <label for="offset">Offset (paginación):</label>
+                <input type="number" id="offset" value="0" min="0">
+            </div>
+            <div class="filter-group">
+                <label for="vendedor">Vendedor:</label>
+                <input type="text" id="vendedor" placeholder="Ej: Loreto">
+            </div>
+            <div class="filter-group">
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" placeholder="Ej: MARIA JOSE">
+            </div>
+            <div class="filter-group">
+                <label for="estado">Estado:</label>
+                <select id="estado">
+                    <option value="">Todos</option>
+                    <option value="sale">sale</option>
+                    <option value="OK">OK</option>
+                    <option value="sent">sent</option>
+                    <option value="draft">draft</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="familia">Familia de producto:</label>
+                <input type="text" id="familia" placeholder="Ej: Porcelanatos">
+            </div>
+            <div class="filter-group">
+                <label for="canal">Canal:</label>
+                <input type="text" id="canal" placeholder="Ej: Showroom">
+            </div>
+            <div class="filter-group">
+                <label for="fecha_desde">Fecha desde:</label>
+                <input type="date" id="fecha_desde" title="Filtrar registros desde esta fecha">
+            </div>
+            <div class="filter-group">
+                <label for="fecha_hasta">Fecha hasta:</label>
+                <input type="date" id="fecha_hasta" title="Filtrar registros hasta esta fecha">
+            </div>
+            <div class="filter-group">
+                <label for="año">Año:</label>
+                <input type="number" id="año" value="2025" min="2020" max="2030">
+            </div>
+            <div class="filter-group" id="trimestre-filter" style="display: none;">
+                <label for="trimestre">Trimestre:</label>
+                <select id="trimestre">
+                    <option value="">Todos</option>
+                    <option value="1">Q1</option>
+                    <option value="2">Q2</option>
+                    <option value="3">Q3</option>
+                    <option value="4">Q4</option>
+                </select>
+            </div>
+            <div class="filter-group" id="mes-filter" style="display: none;">
+                <label for="mes">Mes:</label>
+                <select id="mes">
+                    <option value="">Todos</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons">
+            <button id="loadDataBtn" onclick="loadData()" disabled>🔍 Consultar Datos</button>
+            <button id="exportBtn" onclick="exportToCSV()" class="secondary" disabled>📊 Exportar CSV</button>
+            <button onclick="clearFilters()" class="secondary">🧹 Limpiar Filtros</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="messages"></div>
+
+        <!-- Estadísticas -->
+        <div id="stats" class="stats" style="display: none;"></div>
+
+        <!-- Tabla de datos -->
+        <div id="loadingDiv" class="loading" style="display: none;">
+            Cargando datos...
+        </div>
+        
+        <div id="dataContainer" class="data-table" style="display: none;">
+            <table id="dataTable">
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div id="pagination" class="pagination" style="display: none;"></div>
+    </div>
+
+    <script>
+        let currentPeriod = '';
+        let currentData = null;
+        let availablePeriods = [];
+        let isProcessingDates = false;
+        let autoModeEnabled = false; // Sistema automático activado tras cargar períodos
+
+        // Cargar períodos disponibles
+        async function loadPeriods() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics/periods/available');
+                const result = await response.json();
+                
+                if (result.success) {
+                    availablePeriods = result.data;
+                    autoModeEnabled = true; // Activar modo automático
+                    displayPeriodButtons(result.data);
+                    
+                    // Configurar eventos automáticos para los campos de fecha
+                    setupAutoDateHandlers();
+                    
+                    showMessage('🚀 Sistema automático activado. Ahora selecciona un rango de fechas.', 'success');
+                } else {
+                    showMessage('Error al cargar períodos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            }
+        }
+
+        // Configurar manejadores automáticos para los campos de fecha
+        function setupAutoDateHandlers() {
+            const fechaDesde = document.getElementById('fecha_desde');
+            const fechaHasta = document.getElementById('fecha_hasta');
+            
+            function handleDateChange() {
+                if (autoModeEnabled && fechaDesde.value && fechaHasta.value) {
+                    // Pequeño delay para evitar múltiples ejecuciones
+                    clearTimeout(window.dateChangeTimeout);
+                    window.dateChangeTimeout = setTimeout(() => {
+                        autoSelectAndQuery(fechaDesde.value, fechaHasta.value);
+                    }, 1000);
+                }
+            }
+            
+            fechaDesde.addEventListener('change', handleDateChange);
+            fechaHasta.addEventListener('change', handleDateChange);
+        }
+
+        // Determinar el período óptimo y ejecutar consulta automáticamente
+        async function autoSelectAndQuery(fechaDesde, fechaHasta) {
+            if (!fechaDesde || !fechaHasta || isProcessingDates) {
+                return;
+            }
+
+            isProcessingDates = true;
+
+            try {
+                const startDate = new Date(fechaDesde);
+                const endDate = new Date(fechaHasta);
+                const diffTime = Math.abs(endDate - startDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                // Lógica de selección automática mejorada
+                let selectedPeriod = '';
+                let periodName = '';
+                let emoji = '';
+
+                if (diffDays <= 7) {
+                    selectedPeriod = 'daily';
+                    periodName = 'Daily';
+                    emoji = '📅';
+                } else if (diffDays <= 30) {
+                    selectedPeriod = 'weekly';
+                    periodName = 'Weekly';
+                    emoji = '📆';
+                } else if (diffDays <= 90) {
+                    selectedPeriod = 'monthly';
+                    periodName = 'Monthly';
+                    emoji = '🗓️';
+                } else {
+                    selectedPeriod = 'quarterly';
+                    periodName = 'Quarterly';
+                    emoji = '📋';
+                }
+
+                // Verificar que el período esté disponible
+                const periodData = availablePeriods.find(p => p.period === selectedPeriod && p.available);
+                
+                if (!periodData) {
+                    // Buscar fallback
+                    const fallbackOrder = ['quarterly', 'monthly', 'weekly', 'daily'];
+                    for (const fallback of fallbackOrder) {
+                        const available = availablePeriods.find(p => p.period === fallback && p.available);
+                        if (available) {
+                            selectedPeriod = fallback;
+                            periodName = available.display_name;
+                            break;
+                        }
+                    }
+                }
+
+                // Actualizar información del período
+                currentPeriod = selectedPeriod;
+                const periodInfo = document.getElementById('periodInfo');
+                
+                periodInfo.innerHTML = `
+                    <div style="text-align: center;">
+                        <strong>🤖 Selección Automática Inteligente</strong><br><br>
+                        <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <strong>${emoji} Período Seleccionado: ${periodName.toUpperCase()}</strong><br>
+                            <strong>📊 Registros: ${periodData ? periodData.record_count.toLocaleString() : 'N/A'}</strong><br>
+                            <strong>📅 Rango: ${diffDays} días (${fechaDesde} → ${fechaHasta})</strong><br>
+                            <strong>🗄️ Base de datos: ${periodData ? periodData.table_name : 'N/A'}</strong>
+                        </div>
+                        <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                            <small>💡 <strong>¿Por qué este período?</strong><br>
+                            ${diffDays <= 7 ? 'Rango corto (≤7 días): Base Daily para máximo detalle' :
+                              diffDays <= 30 ? 'Rango medio (8-30 días): Base Weekly para balance detalle/rendimiento' :
+                              diffDays <= 90 ? 'Rango extendido (31-90 días): Base Monthly para eficiencia' :
+                              'Rango largo (90+ días): Base Quarterly para rendimiento óptimo'}
+                            </small>
+                        </div>
+                    </div>
+                `;
+                periodInfo.className = 'period-info auto-selected show';
+
+                // Actualizar botones de período
+                updatePeriodButtons(selectedPeriod);
+                
+                // Habilitar controles
+                enableControls();
+                
+                // Ejecutar consulta automáticamente
+                showMessage(`🤖 Ejecutando consulta automática en base ${periodName.toUpperCase()}...`, 'success');
+                
+                // Esperar un poco para que el usuario vea la selección
+                setTimeout(async () => {
+                    await executeQuery();
+                }, 500);
+
+            } finally {
+                isProcessingDates = false;
+            }
+        }
+
+        // Ejecutar consulta con los parámetros actuales
+        async function executeQuery() {
+            if (!currentPeriod) {
+                return;
+            }
+
+            const params = new URLSearchParams();
+            
+            // Agregar parámetros de filtros
+            const limit = document.getElementById('limit').value;
+            const offset = document.getElementById('offset').value;
+            const vendedor = document.getElementById('vendedor').value;
+            const cliente = document.getElementById('cliente').value;
+            const estado = document.getElementById('estado').value;
+            const familia = document.getElementById('familia').value;
+            const canal = document.getElementById('canal').value;
+            const fechaDesde = document.getElementById('fecha_desde').value;
+            const fechaHasta = document.getElementById('fecha_hasta').value;
+            const año = document.getElementById('año').value;
+            const trimestre = document.getElementById('trimestre').value;
+            const mes = document.getElementById('mes').value;
+            
+            if (limit) params.append('limit', limit);
+            if (offset) params.append('offset', offset);
+            if (vendedor) params.append('vendedor', vendedor);
+            if (cliente) params.append('cliente', cliente);
+            if (estado) params.append('estado', estado);
+            if (familia) params.append('familia', familia);
+            if (canal) params.append('canal', canal);
+            if (fechaDesde) params.append('fecha_desde', fechaDesde);
+            if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+            if (año) params.append('año', año);
+            if (trimestre) params.append('trimestre', trimestre);
+            if (mes) params.append('mes', mes);
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/analytics/${currentPeriod}/complete?${params}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentData = result.data;
+                    displayData(result.data, currentPeriod);
+                    showStats(result, currentPeriod);
+                    
+                    const diffDays = fechaDesde && fechaHasta ? 
+                        Math.ceil(Math.abs(new Date(fechaHasta) - new Date(fechaDesde)) / (1000 * 60 * 60 * 24)) : 0;
+                    
+                    showMessage(
+                        `✅ Consulta automática completada en base ${currentPeriod.toUpperCase()} (${diffDays} días): ${result.data.length} de ${result.total_records.toLocaleString()} registros`, 
+                        'success'
+                    );
+                } else {
+                    showMessage('Error al cargar datos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Actualizar botones de período para mostrar el seleccionado
+        function updatePeriodButtons(selectedPeriod) {
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(selectedPeriod)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Mostrar botones de períodos (modo automático)
+        function displayPeriodButtons(periods) {
+            const container = document.getElementById('periodButtons');
+            container.innerHTML = '';
+            
+            // Indicador de modo automático
+            const autoIndicator = document.createElement('div');
+            autoIndicator.style.cssText = 'background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
+            autoIndicator.innerHTML = `
+                <strong>✅ SISTEMA AUTOMÁTICO ACTIVADO</strong><br>
+                <small>Selecciona un rango de fechas y el sistema elegirá la tabla óptima automáticamente</small>
+            `;
+            container.appendChild(autoIndicator);
+            
+            // Mostrar períodos disponibles para referencia
+            const periodsTitle = document.createElement('div');
+            periodsTitle.style.cssText = 'text-align: center; margin: 15px 0; font-weight: bold; color: #34495e;';
+            periodsTitle.innerHTML = '📊 Períodos Disponibles:';
+            container.appendChild(periodsTitle);
+            
+            const periodsContainer = document.createElement('div');
+            periodsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;';
+            
+            periods.forEach(period => {
+                const btn = document.createElement('button');
+                btn.className = `period-btn ${period.available ? 'available' : 'unavailable'}`;
+                btn.style.cssText = period.available ? 
+                    'background: #ecf0f1; color: #2c3e50; border: 2px solid #27ae60; cursor: pointer;' :
+                    'background: #bdc3c7; color: #7f8c8d; cursor: not-allowed;';
+                    
+                btn.onclick = () => {
+                    if (period.available) {
+                        manualSelectPeriod(period.period, true);
+                    }
+                };
+                
+                let periodName = period.display_name;
+                if (period.period === 'summary') periodName += ' 📊';
+                else if (period.period === 'daily') periodName += ' 📅';
+                else if (period.period === 'weekly') periodName += ' 📆';
+                else if (period.period === 'monthly') periodName += ' 🗓️';
+                else if (period.period === 'quarterly') periodName += ' 📋';
+                
+                btn.innerHTML = periodName;
+                
+                if (period.available) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.style.background = '#27ae60';
+                    badge.textContent = period.record_count > 1000 ? 
+                        Math.round(period.record_count / 1000) + 'K' : 
+                        period.record_count;
+                    btn.appendChild(badge);
+                }
+                
+                periodsContainer.appendChild(btn);
+            });
+            
+            container.appendChild(periodsContainer);
+            
+            // Nota explicativa
+            const note = document.createElement('div');
+            note.style.cssText = 'margin-top: 15px; padding: 10px; background: #e8f4f8; border-radius: 5px; font-size: 14px; color: #2c3e50; text-align: center;';
+            note.innerHTML = '<strong>💡 Cómo funciona:</strong> Selecciona fechas abajo y el sistema elegirá automáticamente la tabla más eficiente. También puedes hacer clic en cualquier período para forzar su uso.';
+            container.appendChild(note);
+        }
+        }
+
+        // Selección manual de período (override del automático)
+        function manualSelectPeriod(period, available) {
+            if (!available) {
+                showMessage(`El período ${period} no está disponible. Ejecuta el pipeline ETL correspondiente.`, 'error');
+                return;
+            }
+
+            currentPeriod = period;
+            updatePeriodButtons(period);
+            
+            const periodData = availablePeriods.find(p => p.period === period);
+            const periodInfo = document.getElementById('periodInfo');
+            
+            periodInfo.innerHTML = `
+                <div style="text-align: center;">
+                    <strong>👤 Selección Manual</strong><br><br>
+                    <div style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong>📋 Período: ${period.toUpperCase()}</strong><br>
+                        <strong>📊 Registros: ${periodData.record_count.toLocaleString()}</strong><br>
+                        <strong>🗄️ Tabla: ${periodData.table_name}</strong>
+                    </div>
+                    <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                        <small>⚠️ <strong>Modo Manual:</strong> Has seleccionado manualmente este período. 
+                        Para volver al modo automático, cambia las fechas.</small>
+                    </div>
+                </div>
+            `;
+            periodInfo.className = 'period-info show';
+            
+            enableControls();
+            showMessage(`Período ${period.toUpperCase()} seleccionado manualmente`, 'success');
+        }
+
+        // Cargar períodos disponibles
+        async function loadPeriods() {
+            try {
+                const response = await fetch('http://localhost:5000/api/analytics/periods/available');
+                const result = await response.json();
+                
+                if (result.success) {
+                    availablePeriods = result.data;
+                    displayPeriodButtons(result.data);
+                    showMessage('Períodos cargados correctamente', 'success');
+                } else {
+                    showMessage('Error al cargar períodos: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión: ' + error.message, 'error');
+            }
+        }
+
+        // Determinar el período óptimo basado en el rango de fechas
+        function getOptimalPeriod(fechaDesde, fechaHasta) {
+            if (!fechaDesde || !fechaHasta) {
+                return null;
+            }
+
+            const startDate = new Date(fechaDesde);
+            const endDate = new Date(fechaHasta);
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            console.log(`📅 Analizando rango: ${diffDays} días (${fechaDesde} → ${fechaHasta})`);
+
+            // Lógica de selección automática según el rango de días
+            let suggestedPeriod = '';
+            let reason = '';
+
+            if (diffDays <= 7) {
+                suggestedPeriod = 'daily';
+                reason = `Rango corto (${diffDays} días) - Óptimo para datos diarios`;
+            } else if (diffDays <= 30) {
+                suggestedPeriod = 'weekly';
+                reason = `Rango medio (${diffDays} días) - Óptimo para datos semanales`;
+            } else if (diffDays <= 90) {
+                suggestedPeriod = 'monthly';
+                reason = `Rango extendido (${diffDays} días) - Óptimo para datos mensuales`;
+            } else if (diffDays <= 365) {
+                suggestedPeriod = 'quarterly';
+                reason = `Rango largo (${diffDays} días) - Óptimo para datos trimestrales`;
+            } else {
+                suggestedPeriod = 'quarterly'; // Para rangos muy largos, usar quarterly
+                reason = `Rango muy largo (${diffDays} días) - Usando datos trimestrales`;
+            }
+
+            // Verificar que el período sugerido esté disponible
+            const periodAvailable = availablePeriods.find(p => p.period === suggestedPeriod && p.available);
+            
+            if (!periodAvailable) {
+                console.log(`⚠️ Período sugerido (${suggestedPeriod}) no disponible, buscando alternativa...`);
+                
+                // Buscar el período disponible más cercano
+                const fallbackOrder = ['quarterly', 'monthly', 'weekly', 'daily'];
+                for (const fallback of fallbackOrder) {
+                    const available = availablePeriods.find(p => p.period === fallback && p.available);
+                    if (available) {
+                        suggestedPeriod = fallback;
+                        reason += ` (Fallback: ${fallback} disponible)`;
+                        break;
+                    }
+                }
+            }
+
+            return {
+                period: suggestedPeriod,
+                days: diffDays,
+                reason: reason,
+                available: !!availablePeriods.find(p => p.period === suggestedPeriod && p.available)
+            };
+        }
+
+        // Función para mostrar sugerencia de período
+        function showPeriodSuggestion(suggestion) {
+            if (!suggestion) return;
+
+            const suggestionHtml = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>🤖 Sugerencia Automática:</strong><br>
+                    <strong>Período recomendado:</strong> ${suggestion.period.toUpperCase()}<br>
+                    <strong>Razón:</strong> ${suggestion.reason}<br>
+                    <button onclick="acceptSuggestion('${suggestion.period}')" 
+                            style="background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-weight: bold;">
+                        ✅ Usar ${suggestion.period.toUpperCase()}
+                    </button>
+                    <button onclick="dismissSuggestion()" 
+                            style="background: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 4px; margin: 5px; cursor: pointer;">
+                        ❌ Ignorar
+                    </button>
+                </div>
+            `;
+            
+            // Insertar la sugerencia después de los filtros de fecha
+            const fechaHastaGroup = document.getElementById('fecha_hasta').parentElement;
+            const existingSuggestion = document.getElementById('period-suggestion');
+            if (existingSuggestion) {
+                existingSuggestion.remove();
+            }
+            
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.id = 'period-suggestion';
+            suggestionDiv.innerHTML = suggestionHtml;
+            fechaHastaGroup.parentElement.insertBefore(suggestionDiv, fechaHastaGroup.nextSibling);
+        }
+
+        // Aceptar sugerencia de período
+        function acceptSuggestion(period) {
+            const periodData = availablePeriods.find(p => p.period === period);
+            if (periodData && periodData.available) {
+                selectPeriod(period, true);
+                dismissSuggestion();
+                showMessage(`🤖 Período ${period.toUpperCase()} seleccionado automáticamente`, 'success');
+            }
+        }
+
+        // Descartar sugerencia
+        function dismissSuggestion() {
+            const suggestion = document.getElementById('period-suggestion');
+            if (suggestion) {
+                suggestion.remove();
+            }
+        }
+
+        // Toggle auto-selección
+        function toggleAutoSelect() {
+            autoSelectEnabled = !autoSelectEnabled;
+            const btn = document.getElementById('autoSelectBtn');
+            btn.textContent = `🤖 Auto-Selección: ${autoSelectEnabled ? 'ON' : 'OFF'}`;
+            btn.style.background = autoSelectEnabled ? 
+                'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)' : 
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            
+            if (autoSelectEnabled) {
+                showMessage('🤖 Auto-selección activada. Los períodos se seleccionarán automáticamente según el rango de fechas.', 'success');
+                analyzeCurrentRange();
+            } else {
+                showMessage('🤖 Auto-selección desactivada.', 'success');
+                dismissSuggestion();
+            }
+        }
+
+        // Analizar rango actual y sugerir período
+        function analyzeCurrentRange() {
+            const fechaDesde = document.getElementById('fecha_desde').value;
+            const fechaHasta = document.getElementById('fecha_hasta').value;
+            
+            if (!fechaDesde || !fechaHasta) {
+                showMessage('⚠️ Por favor selecciona un rango de fechas para analizar.', 'error');
+                return;
+            }
+            
+            if (availablePeriods.length === 0) {
+                showMessage('⚠️ Carga los períodos disponibles primero.', 'error');
+                return;
+            }
+            
+            const suggestion = getOptimalPeriod(fechaDesde, fechaHasta);
+            
+            if (suggestion) {
+                showPeriodSuggestion(suggestion);
+                
+                // Si auto-selección está habilitada, seleccionar automáticamente
+                if (autoSelectEnabled && suggestion.available) {
+                    setTimeout(() => {
+                        acceptSuggestion(suggestion.period);
+                    }, 1000); // Dar tiempo para ver la sugerencia
+                }
+                
+                // Mostrar información detallada en consola
+                console.log('📊 Análisis de rango de fechas:', {
+                    rango: `${fechaDesde} → ${fechaHasta}`,
+                    dias: suggestion.days,
+                    periodo_sugerido: suggestion.period,
+                    disponible: suggestion.available,
+                    razon: suggestion.reason
+                });
+            } else {
+                showMessage('❌ No se pudo determinar un período óptimo para el rango seleccionado.', 'error');
+            }
+        }
+
+        // Seleccionar período
+        function selectPeriod(period, available) {
+            if (!available) {
+                showMessage(`El período ${period} no está disponible. Ejecuta el pipeline ETL correspondiente.`, 'error');
+                document.getElementById('unavailableMessage').style.display = 'block';
+                document.getElementById('periodInfo').classList.remove('show');
+                disableControls();
+                return;
+            }
+
+            currentPeriod = period;
+            document.getElementById('unavailableMessage').style.display = 'none';
+            
+            // Actualizar botones
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Mostrar filtros específicos del período
+            showPeriodFilters(period);
+            
+            // Habilitar controles
+            enableControls();
+            
+            // Actualizar títulos
+            document.getElementById('infoTitle').textContent = `📊 Información de ${period.toUpperCase()}`;
+            
+            // Cargar información del período
+            loadTableInfo();
+        }
+
+        // Alternar entre modo automático y manual
+        function toggleManualMode() {
+            autoModeEnabled = !autoModeEnabled;
+            
+            if (autoModeEnabled) {
+                showMessage('🤖 Modo automático activado. Selecciona fechas para consulta automática.', 'success');
+                // Recargar botones en modo automático
+                displayPeriodButtons(availablePeriods);
+            } else {
+                showMessage('⚙️ Modo manual activado. Selecciona un período manualmente.', 'info');
+                // Mostrar botones de selección manual
+                displayManualPeriodButtons(availablePeriods);
+            }
+        }
+
+        // Mostrar botones para selección manual
+        function displayManualPeriodButtons(periods) {
+            const container = document.getElementById('periodButtons');
+            container.innerHTML = '';
+            
+            // Agregar indicador de modo manual
+            const manualIndicator = document.createElement('div');
+            manualIndicator.style.cssText = 'background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;';
+            manualIndicator.innerHTML = `
+                <strong>⚙️ MODO MANUAL ACTIVADO</strong><br>
+                <small>Selecciona manualmente el período que deseas consultar</small>
+            `;
+            container.appendChild(manualIndicator);
+            
+            periods.forEach(period => {
+                const btn = document.createElement('button');
+                btn.className = `period-btn ${period.available ? 'available' : 'unavailable'}`;
+                btn.onclick = () => manualSelectPeriod(period.period, period.available);
+                
+                let periodName = period.display_name;
+                if (period.period === 'summary') periodName += ' 📊';
+                else if (period.period === 'daily') periodName += ' 📅';
+                else if (period.period === 'weekly') periodName += ' 📆';
+                else if (period.period === 'monthly') periodName += ' 🗓️';
+                else if (period.period === 'quarterly') periodName += ' 📋';
+                
+                btn.innerHTML = periodName;
+                
+                if (period.available) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.textContent = period.record_count > 1000 ? 
+                        Math.round(period.record_count / 1000) + 'K' : 
+                        period.record_count;
+                    btn.appendChild(badge);
+                }
+                
+                container.appendChild(btn);
+            });
+            
+            // Botón para volver al modo automático
+            const autoModeBtn = document.createElement('button');
+            autoModeBtn.style.cssText = 'background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 15px; cursor: pointer;';
+            autoModeBtn.innerHTML = '🤖 Volver a Modo Automático';
+            autoModeBtn.onclick = toggleManualMode;
+            container.appendChild(autoModeBtn);
+        }
+
+        // ...existing code...

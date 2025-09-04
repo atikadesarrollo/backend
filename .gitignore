@@ -1,15 +1,36 @@
-.env
-.venv
-venv
-.pyc
-.pyo
-.pyd
+########################
+# Entornos / dependencias
+########################
+.venv/
+venv/
+env/
+ENV/
 
-datalake_api/__pycache__/__init__.cpython-313.pyc
-datalake_api/__pycache__/routes.cpython-313.pyc
-odoo_api/__pycache__/__init__.cpython-313.pyc
-odoo_api/__pycache__/routes.cpython-313.pyc
-datalake_api/__pycache__/__init__.cpython-313.pyc
-datalake_api/__pycache__/routes.cpython-313.pyc
-odoo_api/__pycache__/__init__.cpython-313.pyc
-odoo_api/__pycache__/routes.cpython-313.pyc
+########################
+# Secretos / configuración local
+#TEST
+########################
+.env
+**/.env
+*.env
+
+########################
+# Python: bytecode y cachés
+########################
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+
+########################
+# Logs / artefactos de runtime
+########################
+logs/
+*.log
+
+########################
+# SO/Editor
+########################
+.DS_Store
+Thumbs.db
+.vscode/

@@ -2,17 +2,21 @@ import xmlrpc.client
 from flask import Blueprint, jsonify, request, send_file
 import base64
 from dotenv import load_dotenv
+from pathlib import Path
 import os
 from io import BytesIO
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
 
-# Cargar las variables de entorno desde el archivo .env
-load_dotenv()
+# Cargar las variables de entorno desde el archivo .env del módulo (sin sobreescribir variables ya definidas)
+_dotenv_path = Path(__file__).with_name('.env')
+load_dotenv(dotenv_path=_dotenv_path, override=False)
 
 # Obtener las variables de entorno
-url = os.getenv('ODOO_URL')
+url = os.getenv('ODOO_URL') or ''
+# Normalizar para evitar '//' al construir endpoints XML-RPC
+url = url.rstrip('/')
 db = os.getenv('ODOO_DB')
 username = os.getenv('ODOO_USERNAME')
 password = os.getenv('ODOO_PASSWORD')
@@ -98,7 +102,8 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_fecha_de_entrega', 'np_rpt_base_price', 'np_mo_price_unit', 'source_currency_id',
                 'np_rate_currency', 'discount', 'tax_id', 'price_subtotal', 
                 'discount', 'np_original_discount',
-                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp'
+                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit'
+
             ]
 
             order_line_ids = [line_id for order in sale_orders for line_id in order['order_line']]
@@ -463,6 +468,50 @@ def get_latest_projects_info(date_range=None):
                         project['creator_email'] = user_to_email.get(project_creator[0], '')
                         project['np_sei_geo'] = user_to_geo.get(project_creator[0], '')
             
+            # Obtener los work_emails de los arch_specifier
+            arch_specifier_ids = []
+            for project in projects:
+                if project.get('arch_specifier'):
+                    arch_specifier_ids.append(project['arch_specifier'][0])
+            
+            employee_to_work_email = {}
+            if arch_specifier_ids:
+                arch_employees = models.execute_kw(db, uid, password,
+                    'hr.employee', 'read',
+                    [arch_specifier_ids],
+                    {'fields': ['work_email']})
+                
+                employee_to_work_email = {employee['id']: employee.get('work_email', '') for employee in arch_employees}
+            
+            # Asignar el work_email a cada proyecto
+            for project in projects:
+                if project.get('arch_specifier'):
+                    project['arch_specifier_email'] = employee_to_work_email.get(project['arch_specifier'][0], '')
+                else:
+                    project['arch_specifier_email'] = ''
+            
+            # Obtener los work_emails de los real_estate_specifier
+            real_estate_specifier_ids = []
+            for project in projects:
+                if project.get('real_estate_specifier'):
+                    real_estate_specifier_ids.append(project['real_estate_specifier'][0])
+            
+            real_estate_employee_to_work_email = {}
+            if real_estate_specifier_ids:
+                real_estate_employees = models.execute_kw(db, uid, password,
+                    'hr.employee', 'read',
+                    [real_estate_specifier_ids],
+                    {'fields': ['work_email']})
+                
+                real_estate_employee_to_work_email = {employee['id']: employee.get('work_email', '') for employee in real_estate_employees}
+            
+            # Asignar el work_email del real_estate_specifier a cada proyecto
+            for project in projects:
+                if project.get('real_estate_specifier'):
+                    project['real_estate_specifier_email'] = real_estate_employee_to_work_email.get(project['real_estate_specifier'][0], '')
+                else:
+                    project['real_estate_specifier_email'] = ''
+            
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
             sale_orders = models.execute_kw(db, uid, password,
@@ -513,7 +562,9 @@ def get_latest_projects_info(date_range=None):
                     'Nombre_Proyecto': project.get('project_name', ''),
                     'Creador_Proyecto': project.get('project_creator', [])[1] if project.get('project_creator') else '',
                     'Especificador_Inmobiliaria': project.get('real_estate_specifier', [])[1] if project.get('real_estate_specifier') else '',
+                    'Email_Especificador_Inmobiliaria': project.get('real_estate_specifier_email', ''),
                     'Especificador_Arquitectura': project.get('arch_specifier', [])[1] if project.get('arch_specifier') else '',
+                    'Email_Especificador_Arquitectura': project.get('arch_specifier_email', ''),
                     'Fecha_Inicio': project.get('start_date', ''),
                     'Fecha_Termino': project.get('closing_date', ''),
                     'Canal_Venta': project.pop('np_canal', ''),
@@ -567,8 +618,6 @@ def obtener_ultimo_proyecto ():
             return jsonify({"error": "No se encontraron proyectos"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-    
 @odoo_bp.route('/DescargaOC/<string:order_name>', methods=['GET'])
 def descarga_oc(order_name):
     try:
@@ -688,5 +737,121 @@ def obtener_factura(factura_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@odoo_bp.route('/factura_refoliar/<string:factura_name>', methods=['GET'])
+def get_factura_refoliar(factura_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
 
+
+        # Buscar la factura por su nombre (número)
+        factura_ids = models.execute_kw(db, uid, password,
+            'account.move', 'search',
+            [[('name', '=', factura_name), ('move_type', 'in', ['out_invoice', 'out_refund'])]], 
+            {'limit': 1})
+
+        if not factura_ids:
+            return jsonify({"error": "Factura no encontrada"}), 404
+
+        # Obtener los campos específicos solicitados
+        factura = models.execute_kw(db, uid, password,
+            'account.move', 'read',
+            [factura_ids[0]],
+            {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
+
+        if not factura:
+            return jsonify({"error": "Error al leer la factura"}), 500
+
+        # Preparar la respuesta con los campos específicos
+        response = {
+            "Codigo Odoo Factura": factura[0].get('name', ''),
+            "Folio DTE": factura[0].get('folio_dte', ''),
+            "ID Febos": factura[0].get('febos_id', ''),
+            "Mensaje Febos": factura[0].get('mensaje_febos', ''),
+            "Seguimiento Febos": factura[0].get('seguimiento_febos', ''),
+            "Codigo Febos": factura[0].get('codigo_febos', ''),
+            "Errores Febos": factura[0].get('errores_febos', ''),
+            "Internal ID Febos": factura[0].get('internal_id_febos', ''),
+            "Display Name": factura[0].get('display_name', '')
+        }
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
+@odoo_bp.route('/factura_refoliar/<string:factura_name>', methods=['PUT'])
+def update_factura_refoliar(factura_name):
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Buscar la factura por su nombre (número)
+        factura_ids = models.execute_kw(db, uid, password,
+            'account.move', 'search',
+            [[('name', '=', factura_name), ('move_type', 'in', ['out_invoice', 'out_refund'])]], 
+            {'limit': 1})
+
+        if not factura_ids:
+            return jsonify({"error": "Factura no encontrada"}), 404
+
+        # Obtener los datos del request JSON
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
+
+        # Mapear los campos del JSON a los campos de Odoo
+        update_values = {}
+        field_mapping = {
+            'folio_dte': 'folio_dte',
+            'febos_id': 'febos_id', 
+            'mensaje_febos': 'mensaje_febos',
+            'seguimiento_febos': 'seguimiento_febos',
+            'codigo_febos': 'codigo_febos',
+            'errores_febos': 'errores_febos',
+            'internal_id_febos': 'internal_id_febos',
+            'display_name': 'display_name'
+        }
+
+        # Construir el diccionario de valores a actualizar
+        for json_field, odoo_field in field_mapping.items():
+            if json_field in data:
+                update_values[odoo_field] = data[json_field]
+
+        if not update_values:
+            return jsonify({"error": "No se encontraron campos válidos para actualizar"}), 400
+
+        # Actualizar la factura
+        result = models.execute_kw(db, uid, password,
+            'account.move', 'write',
+            [factura_ids, update_values])
+
+        if result:
+            # Obtener los datos actualizados para confirmar
+            updated_factura = models.execute_kw(db, uid, password,
+                'account.move', 'read',
+                [factura_ids[0]],
+                {'fields': ['name', 'folio_dte', 'febos_id', 'mensaje_febos', 'seguimiento_febos', 'codigo_febos', 'errores_febos', 'internal_id_febos', 'display_name']})
+
+            response = {
+                "message": "Factura actualizada exitosamente",
+                "factura_actualizada": {
+                    "Codigo Odoo Factura": updated_factura[0].get('name', ''),
+                    "Folio DTE": updated_factura[0].get('folio_dte', ''),
+                    "ID Febos": updated_factura[0].get('febos_id', ''),
+                    "Mensaje Febos": updated_factura[0].get('mensaje_febos', ''),
+                    "Seguimiento Febos": updated_factura[0].get('seguimiento_febos', ''),
+                    "Codigo Febos": updated_factura[0].get('codigo_febos', ''),
+                    "Errores Febos": updated_factura[0].get('errores_febos', ''),
+                    "Internal ID Febos": updated_factura[0].get('internal_id_febos', ''),
+                    "Display Name": updated_factura[0].get('display_name', '') 
+                }
+            }
+            return jsonify(response)
+        else:
+            return jsonify({"error": "Error al actualizar la factura"}), 500
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+

@@ -1,0 +1,17 @@
+# Dependencias para el pipeline ETL
+pandas>=1.5.0
+pyodbc>=4.0.35
+python-dotenv>=0.19.0
+schedule>=1.2.0
+sqlalchemy>=1.4.0
+openpyxl>=3.0.9
+xlsxwriter>=3.0.3
+
+# Para logging y monitoreo
+colorama>=0.4.4
+
+# Para validación de datos
+great-expectations>=0.15.0
+
+# Para procesamiento de fechas
+python-dateutil>=2.8.2
