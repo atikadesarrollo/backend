@@ -341,6 +341,11 @@
         let isProcessingDates = false;
         let autoModeEnabled = false;
 
+        // Activar sistema automático al cargar la página
+        window.onload = function() {
+            loadPeriods();
+        };
+
         // Cargar períodos disponibles y activar sistema automático
         async function loadPeriods() {
             try {

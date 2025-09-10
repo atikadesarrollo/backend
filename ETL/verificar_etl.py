@@ -17,8 +17,8 @@ def verificar_tablas_etl():
             'DL_Analisis_Venta_Daily': 'Datos diarios (últimos 7 días)',
             'DL_Analisis_Venta_Summary': 'Resumen por vendedores (últimos 7 días)',
             'DL_Analisis_Venta_Weekly': 'Datos semanales (últimos 30 días)',
-            'DL_Analisis_Venta_Monthly': 'Datos mensuales (últimos 30 días)',
-            'DL_Analisis_Venta_Quarterly': 'Datos trimestrales (últimos 90 días)',
+            'DL_Analisis_Venta_Monthly': 'Datos mensuales (últimos 90 días)',
+            'DL_Analisis_Venta_Quarterly': 'Datos trimestrales (últimos 365 días)',
             'DL_Analisis_Venta_Processed': 'Datos procesados generales (si existe)'
         }
         
