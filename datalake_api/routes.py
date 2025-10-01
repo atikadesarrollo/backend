@@ -182,6 +182,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Cliente]
                 ,[Fecha creación cliente] as 'Fecha_creacion_cliente' 
                 -- ,[Categoria cliente] as ''
+                ,[Categoria cliente] as 'Categoria_cliente'
                 ,[Canal]
                 ,[Departamento]
                 ,[Vendedor]
