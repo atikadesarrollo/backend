@@ -234,6 +234,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 FROM DL_Analisis_Venta_v 
                 WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 AND [RUT Cliente] != '1-9'
+                --ordenar por fecha de oferta mayor a menor
                 ORDER BY [Fecha de oferta] DESC
             """
             cursor.execute(query, start_date, end_date)
