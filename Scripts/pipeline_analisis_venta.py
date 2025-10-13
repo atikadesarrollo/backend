@@ -2,6 +2,7 @@ import pyodbc
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import time
 
 # Cargar variables de entorno
 load_dotenv()
@@ -81,6 +82,7 @@ def create_table_and_insert(cursor, table_name, filter_sql):
     print(f"Tabla {table_name} creada y datos insertados.")
 
 if __name__ == "__main__":
+    start_time = time.time()
     try:
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
@@ -91,6 +93,24 @@ if __name__ == "__main__":
             create_table_and_insert(cursor, 'DL_Analisis_Venta_v_Media', "[Fecha de oferta] >= DATEADD(day, -90, GETDATE())")
             # Antiguo: últimos 365 días
             create_table_and_insert(cursor, 'DL_Analisis_Venta_v_Antiguo', "[Fecha de oferta] >= DATEADD(day, -365, GETDATE())")
+
+            # Mostrar tamaño de las tablas generadas
+            tablas = [
+                'DL_Analisis_Venta_v_Reciente',
+                'DL_Analisis_Venta_v_Media',
+                'DL_Analisis_Venta_v_Antiguo'
+            ]
+            print("\nTamaño de las tablas generadas:")
+            for tabla in tablas:
+                cursor.execute(f"SELECT COUNT(*) FROM {tabla}")
+                count = cursor.fetchone()[0]
+                cursor.execute(f"EXEC sp_spaceused '{tabla}'")
+                space = cursor.fetchone()
+                print(f"{tabla}: {count} filas, {space[1]} KB")
+
+            end_time = time.time()
+            elapsed = end_time - start_time
+            print(f"\nTiempo total de ejecución: {elapsed:.2f} segundos.")
             print("Proceso finalizado correctamente.")
     except Exception as e:
         print(f"Error en el proceso: {e}")
