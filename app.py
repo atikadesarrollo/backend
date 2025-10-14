@@ -147,6 +147,14 @@ def create_app():
     
     app.register_blueprint(analytics_bp)
     logger.info("Blueprint 'analytics_bp' registrado en /api/analytics")
+    
+    from analisis_venta.periodos import analisis_venta_bp
+    app.register_blueprint(analisis_venta_bp, url_prefix='/analisis_venta')
+
+    # Registrar el dashboard de administración
+    from admin.views import admin_bp
+    app.register_blueprint(admin_bp)
+
 
     return app
 

@@ -87,6 +87,10 @@ if __name__ == "__main__":
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
             print(f"Conectado a la base de datos {database} en el servidor {server}")
+            # Completo: copia completa de la vista
+            print("Creando copia completa de DL_Analisis_Venta_v...")
+            create_table_and_insert(cursor, 'DL_Analisis_Venta_v_Completo', "1=1")
+            
             # Reciente: últimos 30 días
             create_table_and_insert(cursor, 'DL_Analisis_Venta_v_Reciente', "[Fecha de oferta] >= DATEADD(day, -30, GETDATE())")
             # Media: últimos 90 días
@@ -96,6 +100,7 @@ if __name__ == "__main__":
 
             # Mostrar tamaño de las tablas generadas
             tablas = [
+                'DL_Analisis_Venta_v_Completo',
                 'DL_Analisis_Venta_v_Reciente',
                 'DL_Analisis_Venta_v_Media',
                 'DL_Analisis_Venta_v_Antiguo'
