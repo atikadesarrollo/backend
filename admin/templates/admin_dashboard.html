@@ -116,6 +116,9 @@
                   {% endif %}
                 </select>
               </div>
+              
+              <!-- Filtros para Análisis de Venta -->
+              {% if base_datos == 'analisis_venta' %}
               <div class="col-md-3">
                 <label>Proyecto</label>
                 <input type="text" name="proyecto" class="form-control" value="{{ filtros.proyecto }}" />
@@ -174,6 +177,87 @@
                   value="{{ filtros.order_by }}"
                 />
               </div>
+              {% endif %}
+
+              <!-- Filtros para Facturación -->
+              {% if base_datos == 'facturacion' %}
+              <div class="col-md-3">
+                <label>Cliente (Razón Social)</label>
+                <input type="text" name="cliente" class="form-control" value="{{ filtros.cliente }}" 
+                       placeholder="Ej: Constructora" />
+              </div>
+              <div class="col-md-3">
+                <label>Vendedor</label>
+                <input type="text" name="vendedor" class="form-control" value="{{ filtros.vendedor }}" 
+                       placeholder="Busca en factura y oferta" />
+              </div>
+              <div class="col-md-3">
+                <label>Tipo Documento</label>
+                <input type="text" name="tipo_documento" class="form-control" value="{{ filtros.tipo_documento }}" 
+                       placeholder="Ej: 33, 34, 61" />
+              </div>
+              <div class="col-md-3">
+                <label>Número Documento</label>
+                <input type="text" name="numero_documento" class="form-control" value="{{ filtros.numero_documento }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Folio SII</label>
+                <input type="text" name="folio_sii" class="form-control" value="{{ filtros.folio_sii }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Código Producto</label>
+                <input type="text" name="codigo" class="form-control" value="{{ filtros.codigo }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Descripción Producto</label>
+                <input type="text" name="descripcion" class="form-control" value="{{ filtros.descripcion }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Obra/Proyecto</label>
+                <input type="text" name="obra" class="form-control" value="{{ filtros.obra }}" 
+                       placeholder="Nombre de la obra" />
+              </div>
+              <div class="col-md-3">
+                <label>Unidad de Negocios</label>
+                <input type="text" name="unidad_negocio" class="form-control" value="{{ filtros.unidad_negocio }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Categoría Cliente</label>
+                <input type="text" name="categoria_cliente" class="form-control" value="{{ filtros.categoria_cliente }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Rubro</label>
+                <input type="text" name="rubro" class="form-control" value="{{ filtros.rubro }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Familia Producto</label>
+                <input type="text" name="familia" class="form-control" value="{{ filtros.familia }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Marca</label>
+                <input type="text" name="marca" class="form-control" value="{{ filtros.marca }}" />
+              </div>
+              <div class="col-md-3">
+                <label>Venta Neta - Mínimo</label>
+                <input type="number" name="monto_min" class="form-control" value="{{ filtros.monto_min }}" 
+                       placeholder="Monto mínimo" />
+              </div>
+              <div class="col-md-3">
+                <label>Venta Neta - Máximo</label>
+                <input type="number" name="monto_max" class="form-control" value="{{ filtros.monto_max }}" 
+                       placeholder="Monto máximo" />
+              </div>
+              <div class="col-md-3">
+                <label>Ordenar por</label>
+                <input
+                  type="text"
+                  name="order_by"
+                  class="form-control"
+                  placeholder="[Fecha documento] DESC"
+                  value="{{ filtros.order_by }}"
+                />
+              </div>
+              {% endif %}
               <input type="hidden" name="pagina" value="1" id="pagina_input" />
               <input
                 type="hidden"

@@ -105,18 +105,14 @@ def query_facturacion():
     args = dict(request.args)
     fecha_inicio = args.get('fecha_inicio')
     fecha_fin = args.get('fecha_fin')
-    proyecto = args.get('proyecto')
     cliente = args.get('cliente')
     vendedor = args.get('vendedor')
-    sku = args.get('sku')
-    departamento = args.get('departamento')
-    canal = args.get('canal')
-    monto_min = args.get('monto_min')
-    monto_max = args.get('monto_max')
     descripcion = args.get('descripcion')
     rubro = args.get('rubro')
     familia = args.get('familia')
     marca = args.get('marca')
+    monto_min = args.get('monto_min')
+    monto_max = args.get('monto_max')
     periodo = args.get('periodo')
     
     # Validar campo order_by
@@ -172,38 +168,25 @@ def query_facturacion():
 
     filtros = []
     params = []
+    
+    # Filtros de fecha
     if fecha_inicio:
         filtros.append(f"CAST([{FECHA_COLUMN}] AS DATE) >= CAST(? AS DATE)")
         params.append(fecha_inicio)
     if fecha_fin:
         filtros.append(f"CAST([{FECHA_COLUMN}] AS DATE) <= CAST(? AS DATE)")
         params.append(fecha_fin)
-    if proyecto:
-        filtros.append("[Proyecto] LIKE ?")
-        params.append(f'%{proyecto}%')
+    
+    # Filtros específicos de facturación
     if cliente:
-        filtros.append("[Cliente] LIKE ?")
+        filtros.append("[Razon social] LIKE ?")
         params.append(f'%{cliente}%')
     if vendedor:
-        filtros.append("[Vendedor] LIKE ?")
+        filtros.append("([Vendedor factura] LIKE ? OR [Vendedor oferta] LIKE ?)")
         params.append(f'%{vendedor}%')
-    if sku:
-        filtros.append("[SKU] LIKE ?")
-        params.append(f'%{sku}%')
-    if departamento:
-        filtros.append("[Departamento] LIKE ?")
-        params.append(f'%{departamento}%')
-    if canal:
-        filtros.append("[Canal] LIKE ?")
-        params.append(f'%{canal}%')
-    if monto_min:
-        filtros.append("[Monto facturado] >= ?")
-        params.append(monto_min)
-    if monto_max:
-        filtros.append("[Monto facturado] <= ?")
-        params.append(monto_max)
+        params.append(f'%{vendedor}%')
     if descripcion:
-        filtros.append("[Descipción] LIKE ?")
+        filtros.append("[Descripcion] LIKE ?")
         params.append(f'%{descripcion}%')
     if rubro:
         filtros.append("[Rubro] LIKE ?")
@@ -214,6 +197,45 @@ def query_facturacion():
     if marca:
         filtros.append("[Marca] LIKE ?")
         params.append(f'%{marca}%')
+    
+    # Filtros adicionales de facturación
+    tipo_doc = args.get('tipo_documento')
+    numero_doc = args.get('numero_documento')
+    folio_sii = args.get('folio_sii')
+    codigo = args.get('codigo')
+    obra = args.get('obra')
+    unidad_negocio = args.get('unidad_negocio')
+    categoria_cliente = args.get('categoria_cliente')
+    
+    if tipo_doc:
+        filtros.append("[Tipo documento] LIKE ?")
+        params.append(f'%{tipo_doc}%')
+    if numero_doc:
+        filtros.append("[Numero de documento] LIKE ?")
+        params.append(f'%{numero_doc}%')
+    if folio_sii:
+        filtros.append("[Folio SII] LIKE ?")
+        params.append(f'%{folio_sii}%')
+    if codigo:
+        filtros.append("[Codigo] LIKE ?")
+        params.append(f'%{codigo}%')
+    if obra:
+        filtros.append("[Nombre obra] LIKE ?")
+        params.append(f'%{obra}%')
+    if unidad_negocio:
+        filtros.append("[Unidad de negocios] LIKE ?")
+        params.append(f'%{unidad_negocio}%')
+    if categoria_cliente:
+        filtros.append("[Categoria cliente] LIKE ?")
+        params.append(f'%{categoria_cliente}%')
+    
+    # Filtros numéricos
+    if monto_min:
+        filtros.append("[Venta neta] >= ?")
+        params.append(monto_min)
+    if monto_max:
+        filtros.append("[Venta neta] <= ?")
+        params.append(monto_max)
 
     where_sql = ' AND '.join(filtros) if filtros else '1=1'
     

@@ -60,12 +60,8 @@ def admin_dashboard():
             'periodo': request.form.get('periodo'),
             'fecha_inicio': request.form.get('fecha_inicio'),
             'fecha_fin': request.form.get('fecha_fin'),
-            'proyecto': request.form.get('proyecto'),
             'cliente': request.form.get('cliente'),
             'vendedor': request.form.get('vendedor'),
-            'sku': request.form.get('sku'),
-            'departamento': request.form.get('departamento'),
-            'canal': request.form.get('canal'),
             'monto_min': request.form.get('monto_min'),
             'monto_max': request.form.get('monto_max'),
             'descripcion': request.form.get('descripcion'),
@@ -74,6 +70,21 @@ def admin_dashboard():
             'marca': request.form.get('marca'),
             'order_by': request.form.get('order_by'),
         }
+        
+        # Filtros específicos según la base de datos
+        if base_datos == 'analisis_venta':
+            filtros['proyecto'] = request.form.get('proyecto')
+            filtros['sku'] = request.form.get('sku')
+            filtros['departamento'] = request.form.get('departamento')
+            filtros['canal'] = request.form.get('canal')
+        elif base_datos == 'facturacion':
+            filtros['tipo_documento'] = request.form.get('tipo_documento')
+            filtros['numero_documento'] = request.form.get('numero_documento')
+            filtros['folio_sii'] = request.form.get('folio_sii')
+            filtros['codigo'] = request.form.get('codigo')
+            filtros['obra'] = request.form.get('obra')
+            filtros['unidad_negocio'] = request.form.get('unidad_negocio')
+            filtros['categoria_cliente'] = request.form.get('categoria_cliente')
         
         # Primero, hacer una consulta rápida para saber el total de registros
         filtros_count = filtros.copy()
