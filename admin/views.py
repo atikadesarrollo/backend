@@ -4,29 +4,48 @@ import os
 
 admin_bp = Blueprint('admin', __name__, template_folder='templates')
 
-API_URL = os.getenv('API_URL', 'http://127.0.0.1:5000/analisis_venta/query')
-
 @admin_bp.route('/admin', methods=['GET', 'POST'])
 def admin_dashboard():
     filtros = {}
     resultados = None
     error = None
     mensaje = None
-    periodos = []
+    periodos_venta = []
+    periodos_facturacion = []
     pagina_actual = 1
     total_registros = 0
     registros_por_pagina = 50
     mostrar_todos = False
+    base_datos = 'analisis_venta'  # Default
     
-    # Consultar periodos disponibles al inicio
+    # Consultar periodos disponibles de ambas fuentes
     try:
-        resp = requests.get('http://127.0.0.1:5000/analisis_venta/periodos')
-        if resp.status_code == 200:
-            periodos = resp.json().get('periodos', [])
+        resp_venta = requests.get('http://127.0.0.1:5000/analisis_venta/periodos')
+        if resp_venta.status_code == 200:
+            periodos_venta = resp_venta.json().get('periodos', [])
     except Exception as e:
-        error = f"Error al cargar periodos: {str(e)}"
+        error = f"Error al cargar periodos de venta: {str(e)}"
+    
+    try:
+        resp_facturacion = requests.get('http://127.0.0.1:5000/facturacion/periodos')
+        if resp_facturacion.status_code == 200:
+            periodos_facturacion = resp_facturacion.json().get('periodos', [])
+    except Exception as e:
+        if error:
+            error += f" | Error al cargar periodos de facturación: {str(e)}"
+        else:
+            error = f"Error al cargar periodos de facturación: {str(e)}"
     
     if request.method == 'POST':
+        # Obtener la base de datos seleccionada
+        base_datos = request.form.get('base_datos', 'analisis_venta')
+        
+        # Determinar API_URL según la base de datos
+        if base_datos == 'facturacion':
+            API_URL = 'http://127.0.0.1:5000/facturacion/query'
+        else:
+            API_URL = 'http://127.0.0.1:5000/analisis_venta/query'
+        
         # Verificar si se solicitó "Todos los registros"
         mostrar_todos = request.form.get('mostrar_todos') == 'true'
         
@@ -111,8 +130,10 @@ def admin_dashboard():
                          resultados=resultados, 
                          error=error, 
                          mensaje=mensaje, 
-                         periodos=periodos,
+                         periodos_venta=periodos_venta,
+                         periodos_facturacion=periodos_facturacion,
                          pagina_actual=pagina_actual,
                          total_paginas=total_paginas,
                          registros_por_pagina=registros_por_pagina,
-                         mostrar_todos=mostrar_todos)
+                         mostrar_todos=mostrar_todos,
+                         base_datos=base_datos)
