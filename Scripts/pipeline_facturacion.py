@@ -61,7 +61,7 @@ def get_table_columns(cursor, table_name):
             col_defs.append(f'[{name}] {dtype}')
     return col_defs, col_names
 
-def create_table_and_insert(cursor, table_name, filter_sql):
+def create_table_and_insert(cursor, table_name, filter_sql, fecha_col=None):
     temp_table = f'{table_name}_tmp'
     print(f"Creando tabla temporal: {temp_table}")
     col_defs, col_names = get_table_columns(cursor, 'DL_Facturacion_v')
@@ -81,15 +81,44 @@ if __name__ == "__main__":
         with pyodbc.connect(connection_string) as conn:
             cursor = conn.cursor()
             print(f"Conectado a la base de datos {database} en el servidor {server}")
+            
+            # Detectar columna de fecha automáticamente
+            print("Detectando columna de fecha...")
+            cursor.execute("SELECT TOP 0 * FROM DL_Facturacion_v")
+            columnas = [col[0] for col in cursor.description]
+            
+            # Buscar columna de fecha
+            fecha_col = None
+            for col in columnas:
+                if 'fecha' in col.lower():
+                    fecha_col = col
+                    print(f"Columna de fecha detectada: [{fecha_col}]")
+                    break
+            
+            if not fecha_col:
+                print("ERROR: No se encontró ninguna columna con 'fecha' en su nombre.")
+                print("Columnas disponibles:")
+                for col in columnas:
+                    print(f"  - [{col}]")
+                exit(1)
+            
+            # Guardar columna de fecha en archivo para uso del API
+            config_file = os.path.join(os.path.dirname(__file__), '..', 'facturacion', 'fecha_column.txt')
+            os.makedirs(os.path.dirname(config_file), exist_ok=True)
+            with open(config_file, 'w') as f:
+                f.write(fecha_col)
+            print(f"Columna de fecha guardada en: {config_file}")
+            
             # Completo: copia completa de la vista
             print("Creando copia completa de DL_Facturacion_v...")
-            create_table_and_insert(cursor, 'DL_Facturacion_v_Completo', "1=1")
+            create_table_and_insert(cursor, 'DL_Facturacion_v_Completo', "1=1", fecha_col)
+            
             # Reciente: últimos 30 días
-            create_table_and_insert(cursor, 'DL_Facturacion_v_Reciente', "[Fecha de oferta] >= DATEADD(day, -30, GETDATE())")
+            create_table_and_insert(cursor, 'DL_Facturacion_v_Reciente', f"[{fecha_col}] >= DATEADD(day, -30, GETDATE())", fecha_col)
             # Media: últimos 90 días
-            create_table_and_insert(cursor, 'DL_Facturacion_v_Media', "[Fecha de oferta] >= DATEADD(day, -90, GETDATE())")
+            create_table_and_insert(cursor, 'DL_Facturacion_v_Media', f"[{fecha_col}] >= DATEADD(day, -90, GETDATE())", fecha_col)
             # Antiguo: últimos 365 días
-            create_table_and_insert(cursor, 'DL_Facturacion_v_Antiguo', "[Fecha de oferta] >= DATEADD(day, -365, GETDATE())")
+            create_table_and_insert(cursor, 'DL_Facturacion_v_Antiguo', f"[{fecha_col}] >= DATEADD(day, -365, GETDATE())", fecha_col)
 
             tablas = [
                 'DL_Facturacion_v_Completo',
