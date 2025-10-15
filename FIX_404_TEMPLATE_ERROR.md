@@ -3,6 +3,7 @@
 ## Problemas Identificados
 
 ### 1. Error 404 en `/facturacion/periodos`
+
 ```
 2025-10-15 11:41:22,600 - __main__ - WARNING - 404 Error: GET http://127.0.0.1:5000/facturacion/periodos
 ```
@@ -10,6 +11,7 @@
 **Causa:** El Blueprint de facturación NO estaba registrado en `app.py`
 
 ### 2. Error en Template HTML
+
 ```
 jinja2.exceptions.UndefinedError: list object has no element 0
 ```
@@ -87,6 +89,7 @@ logger.info("  - /admin - Dashboard de Administración")          # NUEVO
 ## Verificación
 
 ### ✅ Cambios Aplicados:
+
 1. Blueprint de facturación registrado correctamente
 2. Template protegido contra listas vacías
 3. Logs actualizados con todos los endpoints
@@ -94,6 +97,7 @@ logger.info("  - /admin - Dashboard de Administración")          # NUEVO
 ### 🧪 Para Probar:
 
 1. **Reiniciar el servidor:**
+
    ```powershell
    # Detener el servidor actual (Ctrl+C)
    # Iniciar nuevamente:
@@ -102,6 +106,7 @@ logger.info("  - /admin - Dashboard de Administración")          # NUEVO
 
 2. **Verificar en los logs de inicio:**
    Deberías ver:
+
    ```
    Blueprint 'bp_facturacion' registrado en /facturacion
    - /analisis_venta/* - API de Análisis de Venta
@@ -110,10 +115,11 @@ logger.info("  - /admin - Dashboard de Administración")          # NUEVO
    ```
 
 3. **Probar endpoint de facturación:**
+
    ```powershell
    curl http://localhost:5000/facturacion/periodos
    ```
-   
+
    Debería devolver error con mensaje sobre tablas no encontradas (hasta que ejecutes el pipeline)
 
 4. **Probar dashboard:**
@@ -125,12 +131,15 @@ logger.info("  - /admin - Dashboard de Administración")          # NUEVO
 ## Próximos Pasos
 
 ### Antes de usar Facturación:
+
 1. **Ejecutar el pipeline de facturación:**
+
    ```powershell
    python Scripts\pipeline_facturacion.py
    ```
 
 2. **Verificar que las tablas se crearon:**
+
    - DL_Facturacion_v_Completo
    - DL_Facturacion_v_Reciente
    - DL_Facturacion_v_Media
