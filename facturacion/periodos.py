@@ -43,6 +43,36 @@ PERIODOS = [
 def get_connection():
     return pyodbc.connect(connection_string)
 
+def detect_fecha_column():
+    """Detecta automáticamente la columna de fecha en las tablas de facturación"""
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            # Intentar con cualquiera de las tablas que exista
+            for tabla in ['DL_Facturacion_v_Completo', 'DL_Facturacion_v', 'DL_Facturacion_v_Reciente']:
+                try:
+                    cursor.execute(f"SELECT TOP 0 * FROM {tabla}")
+                    for col in cursor.description:
+                        if 'fecha' in col[0].lower():
+                            return col[0]
+                except:
+                    continue
+    except:
+        pass
+    # Fallback por defecto
+    return 'Fecha'
+
+# Detectar columna de fecha al cargar el módulo
+FECHA_COLUMN = detect_fecha_column()
+print(f"[Facturación] Columna de fecha detectada: [{FECHA_COLUMN}]")
+
+PERIODOS = [
+    ('DL_Facturacion_v_Reciente', 'Reciente'),
+    ('DL_Facturacion_v_Media', 'Media'),
+    ('DL_Facturacion_v_Antiguo', 'Antiguo'),
+    ('DL_Facturacion_v_Completo', 'Completo')
+]
+
 @bp_facturacion.route('/periodos', methods=['GET'])
 def listar_periodos():
     resultados = []
@@ -51,7 +81,7 @@ def listar_periodos():
             cursor = conn.cursor()
             for tabla, nombre in PERIODOS:
                 try:
-                    cursor.execute(f"SELECT MIN([Fecha de oferta]), MAX([Fecha de oferta]), COUNT(*) FROM {tabla}")
+                    cursor.execute(f"SELECT MIN([{FECHA_COLUMN}]), MAX([{FECHA_COLUMN}]), COUNT(*) FROM {tabla}")
                     row = cursor.fetchone()
                     resultados.append({
                         'periodo': nombre,
@@ -92,7 +122,7 @@ def query_facturacion():
     # Validar campo order_by
     order_by = args.get('order_by')
     if not order_by or not isinstance(order_by, str) or order_by.strip() == '':
-        order_by = '[Fecha de oferta] DESC'
+        order_by = f'[{FECHA_COLUMN}] DESC'
     else:
         col = order_by.replace(' DESC', '').replace(' ASC', '').strip()
         if ' ' in col and not col.startswith('['):
@@ -143,10 +173,10 @@ def query_facturacion():
     filtros = []
     params = []
     if fecha_inicio:
-        filtros.append("CAST([Fecha de oferta] AS DATE) >= CAST(? AS DATE)")
+        filtros.append(f"CAST([{FECHA_COLUMN}] AS DATE) >= CAST(? AS DATE)")
         params.append(fecha_inicio)
     if fecha_fin:
-        filtros.append("CAST([Fecha de oferta] AS DATE) <= CAST(? AS DATE)")
+        filtros.append(f"CAST([{FECHA_COLUMN}] AS DATE) <= CAST(? AS DATE)")
         params.append(fecha_fin)
     if proyecto:
         filtros.append("[Proyecto] LIKE ?")
