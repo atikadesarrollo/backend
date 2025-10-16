@@ -89,7 +89,7 @@
                   type="date"
                   name="fecha_inicio"
                   class="form-control"
-                  value="{{ filtros.fecha_inicio }}"
+                  value="{{ filtros.get('fecha_inicio', '') }}"
                 />
               </div>
               <div class="col-md-3">
@@ -98,7 +98,7 @@
                   type="date"
                   name="fecha_fin"
                   class="form-control"
-                  value="{{ filtros.fecha_fin }}"
+                  value="{{ filtros.get('fecha_fin', '') }}"
                 />
               </div>
               <div class="col-md-3">
@@ -121,51 +121,51 @@
               {% if base_datos == 'analisis_venta' %}
               <div class="col-md-3">
                 <label>Proyecto</label>
-                <input type="text" name="proyecto" class="form-control" value="{{ filtros.proyecto }}" />
+                <input type="text" name="proyecto" class="form-control" value="{{ filtros.get('proyecto', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Cliente</label>
-                <input type="text" name="cliente" class="form-control" value="{{ filtros.cliente }}" />
+                <input type="text" name="cliente" class="form-control" value="{{ filtros.get('cliente', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Vendedor</label>
-                <input type="text" name="vendedor" class="form-control" value="{{ filtros.vendedor }}" />
+                <input type="text" name="vendedor" class="form-control" value="{{ filtros.get('vendedor', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>SKU</label>
-                <input type="text" name="sku" class="form-control" value="{{ filtros.sku }}" />
+                <input type="text" name="sku" class="form-control" value="{{ filtros.get('sku', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Departamento</label>
-                <input type="text" name="departamento" class="form-control" value="{{ filtros.departamento }}" />
+                <input type="text" name="departamento" class="form-control" value="{{ filtros.get('departamento', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Canal</label>
-                <input type="text" name="canal" class="form-control" value="{{ filtros.canal }}" />
+                <input type="text" name="canal" class="form-control" value="{{ filtros.get('canal', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Monto mínimo</label>
-                <input type="number" name="monto_min" class="form-control" value="{{ filtros.monto_min }}" />
+                <input type="number" name="monto_min" class="form-control" value="{{ filtros.get('monto_min', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Monto máximo</label>
-                <input type="number" name="monto_max" class="form-control" value="{{ filtros.monto_max }}" />
+                <input type="number" name="monto_max" class="form-control" value="{{ filtros.get('monto_max', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Descripción</label>
-                <input type="text" name="descripcion" class="form-control" value="{{ filtros.descripcion }}" />
+                <input type="text" name="descripcion" class="form-control" value="{{ filtros.get('descripcion', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Rubro</label>
-                <input type="text" name="rubro" class="form-control" value="{{ filtros.rubro }}" />
+                <input type="text" name="rubro" class="form-control" value="{{ filtros.get('rubro', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Familia</label>
-                <input type="text" name="familia" class="form-control" value="{{ filtros.familia }}" />
+                <input type="text" name="familia" class="form-control" value="{{ filtros.get('familia', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Marca</label>
-                <input type="text" name="marca" class="form-control" value="{{ filtros.marca }}" />
+                <input type="text" name="marca" class="form-control" value="{{ filtros.get('marca', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Ordenar por</label>
@@ -174,7 +174,7 @@
                   name="order_by"
                   class="form-control"
                   placeholder="[Fecha de oferta] DESC"
-                  value="{{ filtros.order_by }}"
+                  value="{{ filtros.get('order_by', '') }}"
                 />
               </div>
               {% endif %}
@@ -183,68 +183,68 @@
               {% if base_datos == 'facturacion' %}
               <div class="col-md-3">
                 <label>Cliente (Razón Social)</label>
-                <input type="text" name="cliente" class="form-control" value="{{ filtros.cliente }}" 
+                <input type="text" name="cliente" class="form-control" value="{{ filtros.get('cliente', '') }}" 
                        placeholder="Ej: Constructora" />
               </div>
               <div class="col-md-3">
                 <label>Vendedor</label>
-                <input type="text" name="vendedor" class="form-control" value="{{ filtros.vendedor }}" 
+                <input type="text" name="vendedor" class="form-control" value="{{ filtros.get('vendedor', '') }}" 
                        placeholder="Busca en factura y oferta" />
               </div>
               <div class="col-md-3">
                 <label>Tipo Documento</label>
-                <input type="text" name="tipo_documento" class="form-control" value="{{ filtros.tipo_documento }}" 
+                <input type="text" name="tipo_documento" class="form-control" value="{{ filtros.get('tipo_documento', '') }}" 
                        placeholder="Ej: 33, 34, 61" />
               </div>
               <div class="col-md-3">
                 <label>Número Documento</label>
-                <input type="text" name="numero_documento" class="form-control" value="{{ filtros.numero_documento }}" />
+                <input type="text" name="numero_documento" class="form-control" value="{{ filtros.get('numero_documento', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Folio SII</label>
-                <input type="text" name="folio_sii" class="form-control" value="{{ filtros.folio_sii }}" />
+                <input type="text" name="folio_sii" class="form-control" value="{{ filtros.get('folio_sii', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Código Producto</label>
-                <input type="text" name="codigo" class="form-control" value="{{ filtros.codigo }}" />
+                <input type="text" name="codigo" class="form-control" value="{{ filtros.get('codigo', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Descripción Producto</label>
-                <input type="text" name="descripcion" class="form-control" value="{{ filtros.descripcion }}" />
+                <input type="text" name="descripcion" class="form-control" value="{{ filtros.get('descripcion', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Obra/Proyecto</label>
-                <input type="text" name="obra" class="form-control" value="{{ filtros.obra }}" 
+                <input type="text" name="obra" class="form-control" value="{{ filtros.get('obra', '') }}" 
                        placeholder="Nombre de la obra" />
               </div>
               <div class="col-md-3">
                 <label>Unidad de Negocios</label>
-                <input type="text" name="unidad_negocio" class="form-control" value="{{ filtros.unidad_negocio }}" />
+                <input type="text" name="unidad_negocio" class="form-control" value="{{ filtros.get('unidad_negocio', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Categoría Cliente</label>
-                <input type="text" name="categoria_cliente" class="form-control" value="{{ filtros.categoria_cliente }}" />
+                <input type="text" name="categoria_cliente" class="form-control" value="{{ filtros.get('categoria_cliente', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Rubro</label>
-                <input type="text" name="rubro" class="form-control" value="{{ filtros.rubro }}" />
+                <input type="text" name="rubro" class="form-control" value="{{ filtros.get('rubro', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Familia Producto</label>
-                <input type="text" name="familia" class="form-control" value="{{ filtros.familia }}" />
+                <input type="text" name="familia" class="form-control" value="{{ filtros.get('familia', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Marca</label>
-                <input type="text" name="marca" class="form-control" value="{{ filtros.marca }}" />
+                <input type="text" name="marca" class="form-control" value="{{ filtros.get('marca', '') }}" />
               </div>
               <div class="col-md-3">
                 <label>Venta Neta - Mínimo</label>
-                <input type="number" name="monto_min" class="form-control" value="{{ filtros.monto_min }}" 
+                <input type="number" name="monto_min" class="form-control" value="{{ filtros.get('monto_min', '') }}" 
                        placeholder="Monto mínimo" />
               </div>
               <div class="col-md-3">
                 <label>Venta Neta - Máximo</label>
-                <input type="number" name="monto_max" class="form-control" value="{{ filtros.monto_max }}" 
+                <input type="number" name="monto_max" class="form-control" value="{{ filtros.get('monto_max', '') }}" 
                        placeholder="Monto máximo" />
               </div>
               <div class="col-md-3">
@@ -254,7 +254,7 @@
                   name="order_by"
                   class="form-control"
                   placeholder="[Fecha documento] DESC"
-                  value="{{ filtros.order_by }}"
+                  value="{{ filtros.get('order_by', '') }}"
                 />
               </div>
               {% endif %}

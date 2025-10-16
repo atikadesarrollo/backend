@@ -212,3 +212,7 @@ def query_analisis_venta():
             return jsonify({'tabla': tabla, 'total': total_registros, 'data': data}), 200
     except Exception as e:
         return jsonify({'error': str(e), 'tabla': tabla}), 500
+
+# Registrar endpoints de KPIs
+from .kpis import registrar_endpoints_kpis
+registrar_endpoints_kpis(analisis_venta_bp)
