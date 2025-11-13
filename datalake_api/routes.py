@@ -231,6 +231,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                 ,[Especificador Inmobiliario] as 'Especificador_inmobiliario' 
                 ,[Email Esp Inmobiliario] as 'Email_esp_In'
+                ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
                 FROM DL_Analisis_Venta_v 
                 WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 AND [RUT Cliente] != '1-9'
@@ -437,6 +438,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                     ,[Especificador Inmobiliario] as 'Especificador_inmobiliario'
                     ,[Email Esp Inmobiliario] as 'Email_esp_In'
+                    ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
                 FROM DL_Facturacion_v 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
