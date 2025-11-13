@@ -98,7 +98,7 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_fecha_de_entrega', 'np_rpt_base_price', 'np_mo_price_unit', 'source_currency_id',
                 'np_rate_currency', 'discount', 'tax_id', 'price_subtotal', 
                 'discount', 'np_original_discount',
-                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit'
+                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit', 'freight_cost_origin_currency'
 
             ]
 

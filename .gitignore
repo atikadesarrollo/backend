@@ -27,3 +27,7 @@ datalake_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/routes.cpython-313.pyc
 
 logs/requests.log
+admin/__pycache__/views.cpython-313.pyc
+analisis_venta/__pycache__/periodos.cpython-313.pyc
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
