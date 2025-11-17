@@ -162,7 +162,7 @@ class ETLPipeline:
             # Usar la configuración específica para análisis de ventas
             source_table = ETLConfig.ANALISIS_VENTA_CONFIG['source_table']
             target_table = ETLConfig.TARGET_TABLES['analisis_venta_quarterly']
-            days_back = 90  # Datos de los últimos 90 días (aproximadamente 1 trimestre)
+            days_back = 200  # Datos de los últimos 90 días (aproximadamente 1 trimestre)
             
             self.logger.info(f"Procesando: {source_table} -> {target_table} (últimos {days_back} días)")
             
@@ -192,7 +192,7 @@ class ETLPipeline:
             # Usar la configuración específica para análisis de ventas
             source_table = ETLConfig.ANALISIS_VENTA_CONFIG['source_table']
             target_table = ETLConfig.TARGET_TABLES['analisis_venta_monthly']
-            days_back = 30  # Datos de los últimos 30 días
+            days_back = 90  # Datos de los últimos 30 días
             
             self.logger.info(f"Procesando: {source_table} -> {target_table} (últimos {days_back} días)")
             

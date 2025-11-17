@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Venta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background: #f8f9fa; }
+        .container { margin-top: 40px; }
+        .table-responsive { max-height: 600px; }
+        .stats-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mb-4 text-center">Análisis de Venta</h1>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="fecha_desde" class="form-label">Fecha desde</label>
+            <input type="date" id="fecha_desde" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="fecha_hasta" class="form-label">Fecha hasta</label>
+            <input type="date" id="fecha_hasta" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <label for="limit" class="form-label">Límite</label>
+            <input type="number" id="limit" class="form-control" value="100" min="1" max="1000">
+        </div>
+        <div class="col-md-2">
+            <label for="vendedor" class="form-label">Vendedor</label>
+            <input type="text" id="vendedor" class="form-control" placeholder="Nombre vendedor">
+        </div>
+        <div class="col-md-2">
+            <label for="cliente" class="form-label">Cliente</label>
+            <input type="text" id="cliente" class="form-control" placeholder="Nombre cliente">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-2">
+            <label for="estado" class="form-label">Estado</label>
+            <select id="estado" class="form-select">
+                <option value="">Todos</option>
+                <option value="sale">sale</option>
+                <option value="OK">OK</option>
+                <option value="sent">sent</option>
+                <option value="draft">draft</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="familia" class="form-label">Familia</label>
+            <input type="text" id="familia" class="form-control" placeholder="Familia producto">
+        </div>
+        <div class="col-md-2">
+            <label for="canal" class="form-label">Canal</label>
+            <input type="text" id="canal" class="form-control" placeholder="Canal">
+        </div>
+        <div class="col-md-3">
+            <label for="tabla" class="form-label">Tabla</label>
+            <select id="tabla" class="form-select">
+                <option value="daily">Diaria</option>
+                <option value="weekly">Semanal</option>
+                <option value="monthly">Mensual</option>
+                <option value="quarterly">Trimestral</option>
+                <option value="summary">Resumen</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" onclick="consultarDatos()">Consultar</button>
+        </div>
+    </div>
+    <div id="stats" class="stats-card" style="display:none;"></div>
+    <div class="table-responsive mb-3">
+        <table class="table table-striped" id="tablaDatos">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <button class="btn btn-success mb-3" onclick="exportarCSV()">Exportar CSV</button>
+    <canvas id="grafico" style="max-width:100%;max-height:400px;"></canvas>
+</div>
+<script>
+let datosActuales = [];
+function consultarDatos() {
+    // Selección automática de tabla según rango de fechas
+    const fechaDesde = document.getElementById('fecha_desde').value;
+    const fechaHasta = document.getElementById('fecha_hasta').value;
+    let tabla = 'daily';
+    if (fechaDesde && fechaHasta) {
+        const startDate = new Date(fechaDesde);
+        const endDate = new Date(fechaHasta);
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 7) {
+            tabla = 'daily';
+        } else if (diffDays <= 30) {
+            tabla = 'weekly';
+        } else if (diffDays <= 90) {
+            tabla = 'monthly';
+        } else {
+            tabla = 'quarterly';
+        }
+        document.getElementById('tabla').value = tabla;
+    }
+    const params = new URLSearchParams({
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: document.getElementById('limit').value,
+        vendedor: document.getElementById('vendedor').value,
+        cliente: document.getElementById('cliente').value,
+        estado: document.getElementById('estado').value,
+        familia: document.getElementById('familia').value,
+        canal: document.getElementById('canal').value
+    });
+    fetch(`http://localhost:5000/api/analytics/${tabla}/complete?${params}`)
+        .then(r => r.json())
+        .then(res => {
+            if(res.success) {
+                mostrarDatos(res.data);
+                mostrarStats(res);
+                datosActuales = res.data;
+                mostrarGrafico(res.data, tabla);
+            } else {
+                alert('Error: ' + res.message);
+            }
+        });
+}
+function mostrarDatos(data) {
+    const thead = document.querySelector('#tablaDatos thead');
+    const tbody = document.querySelector('#tablaDatos tbody');
+    if(!data || data.length === 0) {
+        thead.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="20">No hay datos</td></tr>';
+        return;
+    }
+    const headers = Object.keys(data[0]);
+    thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+    tbody.innerHTML = data.map(row => '<tr>' + headers.map(h => `<td>${row[h] ?? ''}</td>`).join('') + '</tr>').join('');
+}
+function exportarCSV() {
+    if(!datosActuales || datosActuales.length === 0) return;
+    const headers = Object.keys(datosActuales[0]);
+    const csv = [headers.join(','), ...datosActuales.map(row => headers.map(h => row[h]).join(','))].join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `analisis_venta_${new Date().toISOString().slice(0,10)}.csv`;
+    link.click();
+}
+function mostrarStats(res) {
+    const stats = document.getElementById('stats');
+    if(!res.data || res.data.length === 0) { stats.style.display = 'none'; return; }
+    stats.innerHTML = `<strong>Registros mostrados:</strong> ${res.data.length}<br><strong>Total registros:</strong> ${res.total_records ?? res.data.length}`;
+    stats.style.display = 'block';
+}
+function mostrarGrafico(data, tabla) {
+    if(!data || data.length === 0) return;
+    const ctx = document.getElementById('grafico').getContext('2d');
+    let labels = [], valores = [];
+    if(tabla === 'summary') {
+        labels = data.map(r => r.Vendedor);
+        valores = data.map(r => r.monto_total);
+    } else if(data[0].Fecha) {
+        labels = data.map(r => r.Fecha);
+        valores = data.map(r => r.Total ?? r.Monto_Total ?? 0);
+    } else {
+        labels = data.map((_,i) => i+1);
+        valores = data.map(r => r.Total ?? r.Monto_Total ?? 0);
+    }
+    new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Monto', data: valores, backgroundColor: '#007bff' }] },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+}
+</script>
+</body>
+</html>
