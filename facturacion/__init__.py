@@ -1,1 +1,0 @@
-# Inicializador del módulo facturación

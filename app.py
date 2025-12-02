@@ -147,21 +147,6 @@ def create_app():
     
     app.register_blueprint(analytics_bp)
     logger.info("Blueprint 'analytics_bp' registrado en /api/analytics")
-    
-    from analisis_venta.periodos import analisis_venta_bp
-    app.register_blueprint(analisis_venta_bp, url_prefix='/analisis_venta')
-    logger.info("Blueprint 'analisis_venta_bp' registrado en /analisis_venta")
-
-    # Registrar el blueprint de facturación
-    from facturacion.periodos import bp_facturacion
-    app.register_blueprint(bp_facturacion, url_prefix='/facturacion')
-    logger.info("Blueprint 'bp_facturacion' registrado en /facturacion")
-
-    # Registrar el dashboard de administración
-    from admin.views import admin_bp
-    app.register_blueprint(admin_bp)
-    logger.info("Blueprint 'admin_bp' registrado en /admin")
-
 
     return app
 
@@ -182,9 +167,6 @@ if __name__ == '__main__':
     logger.info("  - /odoo/* - API de Odoo")
     logger.info("  - /datalake/* - API de Datalake")
     logger.info("  - /api/analytics/* - API de Analytics ETL")
-    logger.info("  - /analisis_venta/* - API de Análisis de Venta")
-    logger.info("  - /facturacion/* - API de Facturación")
-    logger.info("  - /admin - Dashboard de Administración")
     logger.info("- Logs guardados en: logs/app.log y logs/requests.log")
     logger.info("=" * 50)
     
