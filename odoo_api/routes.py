@@ -2,21 +2,17 @@ import xmlrpc.client
 from flask import Blueprint, jsonify, request, send_file
 import base64
 from dotenv import load_dotenv
-from pathlib import Path
 import os
 from io import BytesIO
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
 
-# Cargar las variables de entorno desde el archivo .env del módulo (sin sobreescribir variables ya definidas)
-_dotenv_path = Path(__file__).with_name('.env')
-load_dotenv(dotenv_path=_dotenv_path, override=False)
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 # Obtener las variables de entorno
-url = os.getenv('ODOO_URL') or ''
-# Normalizar para evitar '//' al construir endpoints XML-RPC
-url = url.rstrip('/')
+url = os.getenv('ODOO_URL')
 db = os.getenv('ODOO_DB')
 username = os.getenv('ODOO_USERNAME')
 password = os.getenv('ODOO_PASSWORD')
@@ -102,7 +98,7 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_fecha_de_entrega', 'np_rpt_base_price', 'np_mo_price_unit', 'source_currency_id',
                 'np_rate_currency', 'discount', 'tax_id', 'price_subtotal', 
                 'discount', 'np_original_discount',
-                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit'
+                'np_rpt_flete_unitario', 'np_product_sku', 'source_currency_id', 'np_sei_cdp', 'np_has_discount', 'np_rpt_price_unit', 'price_unit', 'freight_cost_origin_currency'
 
             ]
 

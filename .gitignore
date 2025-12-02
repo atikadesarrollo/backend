@@ -1,36 +1,33 @@
-########################
-# Entornos / dependencias
-########################
-.venv/
-venv/
-env/
-ENV/
-
-########################
-# Secretos / configuración local
-#TEST
-########################
 .env
-**/.env
-*.env
+.venv
+venv
+.pyc
+.pyo
+.pyd
 
-########################
-# Python: bytecode y cachés
-########################
-__pycache__/
-*.py[cod]
-*.pyd
-*.pyo
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+odoo_api/__pycache__/__init__.cpython-313.pyc
+odoo_api/__pycache__/routes.cpython-313.pyc
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+odoo_api/__pycache__/__init__.cpython-313.pyc
+odoo_api/__pycache__/routes.cpython-313.pyc
+odoo_api/__pycache__/routes.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+/datalake_api/__pycache__
+logs/app.log
+etl_pipeline.log
+ETL/__pycache__/config.cpython-313.pyc
+ETL/__pycache__/__init__.cpython-313.pyc
+ETL/__pycache__/database_connection.cpython-313.pyc
+ETL/__pycache__/pipeline.cpython-313.pyc
+ETL/__pycache__/utils.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc
 
-########################
-# Logs / artefactos de runtime
-########################
-logs/
-*.log
-
-########################
-# SO/Editor
-########################
-.DS_Store
-Thumbs.db
-.vscode/
+logs/requests.log
+admin/__pycache__/views.cpython-313.pyc
+analisis_venta/__pycache__/periodos.cpython-313.pyc
+datalake_api/__pycache__/__init__.cpython-313.pyc
+datalake_api/__pycache__/routes.cpython-313.pyc

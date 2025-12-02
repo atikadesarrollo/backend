@@ -181,7 +181,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[RUT Cliente] as 'RUT_Cliente'
                 ,[Cliente]
                 ,[Fecha creación cliente] as 'Fecha_creacion_cliente' 
-                -- ,[Categoria cliente] as ''
+                ,[Categoria cliente] as 'Categoria_cliente'
                 ,[Canal]
                 ,[Departamento]
                 ,[Vendedor]
@@ -192,6 +192,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Descipción] as 'Descripcion'
                 ,[Unidad de medida] as 'Unidad_Medida'
                 ,[Inventariable]
+                ,[Grupo de Articulos]
                 ,[Rubro]
                 ,[Formato]
                 ,[Marca]
@@ -231,8 +232,12 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                 ,[Especificador Inmobiliario] as 'Especificador_inmobiliario' 
                 ,[Email Esp Inmobiliario] as 'Email_esp_In'
+                ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
+                ,[Origen]
                 FROM DL_Analisis_Venta_v 
                 WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+                AND [RUT Cliente] != '1-9'
+                --ordenar por fecha de oferta mayor a menor
                 ORDER BY [Fecha de oferta] DESC
             """
             cursor.execute(query, start_date, end_date)
@@ -394,6 +399,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Descripcion]
                     ,[Unidad de medida] as 'Unidad_medida'
                     ,[Inventariable]
+                    ,[Grupo de Articulos]
                     ,[Rubro]
                     ,[Familia]
                     ,[Formato]
@@ -435,6 +441,8 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                     ,[Especificador Inmobiliario] as 'Especificador_inmobiliario'
                     ,[Email Esp Inmobiliario] as 'Email_esp_In'
+                    ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
+                    ,[Origen]
                 FROM DL_Facturacion_v 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
