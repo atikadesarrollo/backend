@@ -192,7 +192,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Descipción] as 'Descripcion'
                 ,[Unidad de medida] as 'Unidad_Medida'
                 ,[Inventariable]
-                ,[Grupo de Articulos]
+                ,[Grupo de Articulos] as 'Grupo_articulos'
                 ,[Rubro]
                 ,[Formato]
                 ,[Marca]
@@ -399,7 +399,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Descripcion]
                     ,[Unidad de medida] as 'Unidad_medida'
                     ,[Inventariable]
-                    ,[Grupo de Articulos]
+                    ,[Grupo de Articulos] as 'Grupo_articulos'
                     ,[Rubro]
                     ,[Familia]
                     ,[Formato]
