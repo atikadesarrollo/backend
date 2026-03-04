@@ -100,6 +100,28 @@ def get_sales_analysis_2025_grouped(odoo_client):
     }
 
 
+def get_sales_order_lines_2025_raw(odoo_client):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    rows = odoo_client.execute_kw(
+        "sale.order.line",
+        "search_read",
+        [domain],
+        {"limit": False}
+    )
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
 def build_sales_analysis_2025_grouped_csv(data_rows):
     output = StringIO()
     writer = csv.writer(output)
@@ -152,7 +174,7 @@ def build_sales_analysis_2025_grouped_xlsx(data_rows):
 def sales_analysis_2025_grouped_endpoint():
     try:
         odoo_client = get_odoo_client()
-        response = get_sales_analysis_2025_grouped(odoo_client)
+        response = get_sales_order_lines_2025_raw(odoo_client)
 
         export_format = request.args.get('format', 'xlsx').lower()
         if export_format == 'xlsx':
