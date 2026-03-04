@@ -317,39 +317,88 @@ def run_december_2025_export_job(job_id, export_format, limit=None, batch_size=1
             })
 
 
-def normalize_excel_value(value):
-    if isinstance(value, (list, tuple)):
-        if len(value) >= 2:
-            return str(value[1])
-        if len(value) == 1:
-            return str(value[0])
-        return ""
-    if value is None:
-        return ""
-    return value
+ANALISIS_VENTA_EXPORT_FIELDS = [
+    "np_canal",
+    "qty_delivered",
+    "qty_invoiced",
+    "np_sei_cdp",
+    "order_partner_id/name",
+    "np_sei_cotfin",
+    "product_uom_qty",
+    "np_departamento",
+    "name",
+    "discount",
+    "np_original_discount",
+    "np_docnum_oferta",
+    "np_ov_docnum_ref/name",
+    "categ_id/name",
+    "np_date_order",
+    "source_currency_id/name",
+    "project_id/name",
+    "order_id/client_order_ref",
+    "np_rpt_discount",
+    "np_rpt_flete_unitario",
+    "np_rpt_flete_unitario_mo",
+    "np_rpt_base_price",
+    "np_rpt_price_unit",
+    "np_rpt_subtotal",
+    "np_rpt_total",
+    "order_partner_id/vat",
+    "np_product_sku",
+    "np_rate_currency",
+    "np_tipo_despacho",
+    "np_total_discount_promotion",
+    "salesman_id/name",
+    "np_venta_anticipada",
+    "analytic_line_ids/account_id",
+    "analytic_line_ids/amount",
+    "analytic_line_ids/project_id",
+]
+
+ANALISIS_VENTA_HEADERS = [
+    "Canal",
+    "Cantidad de entrega",
+    "Cantidad Facturada",
+    "CDP",
+    "Cliente",
+    "Cotización Final",
+    "Ctd. de producto",
+    "Departamento",
+    "Descripción",
+    "Descuento (%)",
+    "Descuento original",
+    "Docnum Oferta",
+    "Docnum OV",
+    "Familia",
+    "Fecha de pedido",
+    "Moneda origen",
+    "Proyecto",
+    "Referencia de pedido",
+    "RPT Descuento",
+    "RPT Flete Unitario",
+    "RPT Flete Unitario MO",
+    "RPT Precio Base",
+    "RPT Precio Unitario",
+    "RPT Subtotal",
+    "RPT Total",
+    "RUT Cliente",
+    "SKU",
+    "Tasa de Cambio",
+    "Tipo Despacho",
+    "Total descuento + promoción",
+    "Vendedor",
+    "Venta Anticipada",
+    "Líneas analíticas/Cuenta analítica",
+    "Líneas analíticas/Importe",
+    "Líneas analíticas/Project",
+]
 
 
-def build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000):
+def build_december_2025_xlsx_using_export(odoo_client, batch_size=1000):
     domain = [
         ("np_date_order", ">=", "2025-12-01 00:00:00"),
         ("np_date_order", "<", "2026-01-01 00:00:00"),
         ("state", "=", "sale"),
-    ]
-
-    fields = [
-        "id",
-        "order_id",
-        "np_ov_docnum_ref",
-        "np_date_order",
-        "state",
-        "product_id",
-        "name",
-        "product_uom_qty",
-        "qty_delivered",
-        "qty_invoiced",
-        "price_unit",
-        "discount",
-        "price_subtotal",
     ]
 
     record_ids = odoo_client.execute_kw(
@@ -360,23 +409,25 @@ def build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000):
     )
 
     workbook = Workbook(write_only=True)
-    worksheet = workbook.create_sheet(title='diciembre_2025')
-    worksheet.append(fields)
+    worksheet = workbook.create_sheet(title='Analisis_Venta_Dic2025')
+    worksheet.append(ANALISIS_VENTA_HEADERS)
 
     for start in range(0, len(record_ids), batch_size):
         batch_ids = record_ids[start:start + batch_size]
-        batch_rows = odoo_client.execute_kw(
+
+        export_result = odoo_client.execute_kw(
             "sale.order.line",
-            "read",
-            [batch_ids],
-            {"fields": fields}
+            "export_data",
+            [batch_ids, ANALISIS_VENTA_EXPORT_FIELDS],
+            {}
         )
 
-        for row in batch_rows:
-            worksheet.append([normalize_excel_value(row.get(field)) for field in fields])
+        rows = export_result.get("datas", [])
+        for row in rows:
+            worksheet.append(row)
 
     timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-    filename = f"sales_order_line_december_2025_{timestamp}.xlsx"
+    filename = f"analisis_venta_diciembre_2025_{timestamp}.xlsx"
     file_path = os.path.join(EXPORT_BASE_DIR, f"{uuid.uuid4()}_{filename}")
     workbook.save(file_path)
 
@@ -387,7 +438,7 @@ def build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000):
 def sales_analysis_2025_grouped_endpoint():
     try:
         odoo_client = get_odoo_client()
-        file_path, filename = build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000)
+        file_path, filename = build_december_2025_xlsx_using_export(odoo_client, batch_size=500)
         return send_file(
             file_path,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
