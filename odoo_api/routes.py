@@ -1,9 +1,12 @@
 import xmlrpc.client
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request, send_file, Response
 import base64
 from dotenv import load_dotenv
 import os
-from io import BytesIO
+from io import BytesIO, StringIO
+from datetime import datetime
+import csv
+import pandas as pd
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
@@ -16,6 +19,168 @@ url = os.getenv('ODOO_URL')
 db = os.getenv('ODOO_DB')
 username = os.getenv('ODOO_USERNAME')
 password = os.getenv('ODOO_PASSWORD')
+
+
+class OdooServiceClient:
+    def __init__(self, models_proxy, uid):
+        self.models_proxy = models_proxy
+        self.uid = uid
+
+    def execute_kw(self, model, method, args=None, kwargs=None):
+        if args is None:
+            args = []
+        if kwargs is None:
+            kwargs = {}
+
+        return self.models_proxy.execute_kw(
+            db,
+            self.uid,
+            password,
+            model,
+            method,
+            args,
+            kwargs
+        )
+
+
+def get_odoo_client():
+    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+    uid = common.authenticate(db, username, password, {})
+
+    if not uid:
+        raise Exception("No se pudo autenticar en Odoo")
+
+    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+    return OdooServiceClient(models, uid)
+
+
+def get_sales_analysis_2025_grouped(odoo_client):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<",  "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "np_ov_docnum_ref",
+        "price_subtotal:sum",
+        "product_uom_qty:sum",
+        "qty_delivered:sum",
+        "qty_invoiced:sum",
+        "__count",
+    ]
+    groupby = ["np_ov_docnum_ref"]
+
+    rows = odoo_client.execute_kw(
+        "sale.order.line",
+        "read_group",
+        [domain, fields, groupby],
+        {"lazy": False}
+    )
+
+    result = []
+    for row in rows:
+        ref_value = row.get("np_ov_docnum_ref")
+        ref_name = ref_value[1] if isinstance(ref_value, (list, tuple)) and len(ref_value) > 1 else "Sin referencia"
+
+        result.append({
+            "pedido_referencia": ref_name,
+            "lineas": row.get("__count", 0),
+            "subtotal_sum": row.get("price_subtotal_sum", 0.0),
+            "qty_sum": row.get("product_uom_qty_sum", 0.0),
+            "qty_delivered_sum": row.get("qty_delivered_sum", 0.0),
+            "qty_invoiced_sum": row.get("qty_invoiced_sum", 0.0),
+        })
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_groups": len(result),
+        "data": result,
+    }
+
+
+def build_sales_analysis_2025_grouped_csv(data_rows):
+    output = StringIO()
+    writer = csv.writer(output)
+
+    headers = [
+        "pedido_referencia",
+        "lineas",
+        "subtotal_sum",
+        "qty_sum",
+        "qty_delivered_sum",
+        "qty_invoiced_sum",
+    ]
+
+    writer.writerow(headers)
+    for row in data_rows:
+        writer.writerow([
+            row.get("pedido_referencia", ""),
+            row.get("lineas", 0),
+            row.get("subtotal_sum", 0.0),
+            row.get("qty_sum", 0.0),
+            row.get("qty_delivered_sum", 0.0),
+            row.get("qty_invoiced_sum", 0.0),
+        ])
+
+    return output.getvalue()
+
+
+def build_sales_analysis_2025_grouped_xlsx(data_rows):
+    dataframe = pd.DataFrame(data_rows)
+
+    if dataframe.empty:
+        dataframe = pd.DataFrame(columns=[
+            "pedido_referencia",
+            "lineas",
+            "subtotal_sum",
+            "qty_sum",
+            "qty_delivered_sum",
+            "qty_invoiced_sum",
+        ])
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        dataframe.to_excel(writer, index=False, sheet_name='sales_analysis_2025')
+
+    output.seek(0)
+    return output
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/grouped', methods=['GET'])
+def sales_analysis_2025_grouped_endpoint():
+    try:
+        odoo_client = get_odoo_client()
+        response = get_sales_analysis_2025_grouped(odoo_client)
+
+        export_format = request.args.get('format', 'xlsx').lower()
+        if export_format == 'xlsx':
+            xlsx_file = build_sales_analysis_2025_grouped_xlsx(response.get("data", []))
+            filename = f"sales_analysis_2025_grouped_{datetime.utcnow().strftime('%Y-%m-%d')}.xlsx"
+
+            return send_file(
+                xlsx_file,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name=filename
+            )
+
+        if export_format == 'csv':
+            csv_content = build_sales_analysis_2025_grouped_csv(response.get("data", []))
+            filename = f"sales_analysis_2025_grouped_{datetime.utcnow().strftime('%Y-%m-%d')}.csv"
+
+            return Response(
+                "\ufeff" + csv_content,
+                mimetype='text/csv; charset=utf-8',
+                headers={
+                    'Content-Disposition': f'attachment; filename={filename}'
+                }
+            )
+
+        return jsonify(response)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @odoo_bp.route('/sale_orders/date/<string:date_range>', methods=['GET'])
 @odoo_bp.route('/sale_orders/<string:order_names>', methods=['GET'])
