@@ -6,7 +6,10 @@ import os
 from io import BytesIO, StringIO
 from datetime import datetime
 import csv
-import pandas as pd
+from openpyxl import Workbook
+import threading
+import tempfile
+import uuid
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
@@ -19,6 +22,11 @@ url = os.getenv('ODOO_URL')
 db = os.getenv('ODOO_DB')
 username = os.getenv('ODOO_USERNAME')
 password = os.getenv('ODOO_PASSWORD')
+
+EXPORT_JOBS = {}
+EXPORT_JOBS_LOCK = threading.Lock()
+EXPORT_BASE_DIR = os.path.join(tempfile.gettempdir(), 'atika_odoo_exports')
+os.makedirs(EXPORT_BASE_DIR, exist_ok=True)
 
 
 class OdooServiceClient:
@@ -126,83 +134,368 @@ def build_sales_analysis_2025_grouped_csv(data_rows):
     output = StringIO()
     writer = csv.writer(output)
 
-    headers = [
-        "pedido_referencia",
-        "lineas",
-        "subtotal_sum",
-        "qty_sum",
-        "qty_delivered_sum",
-        "qty_invoiced_sum",
-    ]
+    if not data_rows:
+        return output.getvalue()
 
+    headers = list(data_rows[0].keys())
     writer.writerow(headers)
     for row in data_rows:
-        writer.writerow([
-            row.get("pedido_referencia", ""),
-            row.get("lineas", 0),
-            row.get("subtotal_sum", 0.0),
-            row.get("qty_sum", 0.0),
-            row.get("qty_delivered_sum", 0.0),
-            row.get("qty_invoiced_sum", 0.0),
-        ])
+        writer.writerow([str(row.get(header, "")) for header in headers])
 
     return output.getvalue()
 
 
 def build_sales_analysis_2025_grouped_xlsx(data_rows):
-    dataframe = pd.DataFrame(data_rows)
+    workbook = Workbook(write_only=True)
+    worksheet = workbook.create_sheet(title='sales_analysis_2025')
 
-    if dataframe.empty:
-        dataframe = pd.DataFrame(columns=[
-            "pedido_referencia",
-            "lineas",
-            "subtotal_sum",
-            "qty_sum",
-            "qty_delivered_sum",
-            "qty_invoiced_sum",
-        ])
+    if data_rows:
+        headers = list(data_rows[0].keys())
+        worksheet.append(headers)
+        for row in data_rows:
+            worksheet.append([str(row.get(header, "")) for header in headers])
 
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        dataframe.to_excel(writer, index=False, sheet_name='sales_analysis_2025')
-
+    workbook.save(output)
     output.seek(0)
     return output
+
+
+def get_sales_order_lines_2025_raw_batched(odoo_client, limit=None, batch_size=1000):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "id",
+        "order_id",
+        "np_ov_docnum_ref",
+        "np_date_order",
+        "state",
+        "product_id",
+        "name",
+        "product_uom_qty",
+        "qty_delivered",
+        "qty_invoiced",
+        "price_unit",
+        "discount",
+        "price_subtotal",
+    ]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    if limit and limit > 0:
+        record_ids = record_ids[:limit]
+
+    rows = []
+    if record_ids:
+        for start in range(0, len(record_ids), batch_size):
+            batch_ids = record_ids[start:start + batch_size]
+            batch_rows = odoo_client.execute_kw(
+                "sale.order.line",
+                "read",
+                [batch_ids],
+                {"fields": fields}
+            )
+            rows.extend(batch_rows)
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
+def get_sales_order_lines_raw_batched_by_range(odoo_client, date_start, date_end, limit=None, batch_size=1000):
+    domain = [
+        ("np_date_order", ">=", date_start),
+        ("np_date_order", "<", date_end),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "id",
+        "order_id",
+        "np_ov_docnum_ref",
+        "np_date_order",
+        "state",
+        "product_id",
+        "name",
+        "product_uom_qty",
+        "qty_delivered",
+        "qty_invoiced",
+        "price_unit",
+        "discount",
+        "price_subtotal",
+    ]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    if limit and limit > 0:
+        record_ids = record_ids[:limit]
+
+    rows = []
+    if record_ids:
+        for start in range(0, len(record_ids), batch_size):
+            batch_ids = record_ids[start:start + batch_size]
+            batch_rows = odoo_client.execute_kw(
+                "sale.order.line",
+                "read",
+                [batch_ids],
+                {"fields": fields}
+            )
+            rows.extend(batch_rows)
+
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
+def run_december_2025_export_job(job_id, export_format, limit=None, batch_size=1000):
+    try:
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id]["status"] = "processing"
+            EXPORT_JOBS[job_id]["started_at"] = datetime.utcnow().isoformat() + "Z"
+
+        odoo_client = get_odoo_client()
+        payload = get_sales_order_lines_raw_batched_by_range(
+            odoo_client,
+            "2025-12-01 00:00:00",
+            "2026-01-01 00:00:00",
+            limit=limit,
+            batch_size=batch_size
+        )
+
+        rows = payload.get("data", [])
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+
+        if export_format == 'csv':
+            filename = f"sales_order_line_december_2025_{timestamp}.csv"
+            file_path = os.path.join(EXPORT_BASE_DIR, f"{job_id}_{filename}")
+            csv_content = build_sales_analysis_2025_grouped_csv(rows)
+            with open(file_path, 'w', encoding='utf-8-sig', newline='') as file_obj:
+                file_obj.write(csv_content)
+            mimetype = 'text/csv; charset=utf-8'
+        else:
+            filename = f"sales_order_line_december_2025_{timestamp}.xlsx"
+            file_path = os.path.join(EXPORT_BASE_DIR, f"{job_id}_{filename}")
+            xlsx_stream = build_sales_analysis_2025_grouped_xlsx(rows)
+            with open(file_path, 'wb') as file_obj:
+                file_obj.write(xlsx_stream.getvalue())
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id].update({
+                "status": "completed",
+                "completed_at": datetime.utcnow().isoformat() + "Z",
+                "total_records": payload.get("total_records", 0),
+                "file_path": file_path,
+                "filename": filename,
+                "mimetype": mimetype
+            })
+    except Exception as exc:
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id].update({
+                "status": "failed",
+                "completed_at": datetime.utcnow().isoformat() + "Z",
+                "error": str(exc)
+            })
+
+
+def normalize_excel_value(value):
+    if isinstance(value, (list, tuple)):
+        if len(value) >= 2:
+            return str(value[1])
+        if len(value) == 1:
+            return str(value[0])
+        return ""
+    if value is None:
+        return ""
+    return value
+
+
+def build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000):
+    domain = [
+        ("np_date_order", ">=", "2025-12-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "id",
+        "order_id",
+        "np_ov_docnum_ref",
+        "np_date_order",
+        "state",
+        "product_id",
+        "name",
+        "product_uom_qty",
+        "qty_delivered",
+        "qty_invoiced",
+        "price_unit",
+        "discount",
+        "price_subtotal",
+    ]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    workbook = Workbook(write_only=True)
+    worksheet = workbook.create_sheet(title='diciembre_2025')
+    worksheet.append(fields)
+
+    for start in range(0, len(record_ids), batch_size):
+        batch_ids = record_ids[start:start + batch_size]
+        batch_rows = odoo_client.execute_kw(
+            "sale.order.line",
+            "read",
+            [batch_ids],
+            {"fields": fields}
+        )
+
+        for row in batch_rows:
+            worksheet.append([normalize_excel_value(row.get(field)) for field in fields])
+
+    timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+    filename = f"sales_order_line_december_2025_{timestamp}.xlsx"
+    file_path = os.path.join(EXPORT_BASE_DIR, f"{uuid.uuid4()}_{filename}")
+    workbook.save(file_path)
+
+    return file_path, filename
 
 
 @odoo_bp.route('/reports/sales-analysis/2025/grouped', methods=['GET'])
 def sales_analysis_2025_grouped_endpoint():
     try:
         odoo_client = get_odoo_client()
-        response = get_sales_order_lines_2025_raw(odoo_client)
-
-        export_format = request.args.get('format', 'xlsx').lower()
-        if export_format == 'xlsx':
-            xlsx_file = build_sales_analysis_2025_grouped_xlsx(response.get("data", []))
-            filename = f"sales_analysis_2025_grouped_{datetime.utcnow().strftime('%Y-%m-%d')}.xlsx"
-
-            return send_file(
-                xlsx_file,
-                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                as_attachment=True,
-                download_name=filename
-            )
-
-        if export_format == 'csv':
-            csv_content = build_sales_analysis_2025_grouped_csv(response.get("data", []))
-            filename = f"sales_analysis_2025_grouped_{datetime.utcnow().strftime('%Y-%m-%d')}.csv"
-
-            return Response(
-                "\ufeff" + csv_content,
-                mimetype='text/csv; charset=utf-8',
-                headers={
-                    'Content-Disposition': f'attachment; filename={filename}'
-                }
-            )
-
-        return jsonify(response)
+        file_path, filename = build_december_2025_xlsx_file_batched(odoo_client, batch_size=1000)
+        return send_file(
+            file_path,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=filename
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/start', methods=['POST', 'GET'])
+def start_december_2025_async_export():
+    try:
+        export_format = request.args.get('format', 'xlsx').lower()
+        if export_format not in ['xlsx', 'csv']:
+            return jsonify({"error": "Formato inválido. Usa format=xlsx o format=csv"}), 400
+
+        limit = request.args.get('limit', type=int)
+        batch_size = request.args.get('batch_size', default=1000, type=int)
+        if not batch_size or batch_size <= 0:
+            batch_size = 1000
+        if batch_size > 5000:
+            batch_size = 5000
+
+        job_id = str(uuid.uuid4())
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id] = {
+                "job_id": job_id,
+                "status": "queued",
+                "created_at": datetime.utcnow().isoformat() + "Z",
+                "format": export_format,
+                "limit": limit,
+                "batch_size": batch_size,
+                "period": "2025-12"
+            }
+
+        worker = threading.Thread(
+            target=run_december_2025_export_job,
+            args=(job_id, export_format, limit, batch_size),
+            daemon=True
+        )
+        worker.start()
+
+        base_path = '/odoo/reports/sales-analysis/2025/december/export-async'
+        return jsonify({
+            "message": "Exportación en proceso",
+            "job_id": job_id,
+            "status": "queued",
+            "period": "2025-12",
+            "status_url": f"{base_path}/status/{job_id}",
+            "download_url": f"{base_path}/download/{job_id}"
+        }), 202
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/status/<string:job_id>', methods=['GET'])
+def get_december_2025_async_export_status(job_id):
+    with EXPORT_JOBS_LOCK:
+        job = EXPORT_JOBS.get(job_id)
+
+    if not job:
+        return jsonify({"error": "Job no encontrado"}), 404
+
+    response = {
+        "job_id": job.get("job_id"),
+        "status": job.get("status"),
+        "period": job.get("period"),
+        "format": job.get("format"),
+        "created_at": job.get("created_at"),
+        "started_at": job.get("started_at"),
+        "completed_at": job.get("completed_at"),
+        "total_records": job.get("total_records")
+    }
+
+    if job.get("status") == "failed":
+        response["error"] = job.get("error")
+
+    if job.get("status") == "completed":
+        response["download_url"] = f"/odoo/reports/sales-analysis/2025/december/export-async/download/{job_id}"
+
+    return jsonify(response), 200
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/download/<string:job_id>', methods=['GET'])
+def download_december_2025_async_export(job_id):
+    with EXPORT_JOBS_LOCK:
+        job = EXPORT_JOBS.get(job_id)
+
+    if not job:
+        return jsonify({"error": "Job no encontrado"}), 404
+
+    if job.get("status") != "completed":
+        return jsonify({
+            "error": "El archivo aún no está disponible",
+            "status": job.get("status")
+        }), 409
+
+    file_path = job.get("file_path")
+    if not file_path or not os.path.exists(file_path):
+        return jsonify({"error": "Archivo no encontrado en servidor"}), 404
+
+    return send_file(
+        file_path,
+        mimetype=job.get("mimetype"),
+        as_attachment=True,
+        download_name=job.get("filename")
+    )
 
 @odoo_bp.route('/sale_orders/date/<string:date_range>', methods=['GET'])
 @odoo_bp.route('/sale_orders/<string:order_names>', methods=['GET'])
