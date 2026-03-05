@@ -394,12 +394,30 @@ ANALISIS_VENTA_HEADERS = [
 ]
 
 
-def build_december_2025_xlsx_using_export(odoo_client, batch_size=1000):
+def build_december_2025_xlsx_using_export(odoo_client, batch_size=500):
     domain = [
         ("np_date_order", ">=", "2025-12-01 00:00:00"),
         ("np_date_order", "<", "2026-01-01 00:00:00"),
         ("state", "=", "sale"),
     ]
+
+    # Obtener campos disponibles del modelo
+    fields_info = odoo_client.execute_kw(
+        "sale.order.line",
+        "fields_get",
+        [],
+        {"attributes": ["string", "type"]}
+    )
+    
+    # Solo campos simples (no one2many, many2many que dan problemas)
+    excluded_types = ["one2many", "many2many", "binary"]
+    export_fields = [
+        field for field, info in fields_info.items()
+        if info.get("type") not in excluded_types
+    ]
+    
+    # Headers con nombres legibles
+    headers = [fields_info[f].get("string", f) for f in export_fields]
 
     record_ids = odoo_client.execute_kw(
         "sale.order.line",
@@ -410,21 +428,31 @@ def build_december_2025_xlsx_using_export(odoo_client, batch_size=1000):
 
     workbook = Workbook(write_only=True)
     worksheet = workbook.create_sheet(title='Analisis_Venta_Dic2025')
-    worksheet.append(ANALISIS_VENTA_HEADERS)
+    worksheet.append(headers)
 
     for start in range(0, len(record_ids), batch_size):
         batch_ids = record_ids[start:start + batch_size]
 
-        export_result = odoo_client.execute_kw(
+        batch_rows = odoo_client.execute_kw(
             "sale.order.line",
-            "export_data",
-            [batch_ids, ANALISIS_VENTA_EXPORT_FIELDS],
-            {}
+            "read",
+            [batch_ids],
+            {"fields": export_fields}
         )
 
-        rows = export_result.get("datas", [])
-        for row in rows:
-            worksheet.append(row)
+        for row in batch_rows:
+            values = []
+            for field in export_fields:
+                val = row.get(field)
+                if isinstance(val, (list, tuple)) and len(val) >= 2:
+                    values.append(str(val[1]))
+                elif isinstance(val, (list, tuple)) and len(val) == 1:
+                    values.append(str(val[0]))
+                elif val is None or val is False:
+                    values.append("")
+                else:
+                    values.append(val)
+            worksheet.append(values)
 
     timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
     filename = f"analisis_venta_diciembre_2025_{timestamp}.xlsx"
@@ -1041,10 +1069,23 @@ def get_latest_projects_info(date_range=None):
             
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
-            sale_orders = models.execute_kw(db, uid, password,
+            project_ids_set = set(project_ids)  # Para búsqueda más rápida
+            
+            # Buscar órdenes de venta que tengan project_id asociado (no nulo)
+            all_sale_orders = models.execute_kw(db, uid, password,
                 'sale.order', 'search_read',
-                [[('project_id', 'in', project_ids), ('state', '!=', 'cancel')]],
+                [[('project_id', '!=', False)]],
                 {'fields': ['name', 'state', 'project_id', 'amount_total', 'user_id']})
+            
+            total_orders_with_project = len(all_sale_orders)
+            
+            # Filtrar las órdenes que pertenecen a los proyectos consultados y no estén canceladas
+            sale_orders = []
+            for order in all_sale_orders:
+                order_project_id = order.get('project_id')
+                if order_project_id and isinstance(order_project_id, (list, tuple)):
+                    if order_project_id[0] in project_ids_set and order.get('state') != 'cancel':
+                        sale_orders.append(order)
             
             # Obtener los department_id de los user_id asociados a las sale_orders
             sale_order_user_ids = [order['user_id'][0] for order in sale_orders if order.get('user_id')]
@@ -1066,18 +1107,21 @@ def get_latest_projects_info(date_range=None):
             # Crear un diccionario para mapear project_id a sus órdenes de venta
             project_to_sale_orders = {}
             for order in sale_orders:
-                project_id = order['project_id'][0]
+                # Validar que project_id existe y es una tupla/lista válida
+                order_project_id = order.get('project_id')
+                if not order_project_id or not isinstance(order_project_id, (list, tuple)):
+                    continue
+                project_id = order_project_id[0]
                 if project_id not in project_to_sale_orders:
                     project_to_sale_orders[project_id] = []
                 # Decorar los datos internos de las órdenes de venta
                 formatted_order = {
                     'Orden': order.get('name', ''),
                     'Estado': order.get('state', ''),
-                    'Codigo_Proyecto': order.get('project_id', [])[1] if order.get('project_id') else '',
+                    'Codigo_Proyecto': order_project_id[1] if len(order_project_id) > 1 else '',
                     'Monto_Total': order.get('amount_total', ''),
                     'Usuario': order.get('user_id', [])[1] if order.get('user_id') else '',
                     'Departamento_Vendedor': order.get('department_id', '')
-
                 }
                 project_to_sale_orders[project_id].append(formatted_order)
 
@@ -1115,7 +1159,16 @@ def get_latest_projects_info(date_range=None):
                 }
                 formatted_projects.append(formatted_project)
 
-            return jsonify({"projects": formatted_projects})
+            return jsonify({
+                "projects": formatted_projects,
+                "_debug": {
+                    "total_projects": len(projects),
+                    "total_orders_with_project_id": total_orders_with_project,
+                    "total_sale_orders_matched": len(sale_orders),
+                    "projects_with_orders": len(project_to_sale_orders),
+                    "sample_project_ids": project_ids[:5] if project_ids else []
+                }
+            })
         else:
             return jsonify({"error": "No se encontraron proyectos"}), 404
     except Exception as e:
