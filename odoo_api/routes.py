@@ -1174,6 +1174,86 @@ def get_latest_projects_info(date_range=None):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@odoo_bp.route('/diagnostico_campos', methods=['GET'])
+def diagnostico_campos():
+    """
+    Endpoint de diagnóstico para verificar los campos del modelo sale.order
+    y encontrar el campo correcto que relaciona órdenes con proyectos.
+    """
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Obtener todos los campos del modelo sale.order
+        sale_order_fields = models.execute_kw(db, uid, password,
+            'sale.order', 'fields_get',
+            [],
+            {'attributes': ['string', 'type', 'relation']})
+        
+        # Filtrar campos que contengan "project" en el nombre o descripción
+        project_related_fields = {}
+        for field_name, field_info in sale_order_fields.items():
+            field_string = field_info.get('string', '').lower()
+            if 'project' in field_name.lower() or 'project' in field_string or 'proyecto' in field_string:
+                project_related_fields[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation', None)
+                }
+        
+        # Buscar campos many2one que apunten a custom.projects
+        custom_project_fields = {}
+        for field_name, field_info in sale_order_fields.items():
+            if field_info.get('relation') == 'custom.projects':
+                custom_project_fields[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation')
+                }
+        
+        # Obtener una muestra de órdenes de venta con todos los campos relacionados a proyecto
+        sample_fields = ['name', 'state'] + list(project_related_fields.keys()) + list(custom_project_fields.keys())
+        sample_fields = list(set(sample_fields))  # Eliminar duplicados
+        
+        sample_orders = models.execute_kw(db, uid, password,
+            'sale.order', 'search_read',
+            [[]],
+            {'fields': sample_fields, 'limit': 5, 'order': 'id desc'})
+        
+        # Obtener campos del modelo custom.projects también
+        custom_projects_fields = models.execute_kw(db, uid, password,
+            'custom.projects', 'fields_get',
+            [],
+            {'attributes': ['string', 'type', 'relation']})
+        
+        # Buscar campos en custom.projects que relacionen con sale.order
+        sale_order_related_in_projects = {}
+        for field_name, field_info in custom_projects_fields.items():
+            if field_info.get('relation') == 'sale.order' or 'sale' in field_name.lower() or 'order' in field_name.lower():
+                sale_order_related_in_projects[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation', None)
+                }
+        
+        return jsonify({
+            "sale_order": {
+                "campos_con_project": project_related_fields,
+                "campos_apuntando_a_custom_projects": custom_project_fields,
+                "total_campos_modelo": len(sale_order_fields),
+                "muestra_ordenes": sample_orders
+            },
+            "custom_projects": {
+                "campos_relacionados_sale_order": sale_order_related_in_projects,
+                "total_campos_modelo": len(custom_projects_fields)
+            },
+            "recomendacion": "Busca en 'campos_apuntando_a_custom_projects' el nombre correcto del campo"
+        })
+    except Exception as e:
+        import traceback
+        return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
+
 @odoo_bp.route('/ultimo_proyecto', methods=['GET'])
 def obtener_ultimo_proyecto ():
     try:
