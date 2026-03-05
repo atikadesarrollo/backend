@@ -1071,18 +1071,19 @@ def get_latest_projects_info(date_range=None):
             project_ids = [project['id'] for project in projects]
             project_ids_set = set(project_ids)  # Para búsqueda más rápida
             
-            # Buscar órdenes de venta que tengan project_id asociado (no nulo)
+            # Buscar órdenes de venta que tengan custom_project_id asociado (no nulo)
+            # NOTA: El campo cambió de project_id a custom_project_id después del upgrade de Odoo
             all_sale_orders = models.execute_kw(db, uid, password,
                 'sale.order', 'search_read',
-                [[('project_id', '!=', False)]],
-                {'fields': ['name', 'state', 'project_id', 'amount_total', 'user_id']})
+                [[('custom_project_id', '!=', False)]],
+                {'fields': ['name', 'state', 'custom_project_id', 'amount_total', 'user_id']})
             
             total_orders_with_project = len(all_sale_orders)
             
             # Filtrar las órdenes que pertenecen a los proyectos consultados y no estén canceladas
             sale_orders = []
             for order in all_sale_orders:
-                order_project_id = order.get('project_id')
+                order_project_id = order.get('custom_project_id')
                 if order_project_id and isinstance(order_project_id, (list, tuple)):
                     if order_project_id[0] in project_ids_set and order.get('state') != 'cancel':
                         sale_orders.append(order)
@@ -1104,11 +1105,11 @@ def get_latest_projects_info(date_range=None):
                     if user_id:
                         order['department_id'] = sale_order_user_to_department.get(user_id[0], '')
 
-            # Crear un diccionario para mapear project_id a sus órdenes de venta
+            # Crear un diccionario para mapear custom_project_id a sus órdenes de venta
             project_to_sale_orders = {}
             for order in sale_orders:
-                # Validar que project_id existe y es una tupla/lista válida
-                order_project_id = order.get('project_id')
+                # Validar que custom_project_id existe y es una tupla/lista válida
+                order_project_id = order.get('custom_project_id')
                 if not order_project_id or not isinstance(order_project_id, (list, tuple)):
                     continue
                 project_id = order_project_id[0]
