@@ -317,7 +317,7 @@ def get_analisis_venta_fechas_prueba(start_date, end_date):
                 ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                 ,[Especificador Inmobiliario] as 'Especificador_inmobiliario' 
                 ,[Email Esp Inmobiliario] as 'Email_esp_In'
-                FROM TablaPruebaReporteVentas 
+                FROM tablaVentas2024 
                 WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha de oferta] DESC
             """
@@ -485,6 +485,7 @@ def get_facturacion_fechas_prueba(start_date, end_date):
                     ,[Descripcion]
                     ,[Unidad de medida] as 'Unidad_medida'
                     ,[Inventariable]
+                    ,[Grupo de Articulos] as 'Grupo_articulos'
                     ,[Rubro]
                     ,[Familia]
                     ,[Formato]
@@ -526,7 +527,9 @@ def get_facturacion_fechas_prueba(start_date, end_date):
                     ,[Email Esp Arquitectura] as 'Email_esp_Ar'
                     ,[Especificador Inmobiliario] as 'Especificador_inmobiliario'
                     ,[Email Esp Inmobiliario] as 'Email_esp_In'
-                FROM TablaPruebaReporteFacturacion 
+                    ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
+                    ,[Origen]
+                FROM tablaFacturacion2024 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
             """
