@@ -5,7 +5,7 @@
     <title>Ficha Técnica - Template 2</title>
     <style>
       body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
         margin: 0;
         padding: 0;
@@ -68,7 +68,8 @@
         border-collapse: collapse;
         font-size: 0.98em;
       }
-      .extra-table th, .extra-table td {
+      .extra-table th,
+      .extra-table td {
         border: 1px solid #b0b8c1;
         padding: 6px 10px;
       }
@@ -154,14 +155,20 @@
         </tr>
       </table>
       <div class="extra-section">
-        <div style="font-weight:bold; color:#2d3e50; margin-bottom:8px;">Campos Adicionales</div>
+        <div style="font-weight: bold; color: #2d3e50; margin-bottom: 8px">
+          Campos Adicionales
+        </div>
         <table class="extra-table">
           <tr>
             <th>Campo</th>
             <th>Valor</th>
           </tr>
-          {% for key, value in product_np.items() if key.startswith('np_') and key not in [
-            'np_nombre_ecommerce', 'np_descripcion_ecommerce', 'np_clase', 'np_color', 'np_formato_comercial', 'np_espesor', 'np_antideslizante', 'np_trafico', 'np_uso', 'np_garantia', 'np_origen_marca', 'np_capacidad', 'np_medidas', 'np_palmetas_caja', 'np_volume_weight', 'np_variacion_tonal', 'np_garantia_texto'] %}
+          {% for key, value in product_np.items() if key.startswith('np_') and
+          key not in [ 'np_nombre_ecommerce', 'np_descripcion_ecommerce',
+          'np_clase', 'np_color', 'np_formato_comercial', 'np_espesor',
+          'np_antideslizante', 'np_trafico', 'np_uso', 'np_garantia',
+          'np_origen_marca', 'np_capacidad', 'np_medidas', 'np_palmetas_caja',
+          'np_volume_weight', 'np_variacion_tonal', 'np_garantia_texto'] %}
           <tr>
             <td>{{ key }}</td>
             <td>{{ value or '-' }}</td>

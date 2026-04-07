@@ -79,8 +79,19 @@
       <img class="logo" src="{{ logo_url or '' }}" alt="Logo" />
       <div class="title">FICHA TÉCNICA</div>
     </div>
-    <div style="text-align:center; margin: 10px 0 20px 0;">
-      <span style="background:#c00; color:#fff; padding:4px 18px; border-radius:20px; font-size:1.1em; font-weight:bold; letter-spacing:1px;">Template 1</span>
+    <div style="text-align: center; margin: 10px 0 20px 0">
+      <span
+        style="
+          background: #c00;
+          color: #fff;
+          padding: 4px 18px;
+          border-radius: 20px;
+          font-size: 1.1em;
+          font-weight: bold;
+          letter-spacing: 1px;
+        "
+        >Template 1</span
+      >
     </div>
     <div class="serie">{{ np_nombre_ecommerce or np_name or '-' }}</div>
     <table class="main-table">
@@ -159,8 +170,12 @@
         <th>Campo</th>
         <th>Valor</th>
       </tr>
-      {% for key, value in product_np.items() if key.startswith('np_') and key not in [
-        'np_nombre_ecommerce', 'np_descripcion_ecommerce', 'np_clase', 'np_color', 'np_formato_comercial', 'np_espesor', 'np_antideslizante', 'np_trafico', 'np_uso', 'np_garantia', 'np_origen_marca', 'np_capacidad', 'np_medidas', 'np_palmetas_caja', 'np_volume_weight', 'np_variacion_tonal', 'np_garantia_texto'] %}
+      {% for key, value in product_np.items() if key.startswith('np_') and key
+      not in [ 'np_nombre_ecommerce', 'np_descripcion_ecommerce', 'np_clase',
+      'np_color', 'np_formato_comercial', 'np_espesor', 'np_antideslizante',
+      'np_trafico', 'np_uso', 'np_garantia', 'np_origen_marca', 'np_capacidad',
+      'np_medidas', 'np_palmetas_caja', 'np_volume_weight',
+      'np_variacion_tonal', 'np_garantia_texto'] %}
       <tr>
         <td>{{ key }}</td>
         <td>{{ value or '-' }}</td>
