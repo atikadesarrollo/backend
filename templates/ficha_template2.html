@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ficha Técnica - Template 2</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+        margin: 0;
+        padding: 0;
+      }
+      .header2 {
+        background: #2d3e50;
+        color: #fff;
+        padding: 30px 0 10px 0;
+        text-align: center;
+        letter-spacing: 2px;
+        font-size: 2.2em;
+        font-weight: bold;
+        box-shadow: 0 2px 8px #0001;
+      }
+      .template-label {
+        background: #ffb347;
+        color: #222;
+        display: inline-block;
+        padding: 4px 18px;
+        border-radius: 20px;
+        font-size: 1em;
+        margin-top: 10px;
+        margin-bottom: 25px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .main-info {
+        background: #fff;
+        margin: 40px auto 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px #0002;
+        max-width: 700px;
+        padding: 30px 40px 20px 40px;
+      }
+      .main-info-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+      }
+      .main-info-table th {
+        text-align: right;
+        color: #2d3e50;
+        font-weight: 600;
+        width: 35%;
+        padding-right: 18px;
+        font-size: 1.1em;
+      }
+      .main-info-table td {
+        background: #f3f6fa;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 1.1em;
+        color: #222;
+      }
+      .extra-section {
+        margin-top: 35px;
+      }
+      .extra-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.98em;
+      }
+      .extra-table th, .extra-table td {
+        border: 1px solid #b0b8c1;
+        padding: 6px 10px;
+      }
+      .extra-table th {
+        background: #e0e7ef;
+        color: #2d3e50;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header2">Ficha Técnica Producto</div>
+    <div class="template-label">Template 2</div>
+    <div class="main-info">
+      <table class="main-info-table">
+        <tr>
+          <th>Nombre Ecommerce</th>
+          <td>{{ np_nombre_ecommerce or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Descripción Ecommerce</th>
+          <td>{{ np_descripcion_ecommerce or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Clase</th>
+          <td>{{ np_clase or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Color</th>
+          <td>{{ np_color or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Formato Comercial</th>
+          <td>{{ np_formato_comercial or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Espesor</th>
+          <td>{{ np_espesor or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Antideslizante</th>
+          <td>{{ np_antideslizante or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Tráfico</th>
+          <td>{{ np_trafico or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Uso</th>
+          <td>{{ np_uso or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Garantía</th>
+          <td>{{ np_garantia or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Origen Marca</th>
+          <td>{{ np_origen_marca or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Capacidad</th>
+          <td>{{ np_capacidad or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Medidas</th>
+          <td>{{ np_medidas or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Palmetas por Caja</th>
+          <td>{{ np_palmetas_caja or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Volumen (Peso)</th>
+          <td>{{ np_volume_weight or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Variación Tonal</th>
+          <td>{{ np_variacion_tonal or '-' }}</td>
+        </tr>
+        <tr>
+          <th>Garantía Texto</th>
+          <td>{{ np_garantia_texto or '-' }}</td>
+        </tr>
+      </table>
+      <div class="extra-section">
+        <div style="font-weight:bold; color:#2d3e50; margin-bottom:8px;">Campos Adicionales</div>
+        <table class="extra-table">
+          <tr>
+            <th>Campo</th>
+            <th>Valor</th>
+          </tr>
+          {% for key, value in product_np.items() if key.startswith('np_') and key not in [
+            'np_nombre_ecommerce', 'np_descripcion_ecommerce', 'np_clase', 'np_color', 'np_formato_comercial', 'np_espesor', 'np_antideslizante', 'np_trafico', 'np_uso', 'np_garantia', 'np_origen_marca', 'np_capacidad', 'np_medidas', 'np_palmetas_caja', 'np_volume_weight', 'np_variacion_tonal', 'np_garantia_texto'] %}
+          <tr>
+            <td>{{ key }}</td>
+            <td>{{ value or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

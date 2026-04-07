@@ -1,12 +1,16 @@
 .env
 .venv
 venv
-.pyc
-.pyo
-.pyd
 
-datalake_api/__pycache__/__init__.cpython-313.pyc
-datalake_api/__pycache__/routes.cpython-313.pyc
+# Ignorar todos los archivos pyc, pyo, pyd y carpetas __pycache__ en cualquier subdirectorio
+__pycache__/
+*.py[cod]
+**/__pycache__/
+**/*.py[cod]
+
+# Ignorar todos los archivos .log en cualquier carpeta
+*.log
+**/*.log
 odoo_api/__pycache__/__init__.cpython-313.pyc
 odoo_api/__pycache__/routes.cpython-313.pyc
 datalake_api/__pycache__/__init__.cpython-313.pyc

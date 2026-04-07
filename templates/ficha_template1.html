@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ficha Técnica - Template 1</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        padding: 20px 30px 10px 30px;
+        border-bottom: 3px solid #c00;
+      }
+      .logo {
+        height: 60px;
+      }
+      .title {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #222;
+        text-align: right;
+      }
+      .main-table {
+        width: 95%;
+        margin: 20px auto 0 auto;
+        border-collapse: collapse;
+        font-size: 1em;
+      }
+      .main-table th,
+      .main-table td {
+        border: 1px solid #222;
+        padding: 6px 10px;
+        text-align: left;
+      }
+      .main-table th {
+        background: #f2f2f2;
+        font-weight: bold;
+      }
+      .section-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        text-align: center;
+        margin: 25px 0 10px 0;
+        letter-spacing: 1px;
+      }
+      .tech-table {
+        width: 95%;
+        margin: 10px auto 0 auto;
+        border-collapse: collapse;
+        font-size: 0.95em;
+      }
+      .tech-table th,
+      .tech-table td {
+        border: 1px solid #888;
+        padding: 5px 8px;
+        text-align: center;
+      }
+      .tech-table th {
+        background: #e6e6e6;
+        font-weight: bold;
+      }
+      .serie {
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0 10px 0;
+        letter-spacing: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img class="logo" src="{{ logo_url or '' }}" alt="Logo" />
+      <div class="title">FICHA TÉCNICA</div>
+    </div>
+    <div style="text-align:center; margin: 10px 0 20px 0;">
+      <span style="background:#c00; color:#fff; padding:4px 18px; border-radius:20px; font-size:1.1em; font-weight:bold; letter-spacing:1px;">Template 1</span>
+    </div>
+    <div class="serie">{{ np_nombre_ecommerce or np_name or '-' }}</div>
+    <table class="main-table">
+      <tr>
+        <th>CÓDIGO</th>
+        <td>{{ default_code or '-' }}</td>
+      </tr>
+      <tr>
+        <th>DESCRIPCIÓN ECOMMERCE</th>
+        <td>{{ np_descripcion_ecommerce or '-' }}</td>
+      </tr>
+      <tr>
+        <th>CLASE</th>
+        <td>{{ np_clase or '-' }}</td>
+      </tr>
+      <tr>
+        <th>COLOR</th>
+        <td>{{ np_color or '-' }}</td>
+      </tr>
+      <tr>
+        <th>FORMATO COMERCIAL</th>
+        <td>{{ np_formato_comercial or '-' }}</td>
+      </tr>
+      <tr>
+        <th>ESPESOR</th>
+        <td>{{ np_espesor or '-' }}</td>
+      </tr>
+      <tr>
+        <th>ANTIDESLIZANTE</th>
+        <td>{{ np_antideslizante or '-' }}</td>
+      </tr>
+      <tr>
+        <th>TRÁFICO</th>
+        <td>{{ np_trafico or '-' }}</td>
+      </tr>
+      <tr>
+        <th>USO</th>
+        <td>{{ np_uso or '-' }}</td>
+      </tr>
+      <tr>
+        <th>GARANTÍA</th>
+        <td>{{ np_garantia or '-' }}</td>
+      </tr>
+      <tr>
+        <th>ORIGEN MARCA</th>
+        <td>{{ np_origen_marca or '-' }}</td>
+      </tr>
+      <tr>
+        <th>CAPACIDAD</th>
+        <td>{{ np_capacidad or '-' }}</td>
+      </tr>
+      <tr>
+        <th>MEDIDAS</th>
+        <td>{{ np_medidas or '-' }}</td>
+      </tr>
+      <tr>
+        <th>PALMETAS POR CAJA</th>
+        <td>{{ np_palmetas_caja or '-' }}</td>
+      </tr>
+      <tr>
+        <th>VOLUMEN (PESO)</th>
+        <td>{{ np_volume_weight or '-' }}</td>
+      </tr>
+      <tr>
+        <th>VARIACIÓN TONAL</th>
+        <td>{{ np_variacion_tonal or '-' }}</td>
+      </tr>
+      <tr>
+        <th>GARANTÍA TEXTO</th>
+        <td>{{ np_garantia_texto or '-' }}</td>
+      </tr>
+    </table>
+    <div class="section-title">CAMPOS ADICIONALES</div>
+    <table class="tech-table">
+      <tr>
+        <th>Campo</th>
+        <th>Valor</th>
+      </tr>
+      {% for key, value in product_np.items() if key.startswith('np_') and key not in [
+        'np_nombre_ecommerce', 'np_descripcion_ecommerce', 'np_clase', 'np_color', 'np_formato_comercial', 'np_espesor', 'np_antideslizante', 'np_trafico', 'np_uso', 'np_garantia', 'np_origen_marca', 'np_capacidad', 'np_medidas', 'np_palmetas_caja', 'np_volume_weight', 'np_variacion_tonal', 'np_garantia_texto'] %}
+      <tr>
+        <td>{{ key }}</td>
+        <td>{{ value or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <div
+      style="
+        width: 95%;
+        margin: 10px auto 0 auto;
+        font-size: 0.9em;
+        color: #444;
+      "
+    >
+      <!-- Aquí puedes agregar notas adicionales si lo deseas -->
+    </div>
+  </body>
+</html>

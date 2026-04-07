@@ -1,3 +1,5 @@
+from flask import render_template
+import pdfkit
 import xmlrpc.client
 from flask import Blueprint, jsonify, request, send_file, Response
 import base64
@@ -1516,3 +1518,54 @@ def update_factura_refoliar(factura_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# Endpoint para generar ficha técnica de producto en PDF
+@odoo_bp.route('/producto/ficha', methods=['POST'])
+def generar_ficha_producto():
+    data = request.get_json()
+    codigo = data.get('codigo')
+    template = data.get('template', 'template1')
+    if not codigo:
+        return jsonify({'error': 'Falta el código de producto'}), 400
+    try:
+        odoo_client = get_odoo_client()
+        # Solo campos np_ personalizados
+        # Lista original de campos np_ proporcionada
+        np_fields = [
+            'np_accessory_product_ids', 'np_advalorem', 'np_alternative_product_ids', 'np_antideslizante',
+            'np_apto_para_losa_radiante', 'np_apto_para_productos_limpieza', 'np_asiento', 'np_bim', 'np_biselado',
+            'np_capacidad', 'np_clase', 'np_color', 'np_consumo_agua', 'np_cross_products_ids', 'np_cub_tran',
+            'np_currency', 'np_descarga', 'np_descripcion_ecommerce', 'np_entrada_de_agua', 'np_equipamiento',
+            'np_espacios', 'np_espesor', 'np_espesor_chapa_natural', 'np_ficha_tecnica', 'np_formato_comercial',
+            'np_garantia', 'np_garantia_texto', 'np_herrajes', 'np_incluye', 'np_instalacion', 'np_instalacion_sanit',
+            'np_is_product_kit', 'np_item_group', 'np_link_ficha_tecnica', 'np_look', 'np_mantencion',
+            'np_manual_instalacion', 'np_manufacturer', 'np_material', 'np_medidas', 'np_negocios',
+            'np_nombre_ecommerce', 'np_num_in_sale', 'np_numero_de_llaves', 'np_numero_graficas_caja',
+            'np_origen_marca', 'np_origin', 'np_palmetas_caja', 'np_payment_type', 'np_posicion', 'np_prod_descont',
+            'np_prod_despacho', 'np_profundidad', 'np_qty_available', 'np_rebalse', 'np_sale_pack_msr',
+            'np_sale_pack_un', 'np_sale_unit_msr', 'np_sdg_texto', 'np_sei_cdp', 'np_sei_ecommerce', 'np_sei_familia',
+            'np_sei_kit', 'np_sei_marca', 'np_sei_mxp', 'np_sei_orig', 'np_sei_pcv', 'np_sei_pfi', 'np_sei_ppa',
+            'np_sei_prop1', 'np_sei_prop2', 'np_sei_prop3', 'np_sei_pzu', 'np_sei_rectifi', 'np_sei_subfamilia',
+            'np_serie_mkt', 'np_sheight1', 'np_shght1_unit', 'np_slength1', 'np_stock_minimo', 'np_svol_unit',
+            'np_swdth1_unit', 'np_swidth1', 'np_terminacion', 'np_tipo', 'np_tipotran_p', 'np_trafico', 'np_uso',
+            'np_variacion_tonal', 'np_volume_weight', 'np_zona_aplicacion'
+        ]
+        # Obtener todos los campos del modelo product.product
+        all_fields = odoo_client.execute_kw('product.product', 'fields_get', [], {'attributes': ['string', 'type']})
+        # Filtrar solo los np_ que existen realmente
+        fields = [f for f in np_fields if f in all_fields]
+        product_ids = odoo_client.execute_kw('product.product', 'search', [[('default_code', '=', codigo)]])
+        if not product_ids:
+            return jsonify({'error': 'Producto no encontrado'}), 404
+        product = odoo_client.execute_kw('product.product', 'read', [product_ids], {'fields': fields})[0]
+        # Pasar todos los campos np_ directamente al template
+        html = render_template(f'ficha_{template}.html', **product, product_np=product)
+        pdf = pdfkit.from_string(html, False)
+        return send_file(
+            BytesIO(pdf),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'ficha_{codigo}.pdf'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
