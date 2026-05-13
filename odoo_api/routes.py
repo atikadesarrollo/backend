@@ -614,7 +614,7 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_sei_factanticpag', 'np_sei_esp', 'np_sei_arq2', 'np_sei_tdes',
                 'np_sei_einm', 'np_sei_obc', 'np_sei_pesodoc', 'np_sei_nob', 'np_oport', 
                 'np_sei_autoriztc', 'np_origen_documento', 'order_line', 'intermediary', 'nxt_id_erp',
-                'user_id','ov_nxt_sync', 'ov_nxt_id_erp', 'ov_docnum_ref'
+                'user_id','ov_nxt_sync', 'ov_nxt_id_erp', 'ov_docnum_ref', 'write_date'
             ]
 
             sale_orders = models.execute_kw(db, uid, password,
