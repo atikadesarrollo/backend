@@ -4,10 +4,9 @@ import os
 from dotenv import load_dotenv
 import logging
 
+
 # Cargar variables de entorno
 load_dotenv()
-
-app = Flask(__name__)
 datalake_bp = Blueprint('datalake_api', __name__)
 
 # Configurar logging
