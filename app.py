@@ -66,26 +66,22 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def create_app():
     logger = setup_logging()
+
     app = Flask(__name__)
-    
-    # Ruta para la interfaz web de ficha técnica
-    @app.route('/ficha-form')
-    def ficha_form():
-        return render_template('ficha_form.html')
-    
+
     # Configurar JSON encoder personalizado
     app.json_encoder = CustomJSONEncoder
-    
+
     # Configurar CORS
     CORS(app, origins=[
-        "http://localhost:8080", 
+        "http://localhost:8080",
         "https://app.atika.cl",
         "http://localhost:3000",
         "http://127.0.0.1:5500",  # Live Server
         "http://localhost:5500",  # Live Server alternativo
         "file://"  # Para archivos HTML locales
     ])
-    
+
     # Middleware para logging de requests
     @app.before_request
     def log_request_info():
@@ -101,8 +97,6 @@ def create_app():
                     request_logger.info(f"REQUEST BODY: {body_preview}")
             except:
                 request_logger.info("REQUEST BODY: [No se pudo leer el body]")
-    
-    app = Flask(__name__)
 
     # Ruta para la interfaz web de ficha técnica
     @app.route('/ficha-form')
