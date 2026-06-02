@@ -421,7 +421,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Cantidad]
                     ,[Precio base] as 'Precio_base'
                     ,[Precio unitario] as 'Precio_unitario'
-                    ,[Precio unitario descuentos aplicados] as 'Precio_unitario_descuento'
+                    ,[Precio unitario descuentos aplicados SAP] as 'Precio_unitario_descuento'
                     ,[Porcentaje descuentos] as 'Porcentaje_descuento'
                     ,[Porcentaje adicional oferta] as 'Porcentaje_adicional'
                     ,[Flete unitario] as 'Flete_unitario'
