@@ -442,6 +442,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Email Esp Inmobiliario] as 'Email_esp_In'
                     ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
                     ,[Origen]
+                    ,[% Falla] as 'porcentaje_falla'
                 FROM DL_Facturacion 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
