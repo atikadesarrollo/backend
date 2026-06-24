@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generar Ficha Técnica PDF</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f8f9fa;
+      }
+      .container {
+        max-width: 400px;
+        margin: 60px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px #ccc;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      button {
+        background: #117a65;
+        color: #fff;
+        font-weight: bold;
+        margin-top: 20px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #148f77;
+      }
+      .msg {
+        margin-top: 15px;
+        color: #c0392b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Generar Ficha Técnica PDF</h2>
+      <form id="fichaForm">
+        <label for="codigo">Código de producto</label>
+        <input type="text" id="codigo" name="codigo" required />
+
+        <label for="template">Template</label>
+        <select id="template" name="template">
+          <option value="template1">Template 1</option>
+          <option value="template2">Template 2</option>
+        </select>
+
+        <button type="submit">Descargar PDF</button>
+      </form>
+      <div class="msg" id="msg"></div>
+    </div>
+    <script>
+      document
+        .getElementById("fichaForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const codigo = document.getElementById("codigo").value;
+          const template = document.getElementById("template").value;
+          const msg = document.getElementById("msg");
+          msg.textContent = "";
+          try {
+            const response = await fetch("/odoo/producto/ficha", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ codigo, template }),
+            });
+            if (!response.ok) {
+              const error = await response.json();
+              msg.textContent = error.error || "Error al generar PDF";
+              return;
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `ficha_${codigo}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+          } catch (err) {
+            msg.textContent = "Error de conexión o inesperado";
+          }
+        });
+    </script>
+  </body>
+</html>

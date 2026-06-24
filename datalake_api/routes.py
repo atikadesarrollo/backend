@@ -4,10 +4,9 @@ import os
 from dotenv import load_dotenv
 import logging
 
+
 # Cargar variables de entorno
 load_dotenv()
-
-app = Flask(__name__)
 datalake_bp = Blueprint('datalake_api', __name__)
 
 # Configurar logging
@@ -234,7 +233,7 @@ def get_analisis_venta_fechas(start_date, end_date):
                 ,[Email Esp Inmobiliario] as 'Email_esp_In'
                 ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
                 ,[Origen]
-                FROM DL_Analisis_Venta_v 
+                FROM DL_Analisis_Venta 
                 WHERE CAST([Fecha de oferta] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 AND [RUT Cliente] != '1-9'
                 --ordenar por fecha de oferta mayor a menor
@@ -422,7 +421,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Cantidad]
                     ,[Precio base] as 'Precio_base'
                     ,[Precio unitario] as 'Precio_unitario'
-                    ,[Precio unitario descuentos aplicados] as 'Precio_unitario_descuento'
+                    ,[Precio unitario descuentos aplicados SAP] as 'Precio_unitario_descuento'
                     ,[Porcentaje descuentos] as 'Porcentaje_descuento'
                     ,[Porcentaje adicional oferta] as 'Porcentaje_adicional'
                     ,[Flete unitario] as 'Flete_unitario'
@@ -443,7 +442,7 @@ def get_facturacion_fechas(start_date, end_date):
                     ,[Email Esp Inmobiliario] as 'Email_esp_In'
                     ,[Valor Flete MO VE] as 'Valor_Flete_MO_VE'
                     ,[Origen]
-                FROM DL_Facturacion_v 
+                FROM DL_Facturacion 
                 WHERE CAST([Fecha documento] AS DATE) BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
                 ORDER BY [Fecha documento] DESC;
             """

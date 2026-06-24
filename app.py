@@ -1,4 +1,5 @@
 from flask import Flask, request, g
+from flask import render_template
 from odoo_api.routes import odoo_bp
 from datalake_api.routes import datalake_bp
 from datalake_api.analytics_routes import analytics_bp
@@ -65,28 +66,28 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def create_app():
     logger = setup_logging()
+
     app = Flask(__name__)
-    
+
     # Configurar JSON encoder personalizado
     app.json_encoder = CustomJSONEncoder
-    
+
     # Configurar CORS
     CORS(app, origins=[
-        "http://localhost:8080", 
+        "http://localhost:8080",
         "https://app.atika.cl",
         "http://localhost:3000",
         "http://127.0.0.1:5500",  # Live Server
         "http://localhost:5500",  # Live Server alternativo
         "file://"  # Para archivos HTML locales
     ])
-    
+
     # Middleware para logging de requests
     @app.before_request
     def log_request_info():
         g.start_time = time.time()
         request_logger = logging.getLogger('requests')
         request_logger.info(f"REQUEST: {request.method} {request.url} - IP: {request.remote_addr} - User-Agent: {request.headers.get('User-Agent', 'N/A')}")
-        
         # Log del body para requests POST/PUT (solo primeros 500 caracteres)
         if request.method in ['POST', 'PUT'] and request.content_length and request.content_length < 5000:
             try:
@@ -96,7 +97,12 @@ def create_app():
                     request_logger.info(f"REQUEST BODY: {body_preview}")
             except:
                 request_logger.info("REQUEST BODY: [No se pudo leer el body]")
-    
+
+    # Ruta para la interfaz web de ficha técnica
+    @app.route('/ficha-form')
+    def ficha_form():
+        return render_template('ficha_form.html')
+
     @app.after_request
     def log_response_info(response):
         duration = time.time() - g.start_time if hasattr(g, 'start_time') else 0

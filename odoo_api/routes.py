@@ -1,9 +1,17 @@
+from flask import render_template
+import pdfkit
 import xmlrpc.client
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, jsonify, request, send_file, Response
 import base64
 from dotenv import load_dotenv
 import os
-from io import BytesIO
+from io import BytesIO, StringIO
+from datetime import datetime
+import csv
+from openpyxl import Workbook
+import threading
+import tempfile
+import uuid
 
 # Crear el Blueprint
 odoo_bp = Blueprint('odoo_api', __name__)
@@ -16,6 +24,559 @@ url = os.getenv('ODOO_URL')
 db = os.getenv('ODOO_DB')
 username = os.getenv('ODOO_USERNAME')
 password = os.getenv('ODOO_PASSWORD')
+
+EXPORT_JOBS = {}
+EXPORT_JOBS_LOCK = threading.Lock()
+EXPORT_BASE_DIR = os.path.join(tempfile.gettempdir(), 'atika_odoo_exports')
+os.makedirs(EXPORT_BASE_DIR, exist_ok=True)
+
+
+class OdooServiceClient:
+    def __init__(self, models_proxy, uid):
+        self.models_proxy = models_proxy
+        self.uid = uid
+
+    def execute_kw(self, model, method, args=None, kwargs=None):
+        if args is None:
+            args = []
+        if kwargs is None:
+            kwargs = {}
+
+        return self.models_proxy.execute_kw(
+            db,
+            self.uid,
+            password,
+            model,
+            method,
+            args,
+            kwargs
+        )
+
+
+def get_odoo_client():
+    common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+    uid = common.authenticate(db, username, password, {})
+
+    if not uid:
+        raise Exception("No se pudo autenticar en Odoo")
+
+    models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+    return OdooServiceClient(models, uid)
+
+
+def get_sales_analysis_2025_grouped(odoo_client):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<",  "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "np_ov_docnum_ref",
+        "price_subtotal:sum",
+        "product_uom_qty:sum",
+        "qty_delivered:sum",
+        "qty_invoiced:sum",
+        "__count",
+    ]
+    groupby = ["np_ov_docnum_ref"]
+
+    rows = odoo_client.execute_kw(
+        "sale.order.line",
+        "read_group",
+        [domain, fields, groupby],
+        {"lazy": False}
+    )
+
+    result = []
+    for row in rows:
+        ref_value = row.get("np_ov_docnum_ref")
+        ref_name = ref_value[1] if isinstance(ref_value, (list, tuple)) and len(ref_value) > 1 else "Sin referencia"
+
+        result.append({
+            "pedido_referencia": ref_name,
+            "lineas": row.get("__count", 0),
+            "subtotal_sum": row.get("price_subtotal_sum", 0.0),
+            "qty_sum": row.get("product_uom_qty_sum", 0.0),
+            "qty_delivered_sum": row.get("qty_delivered_sum", 0.0),
+            "qty_invoiced_sum": row.get("qty_invoiced_sum", 0.0),
+        })
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_groups": len(result),
+        "data": result,
+    }
+
+
+def get_sales_order_lines_2025_raw(odoo_client):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    rows = odoo_client.execute_kw(
+        "sale.order.line",
+        "search_read",
+        [domain],
+        {"limit": False}
+    )
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
+def build_sales_analysis_2025_grouped_csv(data_rows):
+    output = StringIO()
+    writer = csv.writer(output)
+
+    if not data_rows:
+        return output.getvalue()
+
+    headers = list(data_rows[0].keys())
+    writer.writerow(headers)
+    for row in data_rows:
+        writer.writerow([str(row.get(header, "")) for header in headers])
+
+    return output.getvalue()
+
+
+def build_sales_analysis_2025_grouped_xlsx(data_rows):
+    workbook = Workbook(write_only=True)
+    worksheet = workbook.create_sheet(title='sales_analysis_2025')
+
+    if data_rows:
+        headers = list(data_rows[0].keys())
+        worksheet.append(headers)
+        for row in data_rows:
+            worksheet.append([str(row.get(header, "")) for header in headers])
+
+    output = BytesIO()
+    workbook.save(output)
+    output.seek(0)
+    return output
+
+
+def get_sales_order_lines_2025_raw_batched(odoo_client, limit=None, batch_size=1000):
+    domain = [
+        ("np_date_order", ">=", "2025-01-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "id",
+        "order_id",
+        "np_ov_docnum_ref",
+        "np_date_order",
+        "state",
+        "product_id",
+        "name",
+        "product_uom_qty",
+        "qty_delivered",
+        "qty_invoiced",
+        "price_unit",
+        "discount",
+        "price_subtotal",
+    ]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    if limit and limit > 0:
+        record_ids = record_ids[:limit]
+
+    rows = []
+    if record_ids:
+        for start in range(0, len(record_ids), batch_size):
+            batch_ids = record_ids[start:start + batch_size]
+            batch_rows = odoo_client.execute_kw(
+                "sale.order.line",
+                "read",
+                [batch_ids],
+                {"fields": fields}
+            )
+            rows.extend(batch_rows)
+
+    return {
+        "year": 2025,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
+def get_sales_order_lines_raw_batched_by_range(odoo_client, date_start, date_end, limit=None, batch_size=1000):
+    domain = [
+        ("np_date_order", ">=", date_start),
+        ("np_date_order", "<", date_end),
+        ("state", "=", "sale"),
+    ]
+
+    fields = [
+        "id",
+        "order_id",
+        "np_ov_docnum_ref",
+        "np_date_order",
+        "state",
+        "product_id",
+        "name",
+        "product_uom_qty",
+        "qty_delivered",
+        "qty_invoiced",
+        "price_unit",
+        "discount",
+        "price_subtotal",
+    ]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    if limit and limit > 0:
+        record_ids = record_ids[:limit]
+
+    rows = []
+    if record_ids:
+        for start in range(0, len(record_ids), batch_size):
+            batch_ids = record_ids[start:start + batch_size]
+            batch_rows = odoo_client.execute_kw(
+                "sale.order.line",
+                "read",
+                [batch_ids],
+                {"fields": fields}
+            )
+            rows.extend(batch_rows)
+
+    return {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(rows),
+        "data": rows,
+    }
+
+
+def run_december_2025_export_job(job_id, export_format, limit=None, batch_size=1000):
+    try:
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id]["status"] = "processing"
+            EXPORT_JOBS[job_id]["started_at"] = datetime.utcnow().isoformat() + "Z"
+
+        odoo_client = get_odoo_client()
+        payload = get_sales_order_lines_raw_batched_by_range(
+            odoo_client,
+            "2025-12-01 00:00:00",
+            "2026-01-01 00:00:00",
+            limit=limit,
+            batch_size=batch_size
+        )
+
+        rows = payload.get("data", [])
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+
+        if export_format == 'csv':
+            filename = f"sales_order_line_december_2025_{timestamp}.csv"
+            file_path = os.path.join(EXPORT_BASE_DIR, f"{job_id}_{filename}")
+            csv_content = build_sales_analysis_2025_grouped_csv(rows)
+            with open(file_path, 'w', encoding='utf-8-sig', newline='') as file_obj:
+                file_obj.write(csv_content)
+            mimetype = 'text/csv; charset=utf-8'
+        else:
+            filename = f"sales_order_line_december_2025_{timestamp}.xlsx"
+            file_path = os.path.join(EXPORT_BASE_DIR, f"{job_id}_{filename}")
+            xlsx_stream = build_sales_analysis_2025_grouped_xlsx(rows)
+            with open(file_path, 'wb') as file_obj:
+                file_obj.write(xlsx_stream.getvalue())
+            mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id].update({
+                "status": "completed",
+                "completed_at": datetime.utcnow().isoformat() + "Z",
+                "total_records": payload.get("total_records", 0),
+                "file_path": file_path,
+                "filename": filename,
+                "mimetype": mimetype
+            })
+    except Exception as exc:
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id].update({
+                "status": "failed",
+                "completed_at": datetime.utcnow().isoformat() + "Z",
+                "error": str(exc)
+            })
+
+
+ANALISIS_VENTA_EXPORT_FIELDS = [
+    "np_canal",
+    "qty_delivered",
+    "qty_invoiced",
+    "np_sei_cdp",
+    "order_partner_id/name",
+    "np_sei_cotfin",
+    "product_uom_qty",
+    "np_departamento",
+    "name",
+    "discount",
+    "np_original_discount",
+    "np_docnum_oferta",
+    "np_ov_docnum_ref/name",
+    "categ_id/name",
+    "np_date_order",
+    "source_currency_id/name",
+    "project_id/name",
+    "order_id/client_order_ref",
+    "np_rpt_discount",
+    "np_rpt_flete_unitario",
+    "np_rpt_flete_unitario_mo",
+    "np_rpt_base_price",
+    "np_rpt_price_unit",
+    "np_rpt_subtotal",
+    "np_rpt_total",
+    "order_partner_id/vat",
+    "np_product_sku",
+    "np_rate_currency",
+    "np_tipo_despacho",
+    "np_total_discount_promotion",
+    "salesman_id/name",
+    "np_venta_anticipada",
+    "analytic_line_ids/account_id",
+    "analytic_line_ids/amount",
+    "analytic_line_ids/project_id",
+]
+
+ANALISIS_VENTA_HEADERS = [
+    "Canal",
+    "Cantidad de entrega",
+    "Cantidad Facturada",
+    "CDP",
+    "Cliente",
+    "Cotización Final",
+    "Ctd. de producto",
+    "Departamento",
+    "Descripción",
+    "Descuento (%)",
+    "Descuento original",
+    "Docnum Oferta",
+    "Docnum OV",
+    "Familia",
+    "Fecha de pedido",
+    "Moneda origen",
+    "Proyecto",
+    "Referencia de pedido",
+    "RPT Descuento",
+    "RPT Flete Unitario",
+    "RPT Flete Unitario MO",
+    "RPT Precio Base",
+    "RPT Precio Unitario",
+    "RPT Subtotal",
+    "RPT Total",
+    "RUT Cliente",
+    "SKU",
+    "Tasa de Cambio",
+    "Tipo Despacho",
+    "Total descuento + promoción",
+    "Vendedor",
+    "Venta Anticipada",
+    "Líneas analíticas/Cuenta analítica",
+    "Líneas analíticas/Importe",
+    "Líneas analíticas/Project",
+]
+
+
+def build_december_2025_xlsx_using_export(odoo_client, batch_size=500):
+    domain = [
+        ("np_date_order", ">=", "2025-12-01 00:00:00"),
+        ("np_date_order", "<", "2026-01-01 00:00:00"),
+        ("state", "=", "sale"),
+    ]
+
+    # Obtener campos disponibles del modelo
+    fields_info = odoo_client.execute_kw(
+        "sale.order.line",
+        "fields_get",
+        [],
+        {"attributes": ["string", "type"]}
+    )
+    
+    # Solo campos simples (no one2many, many2many que dan problemas)
+    excluded_types = ["one2many", "many2many", "binary"]
+    export_fields = [
+        field for field, info in fields_info.items()
+        if info.get("type") not in excluded_types
+    ]
+    
+    # Headers con nombres legibles
+    headers = [fields_info[f].get("string", f) for f in export_fields]
+
+    record_ids = odoo_client.execute_kw(
+        "sale.order.line",
+        "search",
+        [domain],
+        {"order": "id asc"}
+    )
+
+    workbook = Workbook(write_only=True)
+    worksheet = workbook.create_sheet(title='Analisis_Venta_Dic2025')
+    worksheet.append(headers)
+
+    for start in range(0, len(record_ids), batch_size):
+        batch_ids = record_ids[start:start + batch_size]
+
+        batch_rows = odoo_client.execute_kw(
+            "sale.order.line",
+            "read",
+            [batch_ids],
+            {"fields": export_fields}
+        )
+
+        for row in batch_rows:
+            values = []
+            for field in export_fields:
+                val = row.get(field)
+                if isinstance(val, (list, tuple)) and len(val) >= 2:
+                    values.append(str(val[1]))
+                elif isinstance(val, (list, tuple)) and len(val) == 1:
+                    values.append(str(val[0]))
+                elif val is None or val is False:
+                    values.append("")
+                else:
+                    values.append(val)
+            worksheet.append(values)
+
+    timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+    filename = f"analisis_venta_diciembre_2025_{timestamp}.xlsx"
+    file_path = os.path.join(EXPORT_BASE_DIR, f"{uuid.uuid4()}_{filename}")
+    workbook.save(file_path)
+
+    return file_path, filename
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/grouped', methods=['GET'])
+def sales_analysis_2025_grouped_endpoint():
+    try:
+        odoo_client = get_odoo_client()
+        file_path, filename = build_december_2025_xlsx_using_export(odoo_client, batch_size=500)
+        return send_file(
+            file_path,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/start', methods=['POST', 'GET'])
+def start_december_2025_async_export():
+    try:
+        export_format = request.args.get('format', 'xlsx').lower()
+        if export_format not in ['xlsx', 'csv']:
+            return jsonify({"error": "Formato inválido. Usa format=xlsx o format=csv"}), 400
+
+        limit = request.args.get('limit', type=int)
+        batch_size = request.args.get('batch_size', default=1000, type=int)
+        if not batch_size or batch_size <= 0:
+            batch_size = 1000
+        if batch_size > 5000:
+            batch_size = 5000
+
+        job_id = str(uuid.uuid4())
+        with EXPORT_JOBS_LOCK:
+            EXPORT_JOBS[job_id] = {
+                "job_id": job_id,
+                "status": "queued",
+                "created_at": datetime.utcnow().isoformat() + "Z",
+                "format": export_format,
+                "limit": limit,
+                "batch_size": batch_size,
+                "period": "2025-12"
+            }
+
+        worker = threading.Thread(
+            target=run_december_2025_export_job,
+            args=(job_id, export_format, limit, batch_size),
+            daemon=True
+        )
+        worker.start()
+
+        base_path = '/odoo/reports/sales-analysis/2025/december/export-async'
+        return jsonify({
+            "message": "Exportación en proceso",
+            "job_id": job_id,
+            "status": "queued",
+            "period": "2025-12",
+            "status_url": f"{base_path}/status/{job_id}",
+            "download_url": f"{base_path}/download/{job_id}"
+        }), 202
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/status/<string:job_id>', methods=['GET'])
+def get_december_2025_async_export_status(job_id):
+    with EXPORT_JOBS_LOCK:
+        job = EXPORT_JOBS.get(job_id)
+
+    if not job:
+        return jsonify({"error": "Job no encontrado"}), 404
+
+    response = {
+        "job_id": job.get("job_id"),
+        "status": job.get("status"),
+        "period": job.get("period"),
+        "format": job.get("format"),
+        "created_at": job.get("created_at"),
+        "started_at": job.get("started_at"),
+        "completed_at": job.get("completed_at"),
+        "total_records": job.get("total_records")
+    }
+
+    if job.get("status") == "failed":
+        response["error"] = job.get("error")
+
+    if job.get("status") == "completed":
+        response["download_url"] = f"/odoo/reports/sales-analysis/2025/december/export-async/download/{job_id}"
+
+    return jsonify(response), 200
+
+
+@odoo_bp.route('/reports/sales-analysis/2025/december/export-async/download/<string:job_id>', methods=['GET'])
+def download_december_2025_async_export(job_id):
+    with EXPORT_JOBS_LOCK:
+        job = EXPORT_JOBS.get(job_id)
+
+    if not job:
+        return jsonify({"error": "Job no encontrado"}), 404
+
+    if job.get("status") != "completed":
+        return jsonify({
+            "error": "El archivo aún no está disponible",
+            "status": job.get("status")
+        }), 409
+
+    file_path = job.get("file_path")
+    if not file_path or not os.path.exists(file_path):
+        return jsonify({"error": "Archivo no encontrado en servidor"}), 404
+
+    return send_file(
+        file_path,
+        mimetype=job.get("mimetype"),
+        as_attachment=True,
+        download_name=job.get("filename")
+    )
 
 @odoo_bp.route('/sale_orders/date/<string:date_range>', methods=['GET'])
 @odoo_bp.route('/sale_orders/<string:order_names>', methods=['GET'])
@@ -53,7 +614,7 @@ def get_sale_orders(date_range=None, order_names=None):
                 'np_sei_factanticpag', 'np_sei_esp', 'np_sei_arq2', 'np_sei_tdes',
                 'np_sei_einm', 'np_sei_obc', 'np_sei_pesodoc', 'np_sei_nob', 'np_oport', 
                 'np_sei_autoriztc', 'np_origen_documento', 'order_line', 'intermediary', 'nxt_id_erp',
-                'user_id','ov_nxt_sync', 'ov_nxt_id_erp', 'ov_docnum_ref'
+                'user_id','ov_nxt_sync', 'ov_nxt_id_erp', 'ov_docnum_ref', 'write_date'
             ]
 
             sale_orders = models.execute_kw(db, uid, password,
@@ -510,10 +1071,24 @@ def get_latest_projects_info(date_range=None):
             
             # Obtener las órdenes de venta asociadas a los proyectos
             project_ids = [project['id'] for project in projects]
-            sale_orders = models.execute_kw(db, uid, password,
+            project_ids_set = set(project_ids)  # Para búsqueda más rápida
+            
+            # Buscar órdenes de venta que tengan custom_project_id asociado (no nulo)
+            # NOTA: El campo cambió de project_id a custom_project_id después del upgrade de Odoo
+            all_sale_orders = models.execute_kw(db, uid, password,
                 'sale.order', 'search_read',
-                [[('project_id', 'in', project_ids), ('state', '!=', 'cancel')]],
-                {'fields': ['name', 'state', 'project_id', 'amount_total', 'user_id']})
+                [[('custom_project_id', '!=', False)]],
+                {'fields': ['name', 'state', 'custom_project_id', 'amount_total', 'user_id']})
+            
+            total_orders_with_project = len(all_sale_orders)
+            
+            # Filtrar las órdenes que pertenecen a los proyectos consultados y no estén canceladas
+            sale_orders = []
+            for order in all_sale_orders:
+                order_project_id = order.get('custom_project_id')
+                if order_project_id and isinstance(order_project_id, (list, tuple)):
+                    if order_project_id[0] in project_ids_set and order.get('state') != 'cancel':
+                        sale_orders.append(order)
             
             # Obtener los department_id de los user_id asociados a las sale_orders
             sale_order_user_ids = [order['user_id'][0] for order in sale_orders if order.get('user_id')]
@@ -532,21 +1107,24 @@ def get_latest_projects_info(date_range=None):
                     if user_id:
                         order['department_id'] = sale_order_user_to_department.get(user_id[0], '')
 
-            # Crear un diccionario para mapear project_id a sus órdenes de venta
+            # Crear un diccionario para mapear custom_project_id a sus órdenes de venta
             project_to_sale_orders = {}
             for order in sale_orders:
-                project_id = order['project_id'][0]
+                # Validar que custom_project_id existe y es una tupla/lista válida
+                order_project_id = order.get('custom_project_id')
+                if not order_project_id or not isinstance(order_project_id, (list, tuple)):
+                    continue
+                project_id = order_project_id[0]
                 if project_id not in project_to_sale_orders:
                     project_to_sale_orders[project_id] = []
                 # Decorar los datos internos de las órdenes de venta
                 formatted_order = {
                     'Orden': order.get('name', ''),
                     'Estado': order.get('state', ''),
-                    'Codigo_Proyecto': order.get('project_id', [])[1] if order.get('project_id') else '',
+                    'Codigo_Proyecto': order_project_id[1] if len(order_project_id) > 1 else '',
                     'Monto_Total': order.get('amount_total', ''),
                     'Usuario': order.get('user_id', [])[1] if order.get('user_id') else '',
                     'Departamento_Vendedor': order.get('department_id', '')
-
                 }
                 project_to_sale_orders[project_id].append(formatted_order)
 
@@ -584,11 +1162,100 @@ def get_latest_projects_info(date_range=None):
                 }
                 formatted_projects.append(formatted_project)
 
-            return jsonify({"projects": formatted_projects})
+            return jsonify({
+                "projects": formatted_projects,
+                "_debug": {
+                    "total_projects": len(projects),
+                    "total_orders_with_project_id": total_orders_with_project,
+                    "total_sale_orders_matched": len(sale_orders),
+                    "projects_with_orders": len(project_to_sale_orders),
+                    "sample_project_ids": project_ids[:5] if project_ids else []
+                }
+            })
         else:
             return jsonify({"error": "No se encontraron proyectos"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@odoo_bp.route('/diagnostico_campos', methods=['GET'])
+def diagnostico_campos():
+    """
+    Endpoint de diagnóstico para verificar los campos del modelo sale.order
+    y encontrar el campo correcto que relaciona órdenes con proyectos.
+    """
+    try:
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url), allow_none=True)
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url), allow_none=True)
+
+        # Obtener todos los campos del modelo sale.order
+        sale_order_fields = models.execute_kw(db, uid, password,
+            'sale.order', 'fields_get',
+            [],
+            {'attributes': ['string', 'type', 'relation']})
+        
+        # Filtrar campos que contengan "project" en el nombre o descripción
+        project_related_fields = {}
+        for field_name, field_info in sale_order_fields.items():
+            field_string = field_info.get('string', '').lower()
+            if 'project' in field_name.lower() or 'project' in field_string or 'proyecto' in field_string:
+                project_related_fields[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation', None)
+                }
+        
+        # Buscar campos many2one que apunten a custom.projects
+        custom_project_fields = {}
+        for field_name, field_info in sale_order_fields.items():
+            if field_info.get('relation') == 'custom.projects':
+                custom_project_fields[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation')
+                }
+        
+        # Obtener una muestra de órdenes de venta con todos los campos relacionados a proyecto
+        sample_fields = ['name', 'state'] + list(project_related_fields.keys()) + list(custom_project_fields.keys())
+        sample_fields = list(set(sample_fields))  # Eliminar duplicados
+        
+        sample_orders = models.execute_kw(db, uid, password,
+            'sale.order', 'search_read',
+            [[]],
+            {'fields': sample_fields, 'limit': 5, 'order': 'id desc'})
+        
+        # Obtener campos del modelo custom.projects también
+        custom_projects_fields = models.execute_kw(db, uid, password,
+            'custom.projects', 'fields_get',
+            [],
+            {'attributes': ['string', 'type', 'relation']})
+        
+        # Buscar campos en custom.projects que relacionen con sale.order
+        sale_order_related_in_projects = {}
+        for field_name, field_info in custom_projects_fields.items():
+            if field_info.get('relation') == 'sale.order' or 'sale' in field_name.lower() or 'order' in field_name.lower():
+                sale_order_related_in_projects[field_name] = {
+                    'string': field_info.get('string'),
+                    'type': field_info.get('type'),
+                    'relation': field_info.get('relation', None)
+                }
+        
+        return jsonify({
+            "sale_order": {
+                "campos_con_project": project_related_fields,
+                "campos_apuntando_a_custom_projects": custom_project_fields,
+                "total_campos_modelo": len(sale_order_fields),
+                "muestra_ordenes": sample_orders
+            },
+            "custom_projects": {
+                "campos_relacionados_sale_order": sale_order_related_in_projects,
+                "total_campos_modelo": len(custom_projects_fields)
+            },
+            "recomendacion": "Busca en 'campos_apuntando_a_custom_projects' el nombre correcto del campo"
+        })
+    except Exception as e:
+        import traceback
+        return jsonify({"error": str(e), "traceback": traceback.format_exc()}), 500
 
 @odoo_bp.route('/ultimo_proyecto', methods=['GET'])
 def obtener_ultimo_proyecto ():
@@ -851,3 +1518,54 @@ def update_factura_refoliar(factura_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# Endpoint para generar ficha técnica de producto en PDF
+@odoo_bp.route('/producto/ficha', methods=['POST'])
+def generar_ficha_producto():
+    data = request.get_json()
+    codigo = data.get('codigo')
+    template = data.get('template', 'template1')
+    if not codigo:
+        return jsonify({'error': 'Falta el código de producto'}), 400
+    try:
+        odoo_client = get_odoo_client()
+        # Solo campos np_ personalizados
+        # Lista original de campos np_ proporcionada
+        np_fields = [
+            'np_accessory_product_ids', 'np_advalorem', 'np_alternative_product_ids', 'np_antideslizante',
+            'np_apto_para_losa_radiante', 'np_apto_para_productos_limpieza', 'np_asiento', 'np_bim', 'np_biselado',
+            'np_capacidad', 'np_clase', 'np_color', 'np_consumo_agua', 'np_cross_products_ids', 'np_cub_tran',
+            'np_currency', 'np_descarga', 'np_descripcion_ecommerce', 'np_entrada_de_agua', 'np_equipamiento',
+            'np_espacios', 'np_espesor', 'np_espesor_chapa_natural', 'np_ficha_tecnica', 'np_formato_comercial',
+            'np_garantia', 'np_garantia_texto', 'np_herrajes', 'np_incluye', 'np_instalacion', 'np_instalacion_sanit',
+            'np_is_product_kit', 'np_item_group', 'np_link_ficha_tecnica', 'np_look', 'np_mantencion',
+            'np_manual_instalacion', 'np_manufacturer', 'np_material', 'np_medidas', 'np_negocios',
+            'np_nombre_ecommerce', 'np_num_in_sale', 'np_numero_de_llaves', 'np_numero_graficas_caja',
+            'np_origen_marca', 'np_origin', 'np_palmetas_caja', 'np_payment_type', 'np_posicion', 'np_prod_descont',
+            'np_prod_despacho', 'np_profundidad', 'np_qty_available', 'np_rebalse', 'np_sale_pack_msr',
+            'np_sale_pack_un', 'np_sale_unit_msr', 'np_sdg_texto', 'np_sei_cdp', 'np_sei_ecommerce', 'np_sei_familia',
+            'np_sei_kit', 'np_sei_marca', 'np_sei_mxp', 'np_sei_orig', 'np_sei_pcv', 'np_sei_pfi', 'np_sei_ppa',
+            'np_sei_prop1', 'np_sei_prop2', 'np_sei_prop3', 'np_sei_pzu', 'np_sei_rectifi', 'np_sei_subfamilia',
+            'np_serie_mkt', 'np_sheight1', 'np_shght1_unit', 'np_slength1', 'np_stock_minimo', 'np_svol_unit',
+            'np_swdth1_unit', 'np_swidth1', 'np_terminacion', 'np_tipo', 'np_tipotran_p', 'np_trafico', 'np_uso',
+            'np_variacion_tonal', 'np_volume_weight', 'np_zona_aplicacion'
+        ]
+        # Obtener todos los campos del modelo product.product
+        all_fields = odoo_client.execute_kw('product.product', 'fields_get', [], {'attributes': ['string', 'type']})
+        # Filtrar solo los np_ que existen realmente
+        fields = [f for f in np_fields if f in all_fields]
+        product_ids = odoo_client.execute_kw('product.product', 'search', [[('default_code', '=', codigo)]])
+        if not product_ids:
+            return jsonify({'error': 'Producto no encontrado'}), 404
+        product = odoo_client.execute_kw('product.product', 'read', [product_ids], {'fields': fields})[0]
+        # Pasar todos los campos np_ directamente al template
+        html = render_template(f'ficha_{template}.html', **product, product_np=product)
+        pdf = pdfkit.from_string(html, False)
+        return send_file(
+            BytesIO(pdf),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f'ficha_{codigo}.pdf'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
