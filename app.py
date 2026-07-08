@@ -168,6 +168,10 @@ def create_app():
     app.register_blueprint(admin_bp)
     logger.info("Blueprint 'admin_bp' registrado en /admin")
 
+    # Registrar el middleware Atika × ConceptHome (proyecto Cocinas)
+    from middleware.router import middleware_bp
+    app.register_blueprint(middleware_bp, url_prefix='/middleware')
+    logger.info("Blueprint 'middleware_bp' registrado en /middleware")
 
     return app
 
@@ -191,6 +195,7 @@ if __name__ == '__main__':
     logger.info("  - /analisis_venta/* - API de Análisis de Venta")
     logger.info("  - /facturacion/* - API de Facturación")
     logger.info("  - /admin - Dashboard de Administración")
+    logger.info("  - /middleware/* - Sync Atika x ConceptHome (Cocinas)")
     logger.info("- Logs guardados en: logs/app.log y logs/requests.log")
     logger.info("=" * 50)
     
