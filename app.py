@@ -173,6 +173,10 @@ def create_app():
     app.register_blueprint(middleware_bp, url_prefix='/middleware')
     logger.info("Blueprint 'middleware_bp' registrado en /middleware")
 
+    # Cron in-process: sincroniza periódicamente los proyectos externos activos
+    from middleware.cron import iniciar_cron
+    iniciar_cron()
+
     return app
 
 
