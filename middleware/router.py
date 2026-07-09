@@ -4,7 +4,7 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
-from middleware.sync import ProyectoNoEncontradoEnCH, obtener_estructura_proyecto
+from middleware.sync import ProyectoNoEncontradoEnCH, marcar_hito_pagado, obtener_estructura_proyecto
 
 logger = logging.getLogger(__name__)
 middleware_bp = Blueprint('middleware', __name__)
@@ -21,6 +21,18 @@ def sync_proyecto(name_proyecto):
         return jsonify({'error': 'proyecto_no_encontrado_en_ch'}), 404
     except Exception as e:
         logger.exception("Error sincronizando proyecto %s", name_proyecto)
+        return jsonify({'error': str(e)}), 500
+
+
+@middleware_bp.route('/pago-hito/<id_externo>', methods=['POST'])
+def pago_hito(id_externo):
+    """Atika llama esto al confirmar el wizard de pago de un hito, para que el
+    middleware refleje en CH (x_studio_estado_de_pago='Pagado') que ya se pagó."""
+    try:
+        marcar_hito_pagado(id_externo)
+        return jsonify({'ok': True}), 200
+    except Exception as e:
+        logger.exception("Error marcando hito pagado en CH (id_externo=%s)", id_externo)
         return jsonify({'error': str(e)}), 500
 
 

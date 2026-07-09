@@ -53,3 +53,12 @@ FIELD_MAP_TASK = {
     'sequence': 'secuencia',
     'x_studio_monto_hito': 'monto',
 }
+
+# Campo de CH (project.task) donde se refleja el estado de pago del hito. Único
+# campo que el middleware ESCRIBE en CH (todo lo demás arriba es solo lectura):
+# Atika lo actualiza cuando registra el pago de un hito (wizard de pago → F4).
+# Confirmado con el usuario 2026-07-08: CH solo tiene 2 valores ('Pendiente de
+# Pago' / 'Pagado'), Atika maneja 3 ('notificado'/'pendiente'/'pagado') — solo
+# se escribe cuando Atika llega a 'pagado'.
+CH_FIELD_ESTADO_PAGO = 'x_studio_estado_de_pago'
+CH_ESTADO_PAGO_PAGADO = 'Pagado'
