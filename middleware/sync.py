@@ -27,18 +27,20 @@ class ProyectoNoEncontradoEnCH(Exception):
 def obtener_estructura_proyecto(name_proyecto: str) -> dict:
     client = get_ch_client()
 
+    # Relación 1:N — un mismo código Atika puede vivir en VARIOS proyectos de CH;
+    # el espejo en Atika junta las tareas de todos.
     proyectos = client.execute_kw(
         CH_PROJECT_MODEL, 'search_read',
         [[[CH_FIELD_CODIGO_PROYECTO, '=', name_proyecto]]],
-        {'fields': ['id', 'name'], 'limit': 1})
+        {'fields': ['id', 'name']})
     if not proyectos:
         raise ProyectoNoEncontradoEnCH(name_proyecto)
-    ch_project_id = proyectos[0]['id']
+    ch_project_ids = [p['id'] for p in proyectos]
 
     campos = list(FIELD_MAP_TASK.keys()) + [CH_FIELD_TIPO_TAREA, CH_FIELD_STATE, CH_FIELD_VISIBLE]
     tareas_ch = client.execute_kw(
         CH_TASK_MODEL, 'search_read',
-        [[['project_id', '=', ch_project_id], [CH_FIELD_VISIBLE, '=', True]]],
+        [[['project_id', 'in', ch_project_ids], [CH_FIELD_VISIBLE, '=', True]]],
         {'fields': campos})
 
     tareas = []
