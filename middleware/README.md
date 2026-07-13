@@ -43,6 +43,13 @@ Resend_Api_key=       # API key de Resend, para F1b/F3 (mailer.py)
   wizard de pago de un hito (F4). Escribe en CH
   `x_studio_estado_de_pago='Pagado'` sobre la tarea `id_externo` — es el
   **único write** que hace el middleware sobre CH (todo lo demás es lectura).
+- `POST /middleware/notify/<tipo>` — despacho de correos pedidos por Odoo
+  (migrados de `mail.mail` el 2026-07-13, para que TODO el correo salga por
+  Resend HTTP). Tipos: `alta-proyecto` (F1), `pago-hito` (F4, el correo — no
+  confundir con el write de arriba) y `cotizacion-confirmada`. Body:
+  `destinatarios` (lista, obligatoria — Odoo es la fuente de verdad de a quién)
+  más los campos del template. 500 si el envío falla; Odoo decide qué hacer
+  (F1 aborta la acción, F4/cotización dejan advertencia en chatter y siguen).
 
 ## Conexión con CH real
 
@@ -65,9 +72,10 @@ Proyects/Atika):
 ## Flujo completo — qué conlleva cada paso y qué notificación dispara
 
 **F1 — Enviar proyecto** (botón en Odoo Atika, `action_enviar_proyecto`):
-Odoo nativo (`mail.mail`), no pasa por el middleware. Envía "Nuevo proyecto
-asignado" a los correos del proveedor. Marca `proyecto_enviado=True`,
-`estado_sync='conectado'`.
+Odoo llama `POST /notify/alta-proyecto` y el middleware envía "Nuevo proyecto
+asignado" por Resend a los correos de la ficha del proveedor. Si el envío
+falla, la acción aborta (el correo ES el propósito del botón). Marca
+`proyecto_enviado=True`, `estado_sync='conectado'`.
 
 **F1b — Proyecto vinculado por CH** (detectado, no manual): ocurre dentro de
 cualquier `GET /sync/<name>` (botón "Actualizar proyecto" o cron). El
@@ -89,25 +97,23 @@ y dispara correo "Hito completado, pendiente de pago" vía Resend HTTP directo
 
 **F4 — Marcar pagado** (wizard `proyecto.pago.hito.wizard` en Atika,
 `action_confirmar`): registra `estado_pago='pagado'`, fecha, referencia y
-comprobante en Atika. Dispara DOS cosas en el mismo flujo:
-1. `_enviar_correo_pago_hito` — correo nativo de Odoo (`mail.mail`) al
-   proveedor, "Pago registrado".
+comprobante en Atika. Dispara DOS cosas en el mismo flujo (ninguna revierte el
+pago ya registrado si falla — solo advertencia en el chatter):
+1. `_enviar_correo_pago_hito` — `POST /notify/pago-hito`: el middleware envía
+   "Pago registrado" por Resend a los correos de la ficha del proveedor.
 2. `_notificar_pago_ch` — POST a `/middleware/pago-hito/<id_externo>`, que
-   escribe `x_studio_estado_de_pago='Pagado'` en CH (F4b). Si falla, no
-   revierte el pago ya registrado en Atika — solo deja advertencia en el
-   chatter.
+   escribe `x_studio_estado_de_pago='Pagado'` en CH (F4b).
 
 **Cotización confirmada** (`sale_order.py` en Atika, disparador temporal en
-`create()`/`write()` — pendiente moverlo a `action_confirm()`): correo nativo
-de Odoo con el detalle de líneas del pedido confirmado, a destinatarios de
-prueba hardcodeados (pendiente definir los reales).
+`create()`/`write()` — pendiente moverlo a `action_confirm()`):
+`POST /notify/cotizacion-confirmada` con el detalle de líneas del pedido, a
+destinatarios definidos en `sale_order.py` (hoy `alegonfern@gmail.com`).
 
-⚠️ **Ojo con bases de staging "neutralizadas":** si `database.is_neutralized`
-está en `true` (común en bases Odoo Online de desarrollo/duplicadas), los
-correos nativos de Odoo (F1, F4, cotización) **no llegan de verdad** aunque
-Odoo marque el `mail.mail` como `state='sent'` sin ningún error — es un
-comportamiento de la plataforma, no del código. F1b y F3 SÍ funcionan igual
-en staging porque van por Resend HTTP directo, no por Odoo.
+Desde 2026-07-13 **todos los correos del flujo salen por el middleware
+(Resend HTTP)** — ya no queda ningún `mail.mail` de Odoo en `proyectos_externos`.
+Esto además elimina la trampa de las bases de staging "neutralizadas"
+(`database.is_neutralized=true`), donde los correos nativos de Odoo se marcaban
+`state='sent'` sin llegar de verdad: por Resend HTTP llegan igual en staging.
 
 ## Probar
 

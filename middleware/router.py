@@ -36,6 +36,41 @@ def pago_hito(id_externo):
         return jsonify({'error': str(e)}), 500
 
 
+@middleware_bp.route('/notify/<tipo>', methods=['POST'])
+def notify(tipo):
+    """Odoo llama esto para despachar los correos migrados de mail.mail (2026-07-13):
+    alta-proyecto (F1), pago-hito (F4) y cotizacion-confirmada. El body trae los
+    destinatarios (opción A: Odoo es la fuente de verdad de a quién se envía) más
+    los datos del template. Devuelve 500 si el envío falla — Odoo decide qué hacer."""
+    from middleware import notificaciones
+
+    payload = request.get_json(force=True, silent=True) or {}
+    destinatarios = payload.get('destinatarios') or []
+    if not destinatarios:
+        return jsonify({'error': "falta 'destinatarios' en el body"}), 400
+
+    try:
+        if tipo == 'alta-proyecto':
+            notificaciones.notificar_alta_proyecto(
+                destinatarios, payload.get('codigo', ''),
+                payload.get('nombre_proyecto', ''), payload.get('proveedor', ''))
+        elif tipo == 'pago-hito':
+            notificaciones.notificar_pago_hito(
+                destinatarios, payload.get('codigo', ''), payload.get('proveedor', ''),
+                payload.get('hito', ''), payload.get('monto', ''),
+                payload.get('fecha', ''), payload.get('referencia', ''))
+        elif tipo == 'cotizacion-confirmada':
+            notificaciones.notificar_cotizacion_confirmada(
+                destinatarios, payload.get('codigo', ''),
+                payload.get('pedido', ''), payload.get('lineas') or [])
+        else:
+            return jsonify({'error': f"tipo de notificación desconocido: {tipo}"}), 404
+        return jsonify({'ok': True}), 200
+    except Exception as e:
+        logger.exception("Error enviando notificación '%s'", tipo)
+        return jsonify({'error': str(e)}), 500
+
+
 @middleware_bp.route('/webhook/concepthome', methods=['POST'])
 def webhook_concepthome():
     """CH dispara esto desde una Automatización de su Odoo cuando una tarea

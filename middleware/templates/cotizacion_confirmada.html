@@ -1,0 +1,7 @@
+<p>Se confirmó la cotización <strong>{{ pedido }}</strong> del proyecto <strong>{{ codigo }}</strong>.</p>
+<table>
+  <tr><th>Item</th><th>Monto</th></tr>
+  {% for linea in lineas %}
+  <tr><td>{{ linea.item }}</td><td>{{ linea.monto }}</td></tr>
+  {% endfor %}
+</table>
