@@ -4,7 +4,9 @@
 # booleano `completada`, no una agrupación por etapa/stage.
 from middleware.ch_client import get_ch_client
 from middleware.field_map import (
+    CH_ESTADO_PAGO_PAGADO,
     CH_FIELD_CODIGO_PROYECTO,
+    CH_FIELD_ESTADO_PAGO,
     CH_FIELD_STATE,
     CH_FIELD_TIPO_TAREA,
     CH_FIELD_VISIBLE,
@@ -52,3 +54,12 @@ def obtener_estructura_proyecto(name_proyecto: str) -> dict:
     detectar_y_notificar(name_proyecto, tareas)
 
     return {'tareas': tareas}
+
+
+def marcar_hito_pagado(id_externo: str) -> None:
+    """Único write del middleware sobre CH: refleja que Atika registró el pago
+    de un hito. Se llama desde el wizard de pago de Atika (junto con F4)."""
+    client = get_ch_client()
+    client.execute_kw(
+        CH_TASK_MODEL, 'write',
+        [[int(id_externo)], {CH_FIELD_ESTADO_PAGO: CH_ESTADO_PAGO_PAGADO}])
