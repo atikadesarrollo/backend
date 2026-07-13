@@ -1,3 +1,9 @@
 <p>Estimados {{ proveedor }},</p>
 <p>Se les ha asignado el proyecto <strong>{{ nombre_proyecto }}</strong> (código <strong>{{ codigo }}</strong>).</p>
+<table cellpadding="4" style="border-collapse: collapse;">
+  <tr><td style="border: 1px solid #ccc;"><strong>ID</strong></td><td style="border: 1px solid #ccc;">{{ codigo }}</td></tr>
+  <tr><td style="border: 1px solid #ccc;"><strong>Nombre Cliente</strong></td><td style="border: 1px solid #ccc;">{{ cliente_nombre }}</td></tr>
+  <tr><td style="border: 1px solid #ccc;"><strong>RUT</strong></td><td style="border: 1px solid #ccc;">{{ cliente_rut }}</td></tr>
+  <tr><td style="border: 1px solid #ccc;"><strong>Valor Contrato</strong></td><td style="border: 1px solid #ccc;">{{ valor_contrato }}</td></tr>
+</table>
 <p>Por favor regístrenlo en su sistema indicando el código <strong>{{ codigo }}</strong> en el campo «ID Proyecto Atika» de la oportunidad, para que podamos sincronizar el avance.</p>
