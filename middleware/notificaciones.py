@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 # Destinatarios definidos 2026-07-13 (ver NOTIFICACIONES_Y_DESTINATARIOS.md).
 DESTINATARIOS_INTERNOS = ['alegonfern@gmail.com']
+# F3b va a AMBAS partes (Atika y CH); por ahora todo a la casilla de pruebas.
+DESTINATARIOS_ENTREGABLE = ['alegonfern@gmail.com']
 
 
 def detectar_y_notificar(name_proyecto: str, tareas: list) -> None:
@@ -32,15 +34,17 @@ def detectar_y_notificar(name_proyecto: str, tareas: list) -> None:
         tareas_actuales = client.execute_kw(
             'proyecto.tarea.externa', 'search_read',
             [[['proyecto_id', '=', proyecto['id']]]],
-            {'fields': ['id_externo', 'estado_pago']})
-        estado_previo = {t['id_externo']: t['estado_pago'] for t in tareas_actuales}
+            {'fields': ['id_externo', 'estado_pago', 'entregado']})
+        previas = {t['id_externo']: t for t in tareas_actuales}
 
         for t in tareas:
-            if t.get('tipo_tarea') != 'hito' or not t.get('completada'):
+            if not t.get('completada'):
                 continue
-            previo = estado_previo.get(t['id_externo'])
-            if previo in (None, 'pendiente'):
+            previa = previas.get(t['id_externo'], {})
+            if t.get('tipo_tarea') == 'hito' and previa.get('estado_pago') in (None, 'pendiente'):
                 _notificar_hito_completado(name_proyecto, t.get('name'), t.get('monto'))
+            elif t.get('tipo_tarea') == 'entregable' and not previa.get('entregado'):
+                _notificar_entregable_completado(name_proyecto, t.get('name'))
     except Exception:
         logger.exception("Error detectando/notificando cambios para %s", name_proyecto)
 
@@ -53,6 +57,12 @@ def _notificar_proyecto_vinculado(codigo, nombre_proyecto):
 def _notificar_hito_completado(codigo, tarea_nombre, monto):
     html = render_template('hito_completado.html', codigo=codigo, tarea_nombre=tarea_nombre, monto=monto)
     enviar_email(DESTINATARIOS_INTERNOS, f"Hito completado, pendiente de pago: {codigo}", html)
+
+
+def _notificar_entregable_completado(codigo, tarea_nombre):
+    """F3b — entregable (anteproyecto/diseño) completado por CH; sin cobro asociado."""
+    html = render_template('entregable_completado.html', codigo=codigo, tarea_nombre=tarea_nombre)
+    enviar_email(DESTINATARIOS_ENTREGABLE, f"Entregable completado: {codigo}", html)
 
 
 # ── Correos pedidos por Odoo vía POST /notify/* (migrados de mail.mail 2026-07-13).
