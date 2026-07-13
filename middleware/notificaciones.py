@@ -60,10 +60,14 @@ def _notificar_hito_completado(codigo, tarea_nombre, monto):
 # decide qué hacer ante un fallo es Odoo (el router devuelve 500 y Odoo deja
 # advertencia en el chatter o aborta la acción, según el flujo).
 
-def notificar_alta_proyecto(destinatarios, codigo, nombre_proyecto, proveedor):
-    """F1 — aviso de alta de proyecto al proveedor (su casilla CRM crea la oportunidad)."""
+def notificar_alta_proyecto(destinatarios, codigo, nombre_proyecto, proveedor,
+                            cliente_nombre='', cliente_rut='', valor_contrato=''):
+    """F1 — aviso de alta de proyecto al proveedor (su casilla CRM crea la oportunidad).
+    cliente_* = el Mandante del proyecto en Atika (nombre y RUT)."""
     html = render_template('alta_proyecto.html', codigo=codigo,
-                           nombre_proyecto=nombre_proyecto, proveedor=proveedor)
+                           nombre_proyecto=nombre_proyecto, proveedor=proveedor,
+                           cliente_nombre=cliente_nombre, cliente_rut=cliente_rut,
+                           valor_contrato=valor_contrato)
     enviar_email(destinatarios, f"Nuevo proyecto asignado: {codigo}", html)
 
 

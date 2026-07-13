@@ -53,7 +53,9 @@ def notify(tipo):
         if tipo == 'alta-proyecto':
             notificaciones.notificar_alta_proyecto(
                 destinatarios, payload.get('codigo', ''),
-                payload.get('nombre_proyecto', ''), payload.get('proveedor', ''))
+                payload.get('nombre_proyecto', ''), payload.get('proveedor', ''),
+                payload.get('cliente_nombre', ''), payload.get('cliente_rut', ''),
+                payload.get('valor_contrato', ''))
         elif tipo == 'pago-hito':
             notificaciones.notificar_pago_hito(
                 destinatarios, payload.get('codigo', ''), payload.get('proveedor', ''),
