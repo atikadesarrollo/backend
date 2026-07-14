@@ -1,5 +1,5 @@
 from flask import Flask, request, g
-from flask import render_template
+from flask import render_template, send_from_directory
 from odoo_api.routes import odoo_bp
 from datalake_api.routes import datalake_bp
 from datalake_api.analytics_routes import analytics_bp
@@ -103,6 +103,11 @@ def create_app():
     def ficha_form():
         return render_template('ficha_form.html')
 
+    # Cotizador de cocinas (HTML autocontenido)
+    @app.route('/cotizador')
+    def cotizador():
+        return send_from_directory('cotizador_cocinas', 'cotizador-leicht.html')
+
     @app.after_request
     def log_response_info(response):
         duration = time.time() - g.start_time if hasattr(g, 'start_time') else 0
@@ -200,6 +205,7 @@ if __name__ == '__main__':
     logger.info("  - /facturacion/* - API de Facturación")
     logger.info("  - /admin - Dashboard de Administración")
     logger.info("  - /middleware/* - Sync Atika x ConceptHome (Cocinas)")
+    logger.info("  - /cotizador - Cotizador de cocinas")
     logger.info("- Logs guardados en: logs/app.log y logs/requests.log")
     logger.info("=" * 50)
     
