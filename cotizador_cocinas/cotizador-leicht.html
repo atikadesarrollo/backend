@@ -1,0 +1,3372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador Leicht Küchen — Concept Home</title>
+<style>
+  :root {
+    --negro: #1a1a1a;
+    --gris-oscuro: #2c2c2c;
+    --gris-medio: #555;
+    --gris-claro: #f0f0f0;
+    --borde: #ddd;
+    --acento: #c8a96e;
+    --acento-oscuro: #a8893e;
+    --blanco: #ffffff;
+    --rojo: #c0392b;
+    --verde: #27ae60;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: var(--negro); font-size: 14px; }
+
+  /* HEADER */
+  header {
+    background: var(--negro);
+    color: var(--blanco);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--acento);
+  }
+  header .marca { font-size: 22px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; }
+  header .marca span { color: var(--acento); font-weight: 600; }
+  header .subtitulo { font-size: 11px; color: #aaa; letter-spacing: 1px; margin-top: 2px; }
+  .header-right { text-align: right; font-size: 12px; color: #aaa; }
+
+  /* LAYOUT */
+  .container { display: grid; grid-template-columns: 1fr 380px; gap: 0; min-height: calc(100vh - 70px); }
+  .panel-izq { padding: 24px; overflow-y: auto; }
+  .panel-der { background: var(--blanco); border-left: 1px solid var(--borde); padding: 0; position: sticky; top: 0; height: calc(100vh - 70px); overflow-y: auto; display: flex; flex-direction: column; }
+
+  /* SECCIONES */
+  .seccion {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .seccion-header {
+    background: var(--gris-oscuro);
+    color: var(--blanco);
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .seccion-header .num {
+    background: var(--acento);
+    color: var(--negro);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .seccion-body { padding: 16px; }
+
+  /* FORMULARIOS */
+  .fila { display: grid; gap: 12px; margin-bottom: 12px; }
+  .fila-2 { grid-template-columns: 1fr 1fr; }
+  .fila-3 { grid-template-columns: 1fr 1fr 1fr; }
+  label { font-size: 11px; font-weight: 600; color: var(--gris-medio); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--borde);
+    border-radius: 4px; font-size: 13px; color: var(--negro);
+    background: #fafafa; transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--acento); background: white; }
+  textarea { resize: vertical; min-height: 60px; }
+
+  /* PILLS DE LÍNEA */
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    padding: 7px 16px; border: 2px solid var(--borde);
+    border-radius: 20px; cursor: pointer; font-size: 12px;
+    font-weight: 600; transition: all 0.2s; letter-spacing: 0.5px;
+    background: var(--blanco);
+  }
+  .pill:hover { border-color: var(--acento); color: var(--acento-oscuro); }
+  .pill.activo { border-color: var(--acento); background: var(--acento); color: var(--negro); }
+
+  /* TABLA DE MÓDULOS */
+  .tabla-modulos { width: 100%; border-collapse: collapse; }
+  .tabla-modulos th {
+    background: var(--gris-claro); padding: 8px 10px;
+    font-size: 11px; font-weight: 700; text-align: left;
+    text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-medio);
+    border-bottom: 2px solid var(--borde);
+  }
+  .tabla-modulos td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+  .tabla-modulos tr:hover td { background: #fafafa; }
+  .tabla-modulos select, .tabla-modulos input { padding: 5px 7px; font-size: 12px; }
+  .tabla-modulos .precio-fila { font-weight: 700; color: var(--gris-oscuro); text-align: right; font-size: 13px; }
+
+  /* BOTONES */
+  .btn {
+    padding: 9px 18px; border: none; border-radius: 4px;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-agregar { background: var(--acento); color: var(--negro); width: 100%; justify-content: center; margin-top: 8px; }
+  .btn-agregar:hover { background: var(--acento-oscuro); color: white; }
+  .btn-eliminar { background: none; border: 1px solid #ddd; color: var(--rojo); padding: 4px 8px; font-size: 11px; border-radius: 3px; }
+  .btn-eliminar:hover { background: var(--rojo); color: white; border-color: var(--rojo); }
+  .btn-primario { background: var(--negro); color: white; }
+  .btn-primario:hover { background: var(--gris-oscuro); }
+  .btn-secundario { background: white; color: var(--negro); border: 1px solid var(--borde); }
+  .btn-odoo { background: #714B67; color: white; }
+  .btn-odoo:hover { background: #5a3a52; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* RESUMEN / COTIZACIÓN */
+  .resumen-header {
+    background: var(--negro);
+    color: white;
+    padding: 16px;
+    border-bottom: 2px solid var(--acento);
+  }
+  .resumen-header h2 { font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .resumen-header p { font-size: 11px; color: #aaa; }
+
+  .resumen-body { padding: 16px; flex: 1; overflow-y: auto; }
+
+  .linea-resumen {
+    display: flex; justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+  }
+  .linea-resumen .nombre { color: var(--gris-oscuro); flex: 1; }
+  .linea-resumen .nombre small { display: block; color: #999; font-size: 11px; margin-top: 2px; }
+  .linea-resumen .monto { font-weight: 700; text-align: right; white-space: nowrap; margin-left: 8px; }
+  .linea-resumen .puntos { color: #888; font-size: 11px; display: block; }
+  .btn-del-item { background: none; border: none; cursor: pointer; color: #ccc; font-size: 14px; padding: 0 4px; }
+  .btn-del-item:hover { color: var(--rojo); }
+
+  .separador { height: 1px; background: var(--borde); margin: 12px 0; }
+  .subtotal-linea { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: var(--gris-medio); }
+  .subtotal-linea.fijo { color: #888; }
+  .total-final {
+    background: var(--negro); color: white;
+    padding: 14px 16px; margin: 12px -16px -16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .total-final .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; }
+  .total-final .cifra { font-size: 22px; font-weight: 300; color: var(--acento); }
+
+  .acciones-resumen {
+    padding: 16px;
+    border-top: 1px solid var(--borde);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .acciones-resumen .fila-btns { display: flex; gap: 8px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+  .badge-pg { background: var(--acento); color: var(--negro); }
+  .badge-linea { background: #e8f4fd; color: #1a73e8; }
+
+  /* INFO BOX */
+  .infobox { background: #fffbf0; border: 1px solid #f0d080; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: #7a5c00; margin-top: 8px; }
+  .infobox strong { display: block; margin-bottom: 4px; }
+
+  /* GRUPO DE PRECIOS */
+  .pg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pg-card {
+    border: 2px solid var(--borde); border-radius: 6px;
+    padding: 8px; cursor: pointer; transition: all 0.2s;
+    text-align: center;
+  }
+  .pg-card:hover { border-color: var(--acento); }
+  .pg-card.activo { border-color: var(--acento); background: #fffbf0; }
+  .pg-card .pg-num { font-size: 18px; font-weight: 700; color: var(--acento-oscuro); }
+  .pg-card .pg-nombre { font-size: 10px; color: var(--gris-medio); margin-top: 2px; }
+  .pg-card .pg-idx { font-size: 10px; color: #aaa; }
+
+  /* MÓDULO SELECTOR */
+  .mod-config { background: #fafafa; border: 1px solid var(--borde); border-radius: 6px; padding: 14px; margin-bottom: 12px; }
+  .mod-config-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .mod-config-header h4 { font-size: 13px; font-weight: 600; color: var(--gris-oscuro); }
+  .mod-fila { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+
+  /* VACÍO */
+  .vacio { text-align: center; padding: 32px 16px; color: #bbb; }
+  .vacio .icon { font-size: 40px; margin-bottom: 8px; }
+
+  /* MODAL ODOO */
+  .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+  .overlay.visible { display: flex; }
+  .modal { background: white; border-radius: 8px; padding: 24px; width: 500px; max-height: 80vh; overflow-y: auto; }
+  .modal h3 { margin-bottom: 16px; font-size: 16px; }
+  .modal-footer { margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* PRINT */
+  @media print {
+    header, .panel-izq, .acciones-resumen { display: none !important; }
+    .container { display: block; }
+    .panel-der { position: static; height: auto; border: none; }
+    .resumen-header { background: black !important; -webkit-print-color-adjust: exact; }
+  }
+
+  /* TAG NUEVO */
+  .tag-nuevo { background: #e8f5e9; color: #2e7d32; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+
+  /* ZONA CARGA PLANOS */
+  .zona-plano {
+    border: 2px dashed var(--borde); border-radius: 8px;
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: #fafafa; position: relative;
+  }
+  .zona-plano:hover, .zona-plano.drag-over { border-color: var(--acento); background: #fffbf0; }
+  .zona-plano input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .zona-plano .icono { font-size: 32px; margin-bottom: 6px; }
+  .zona-plano p { font-size: 12px; color: var(--gris-medio); }
+  .zona-plano small { font-size: 11px; color: #aaa; }
+  .plano-preview { margin-top: 12px; border: 1px solid var(--borde); border-radius: 6px; overflow: hidden; position: relative; }
+  .plano-preview img { width: 100%; max-height: 280px; object-fit: contain; background: #fff; }
+  .plano-preview .plano-info { padding: 8px 12px; background: #f5f5f5; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; }
+  .plano-overlay { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
+  .badge-plano { background: #1a1a1a; color: var(--acento); padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+  .archivos-adjuntos { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .archivo-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f9f9f9; border: 1px solid var(--borde); border-radius: 4px; font-size: 12px; }
+  .archivo-item .icono-tipo { font-size: 18px; }
+  .archivo-item .nombre { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .archivo-item .tamano { color: #999; font-size: 11px; white-space: nowrap; }
+  .btn-quitar-archivo { background: none; border: none; cursor: pointer; color: #ccc; font-size: 16px; padding: 0; }
+  .btn-quitar-archivo:hover { color: var(--rojo); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="marca">LEICHT <span>KÜCHEN</span></div>
+    <div class="subtitulo">Cotizador Anteproyecto · Concept Home Chile</div>
+  </div>
+  <div class="header-right">
+    <div>v2026.1</div>
+    <div>1 pt = 1 €</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PANEL IZQUIERDO -->
+  <div class="panel-izq">
+
+    <!-- SECCIÓN 1: DATOS DEL PROYECTO -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num">1</span> Datos del Proyecto</div>
+      <div class="seccion-body">
+        <div class="fila fila-2">
+          <div>
+            <label>Nombre del Cliente</label>
+            <input type="text" id="cliente" placeholder="Ej: Sr. García Moreno">
+          </div>
+          <div>
+            <label>N° Cotización</label>
+            <input type="text" id="num-cot" placeholder="COT-2026-001">
+          </div>
+        </div>
+        <div class="fila fila-3">
+          <div>
+            <label>Fecha</label>
+            <input type="text" id="fecha" readonly>
+          </div>
+          <div>
+            <label>Vendedor</label>
+            <input type="text" id="vendedor" placeholder="Nombre vendedor">
+          </div>
+          <div>
+            <label>Tienda</label>
+            <select id="tienda">
+              <option>Concept Home - Santiago</option>
+              <option>Concept Home - Providencia</option>
+              <option>Concept Home - Las Condes</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Observaciones del Proyecto</label>
+          <textarea id="obs" placeholder="Medidas aproximadas de la cocina, estilo deseado, electrodomésticos incluidos, etc."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: LÍNEA Y ESTILO -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num">2</span> Línea de Diseño</div>
+      <div class="seccion-body">
+        <div style="margin-bottom:12px">
+          <label>Línea</label>
+          <div class="pills">
+            <div class="pill activo" onclick="setLinea('PRIMO', this)">PRIMO <small style="font-size:10px;display:block;font-weight:400">Con manilla</small></div>
+            <div class="pill" onclick="setLinea('CONTINO', this)">CONTINO <small style="font-size:10px;display:block;font-weight:400">Sin manilla sup.</small></div>
+            <div class="pill" onclick="setLinea('AVANCE', this)">AVANCE <small style="font-size:10px;display:block;font-weight:400">Sin manilla inf.</small></div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label>Línea de Carcasa (altura frente)</label>
+          <div class="pills">
+            <div class="pill activo" onclick="setCarcasa('73', this)">73 cm</div>
+            <div class="pill" onclick="setCarcasa('80', this)">80 cm</div>
+            <div class="pill" onclick="setCarcasa('86', this)">86 cm</div>
+          </div>
+        </div>
+        <div>
+          <label>Grupo de Precio (estilo de frente)</label>
+          <div class="pg-grid" id="pg-grid"></div>
+          <div class="infobox" style="margin-top:8px">
+            <strong>📋 Grupo seleccionado: <span id="pg-seleccionado-nombre">PG1 — Estilo Básico (Índice 70)</span></strong>
+            Los valores en puntos se multiplican por el tipo de cambio EUR/CLP para obtener el precio en pesos.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: TIPO DE CAMBIO -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num">3</span> Tipo de Cambio y Márgenes</div>
+      <div class="seccion-body">
+        <div class="fila fila-3">
+          <div>
+            <label>EUR → CLP (1 Euro = ? Pesos)</label>
+            <input type="number" id="tc" value="1100" min="800" max="1600" step="10" oninput="recalcular()">
+          </div>
+          <div>
+            <label>Margen Comercial (%)</label>
+            <input type="number" id="margen" value="35" min="0" max="200" step="1" oninput="recalcular()">
+          </div>
+          <div>
+            <label>Descuento Cliente (%)</label>
+            <input type="number" id="descuento" value="0" min="0" max="50" step="1" oninput="recalcular()">
+          </div>
+        </div>
+        <div class="fila fila-2">
+          <div>
+            <label>Costo Importación (CLP fijo)</label>
+            <input type="number" id="costo-imp" value="1400000" step="50000" oninput="recalcular()">
+          </div>
+          <div>
+            <label>Costo Instalación (CLP fijo)</label>
+            <input type="number" id="costo-inst" value="700000" step="50000" oninput="recalcular()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3b: PLANOS / ARCHIVOS -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num" style="background:#4a90d9">📐</span> Plano / Archivos del Proyecto</div>
+      <div class="seccion-body">
+        <div id="zona-plano-container">
+          <div class="zona-plano" id="zona-plano" ondragover="ev.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="soltarArchivo(event)">
+            <input type="file" id="input-plano" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.dxf,.dwg,.svg" onchange="cargarArchivos(this.files)">
+            <div class="icono">📁</div>
+            <p><strong>Arrastrar o hacer clic</strong> para adjuntar plano o imagen</p>
+            <small>PDF, JPG, PNG, SVG, DXF/DWG (solo referencia) · Máx. 20 MB por archivo</small>
+          </div>
+        </div>
+        <div id="archivos-lista" class="archivos-adjuntos"></div>
+        <div id="plano-preview-container"></div>
+        <div class="infobox" style="margin-top:8px">
+          <strong>💡 Uso del plano</strong>
+          El archivo queda guardado en la cotización y se adjunta al PDF y al presupuesto de Odoo. Los archivos DWG/DXF se adjuntan como referencia (no se procesan visualmente).
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: ELEVACIONES -->
+    <div class="seccion">
+      <div class="seccion-header">
+        <span class="num">4</span> Diseño por Elevaciones
+        <span style="margin-left:auto;font-size:10px;opacity:.7;font-weight:400">Organice los módulos por pared o zona</span>
+      </div>
+      <div class="seccion-body" style="padding:0">
+
+        <!-- BARRA DE TABS ELEVACIONES -->
+        <div id="elevaciones-tabs" style="display:flex;flex-wrap:wrap;gap:4px;padding:12px 16px 0;background:#f8f8f8;border-bottom:2px solid #e0e0e0;align-items:center"></div>
+
+        <!-- CONTENIDO DE LA ELEVACIÓN ACTIVA -->
+        <div id="elevacion-contenido" style="padding:16px">
+          <!-- Nombre + indicador de ancho -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="flex:1">
+              <label style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Nombre de esta elevación</label>
+              <input type="text" id="elev-nombre" placeholder="Ej: Pared ventana" style="width:100%;padding:6px 10px;border:1px solid #ddd;border-radius:4px;font-size:13px"
+                oninput="renombrarElevacionActiva(this.value)">
+            </div>
+            <div id="elev-ancho-badge" style="background:#f0f4fb;border:1px solid #c8d8f0;border-radius:6px;padding:8px 12px;font-size:11px;color:#1a3a6b;white-space:nowrap;text-align:center;min-width:130px">
+              <div style="font-weight:700;font-size:14px" id="elev-ml-base">0 cm</div>
+              <div style="color:#888">base · <span id="elev-ml-aereo">0</span> cm aéreo</div>
+            </div>
+          </div>
+
+          <!-- Panel de dimensiones de la elevación -->
+          <div style="display:flex;gap:8px;margin-bottom:12px;align-items:flex-end;flex-wrap:wrap">
+            <div>
+              <label style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">📏 Ancho pared</label>
+              <div style="display:flex;align-items:center;gap:3px">
+                <input type="number" id="elev-ancho-cm" value="360" min="80" max="900" step="10"
+                  style="width:68px;padding:5px 8px;border:2px solid #c8d8f0;border-radius:4px;font-size:14px;font-weight:700;color:#1a3a6b;text-align:center"
+                  oninput="setElevDim('ancho',this.value)">
+                <span style="font-size:11px;color:#999">cm</span>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">↕️ Alto cielo</label>
+              <div style="display:flex;align-items:center;gap:3px">
+                <input type="number" id="elev-alto-cm" value="250" min="200" max="320" step="5"
+                  style="width:68px;padding:5px 8px;border:2px solid #c8d8f0;border-radius:4px;font-size:14px;font-weight:700;color:#1a3a6b;text-align:center"
+                  oninput="setElevDim('alto',this.value)">
+                <span style="font-size:11px;color:#999">cm</span>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">⬛ Prof. bajos</label>
+              <div style="display:flex;align-items:center;gap:3px">
+                <input type="number" id="elev-prof-cm" value="60" min="40" max="75" step="5"
+                  style="width:60px;padding:5px 8px;border:2px solid #c8d8f0;border-radius:4px;font-size:14px;font-weight:700;color:#1a3a6b;text-align:center"
+                  oninput="setElevDim('prof',this.value)">
+                <span style="font-size:11px;color:#999">cm</span>
+              </div>
+            </div>
+            <div id="elev-libre-badge" style="flex:1;min-width:110px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:6px;padding:7px 12px;text-align:center">
+              <div style="font-size:16px;font-weight:700;color:#16a34a" id="elev-libre-num">—</div>
+              <div style="font-size:10px;color:#888">cm libre en pared</div>
+            </div>
+          </div>
+
+          <!-- Diagrama interactivo de elevación -->
+          <div id="elev-diagrama" style="margin-bottom:14px"></div>
+
+          <!-- Paleta drag-and-drop de módulos -->
+          <div id="mod-paleta" class="mod-palette">
+            <div style="font-size:10px;color:#aaa;margin-bottom:8px">
+              💡 <strong>Arrastra</strong> un módulo al diagrama o haz <strong>clic</strong> para agregar
+            </div>
+          </div>
+
+          <!-- Módulos colocados: lista compacta por tipo -->
+          <div style="margin-top:4px">
+            <div style="display:flex;gap:0;border-bottom:1px solid #eee;margin-bottom:8px">
+              <button id="etab-base"    class="etab activo" onclick="setETipoTab('base')">🪵 Bajos</button>
+              <button id="etab-aereo"   class="etab"        onclick="setETipoTab('aereo')">🏠 Aéreos</button>
+              <button id="etab-torre"   class="etab"        onclick="setETipoTab('torre')">🗼 Torres</button>
+            </div>
+            <div id="elista-base"  class="etipo-panel">
+              <div id="elista-base-items"></div>
+            </div>
+            <div id="elista-aereo" class="etipo-panel" style="display:none">
+              <div id="elista-aereo-items"></div>
+            </div>
+            <div id="elista-torre" class="etipo-panel" style="display:none">
+              <div id="elista-torre-items"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 5: ACCESORIOS -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num">5</span> Accesorios y Mesón</div>
+      <div class="seccion-body">
+        <div id="lista-accesorio"></div>
+        <button class="btn btn-agregar" onclick="agregarModulo('accesorio')">+ Agregar Accesorio / Mesón</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 6: CUBIERTA DE TRABAJO -->
+    <div class="seccion">
+      <div class="seccion-header"><span class="num">6</span> 💎 Cubierta de Trabajo</div>
+      <div class="seccion-body">
+
+        <!-- Material -->
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Material</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="cub-pill activo" id="cub-pill-ninguna" onclick="setCubiertaTipo('ninguna')">— Sin cubierta</button>
+            <button class="cub-pill" id="cub-pill-quarzo" onclick="setCubiertaTipo('quarzo')">💎 Quarzo</button>
+            <button class="cub-pill" id="cub-pill-ultracompacto" onclick="setCubiertaTipo('ultracompacto')">🪨 Ultra Compacto</button>
+          </div>
+        </div>
+
+        <!-- Parámetros de medición -->
+        <div id="cub-params" style="display:none">
+          <div class="fila fila-3" style="margin-bottom:10px">
+            <div>
+              <label>Prof. mesón (cm)</label>
+              <input type="number" id="cub-prof-cm" value="60" min="30" max="120" step="5" oninput="recalcularCubierta()">
+            </div>
+            <div>
+              <label>Retorno de muro</label>
+              <select id="cub-retorno-tipo" onchange="recalcularCubierta()">
+                <option value="ninguno">Sin retorno</option>
+                <option value="6cm">Retorno 6 cm</option>
+                <option value="completo">Retorno completo</option>
+              </select>
+            </div>
+            <div>
+              <label>Cant. retornos</label>
+              <input type="number" id="cub-retorno-qty" value="0" min="0" max="8" step="1" oninput="recalcularCubierta()">
+            </div>
+          </div>
+
+          <!-- Desglose m² calculados -->
+          <div style="background:#f8f8f8;border:1px solid #e8e8e8;border-radius:6px;padding:10px;margin-bottom:10px;font-size:11px">
+            <div style="font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;font-size:10px">Medidas calculadas</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span style="color:#555">Mesón frente (<span id="cub-ml-display">0.00</span> ml × <span id="cub-prof-display">60</span> cm)</span>
+              <strong id="cub-m2-meson" style="color:#2c7be5">0.00 m²</strong>
+            </div>
+            <div id="cub-retorno-row" style="display:none;justify-content:space-between;margin-bottom:3px">
+              <span style="color:#555" id="cub-retorno-desc">Retorno (<span id="cub-retorno-qty-display">0</span> × <span id="cub-retorno-alto-display">6</span> cm alt.)</span>
+              <strong id="cub-m2-retorno" style="color:#8e44ad">0.00 m²</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-top:1px solid #e0e0e0;padding-top:5px;margin-top:3px">
+              <span style="font-weight:700;color:#333">Total m² cubierta</span>
+              <strong id="cub-m2-total" style="color:#1a6b1a;font-size:13px">0.00 m²</strong>
+            </div>
+          </div>
+
+          <!-- Precio y total -->
+          <div class="fila" style="gap:8px;margin-bottom:10px">
+            <div style="flex:1">
+              <label>Precio/m² instalado ($)</label>
+              <input type="number" id="cub-precio-m2" value="350000" step="10000"
+                oninput="recalcularCubierta();estado.cubierta.precioM2=parseFloat(this.value)||350000">
+            </div>
+          </div>
+
+          <div id="cub-result-box" class="cub-result">
+            <div>
+              <div class="cub-lbl" id="cub-tipo-label">Quarzo</div>
+              <div style="font-size:10px;color:#aaa;margin-top:2px" id="cub-m2-label">0.00 m² × $350.000/m²</div>
+            </div>
+            <div class="cub-num" id="cub-total-num">$0</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panel-izq -->
+
+  <!-- PANEL DERECHO: RESUMEN -->
+  <div class="panel-der">
+    <div class="resumen-header">
+      <h2>💰 Resumen Cotización</h2>
+      <p id="resumen-cliente">Complete los datos del proyecto</p>
+    </div>
+
+    <div class="resumen-body" id="resumen-body">
+      <div class="vacio">
+        <div class="icon">📋</div>
+        <div>Agregue módulos para ver el resumen</div>
+      </div>
+    </div>
+
+    <div class="total-final" id="total-bloque">
+      <div>
+        <div class="label">TOTAL PROYECTO</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">IVA no incluido</div>
+      </div>
+      <div class="cifra" id="total-cifra">$ 0</div>
+    </div>
+
+    <div class="acciones-resumen">
+      <div class="fila-btns">
+        <button class="btn btn-primario btn-sm" onclick="window.print()" style="flex:1">🖨️ Imprimir</button>
+        <button class="btn btn-secundario btn-sm" onclick="exportarPDF()" style="flex:1">📄 PDF</button>
+      </div>
+      <button class="btn btn-odoo" style="width:100%" onclick="abrirModalOdoo()">
+        🔗 Enviar a Odoo como Presupuesto
+      </button>
+      <button class="btn btn-secundario btn-sm" onclick="limpiarTodo()" style="width:100%;color:#c00">🗑️ Nueva Cotización</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ODOO -->
+<div class="overlay" id="modal-odoo">
+  <div class="modal" style="width:560px">
+    <h3>🔗 Enviar a Odoo Online</h3>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:0">
+      <button class="tab-btn tab-activo" onclick="setTab('api')" id="tab-api" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid #c8a96e;color:#1a1a1a">🔗 API Directa</button>
+      <button class="tab-btn" onclick="setTab('webhook')" id="tab-webhook" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#888">⚡ Make/Zapier</button>
+      <button class="tab-btn" onclick="setTab('json')" id="tab-json" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#888">📥 Exportar JSON</button>
+    </div>
+
+    <!-- TAB: API DIRECTA -->
+    <div id="panel-api">
+      <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:10px 14px;font-size:12px;color:#7a5c00;margin-bottom:14px">
+        <strong>📋 Pasos previos en Odoo Online:</strong><br>
+        1. Ir a <b>Configuración → Usuarios → [su usuario] → Seguridad de cuenta</b><br>
+        2. Clic en <b>"Nueva clave API"</b> → copiar la clave<br>
+        3. El campo <b>Base de datos</b> es el subdominio: <code>su-empresa</code> de <code>su-empresa.odoo.com</code>
+      </div>
+      <div class="fila">
+        <label>URL de Odoo</label>
+        <input type="text" id="odoo-url" placeholder="https://concepthome.odoo.com" oninput="guardarConfigOdoo()">
+      </div>
+      <div class="fila fila-2">
+        <div>
+          <label>Base de Datos (subdominio)</label>
+          <input type="text" id="odoo-db" placeholder="concepthome" oninput="guardarConfigOdoo()">
+        </div>
+        <div>
+          <label>API Key</label>
+          <input type="password" id="odoo-apikey" placeholder="••••••••••••••••" oninput="guardarConfigOdoo()">
+        </div>
+      </div>
+      <div class="fila fila-2">
+        <div>
+          <label>ID Producto "Módulo Leicht" en Odoo</label>
+          <input type="number" id="odoo-prod-id" placeholder="1" value="1" oninput="guardarConfigOdoo()">
+        </div>
+        <div>
+          <label>ID Equipo de Ventas (opcional)</label>
+          <input type="number" id="odoo-team-id" placeholder="1" value="" oninput="guardarConfigOdoo()">
+        </div>
+      </div>
+      <div id="odoo-status" style="margin-top:8px;font-size:12px;display:none;padding:8px;border-radius:4px;background:#f5f5f5"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario btn-sm" onclick="cerrarModalOdoo()">Cancelar</button>
+        <button class="btn btn-secundario btn-sm" onclick="probarConexionOdoo()">🔌 Probar Conexión</button>
+        <button class="btn btn-odoo btn-sm" onclick="enviarOdoo()">✅ Crear Presupuesto</button>
+      </div>
+    </div>
+
+    <!-- TAB: WEBHOOK (MAKE / ZAPIER) -->
+    <div id="panel-webhook" style="display:none">
+      <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;padding:10px 14px;font-size:12px;color:#2e7d32;margin-bottom:14px">
+        <strong>✅ Método recomendado para Odoo Online (evita CORS)</strong><br>
+        Make.com (gratis) actúa como puente entre el cotizador y Odoo. Sin instalar nada en el servidor.
+      </div>
+      <div style="font-size:12px;color:#444;margin-bottom:12px">
+        <strong>Cómo configurar en Make.com (5 pasos):</strong>
+        <ol style="margin:8px 0 0 16px;line-height:2">
+          <li>Crear cuenta gratis en <a href="https://make.com" target="_blank">make.com</a></li>
+          <li>Crear un <b>Escenario nuevo</b> → agregar módulo <b>Webhooks → Custom Webhook</b></li>
+          <li>Copiar la URL del webhook que entrega Make</li>
+          <li>Agregar módulo <b>Odoo → Create a Record</b> → conectar su cuenta Odoo</li>
+          <li>Mapear los campos: <code>partner_id</code>, <code>note</code>, <code>order_line</code></li>
+        </ol>
+      </div>
+      <div class="fila">
+        <label>URL del Webhook de Make / Zapier</label>
+        <input type="text" id="webhook-url" placeholder="https://hook.make.com/xxxxxxxxxxxx" oninput="guardarConfigOdoo()">
+      </div>
+      <div id="webhook-status" style="margin-top:8px;font-size:12px;display:none;padding:8px;border-radius:4px;background:#f5f5f5"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secundario btn-sm" onclick="cerrarModalOdoo()">Cancelar</button>
+        <button class="btn btn-primario btn-sm" onclick="enviarWebhook()">⚡ Enviar a Make/Zapier</button>
+      </div>
+    </div>
+
+    <!-- TAB: EXPORTAR JSON -->
+    <div id="panel-json" style="display:none">
+      <div style="font-size:12px;color:#444;margin-bottom:12px">
+        <strong>Exportar la cotización como JSON</strong> para importar manualmente en Odoo o compartir con su equipo técnico.
+      </div>
+      <div style="background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:10px;font-size:11px;color:#555;max-height:180px;overflow-y:auto" id="json-preview"></div>
+      <div class="modal-footer" style="margin-top:12px">
+        <button class="btn btn-secundario btn-sm" onclick="cerrarModalOdoo()">Cancelar</button>
+        <button class="btn btn-secundario btn-sm" onclick="copiarJSON()">📋 Copiar JSON</button>
+        <button class="btn btn-primario btn-sm" onclick="descargarJSON()">📥 Descargar JSON</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.tab-btn { border-radius: 0; margin-bottom: -2px; }
+/* ELEVACIONES */
+.elev-tab {
+  padding: 7px 14px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  border-radius: 6px 6px 0 0;
+  transition: all .15s;
+  position: relative;
+}
+.elev-tab:hover { color: #444; background: #f0f0f0; }
+.elev-tab.activo { color: #1a1a1a; border-bottom-color: var(--acento); background: #fff; }
+.elev-tab .elev-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.elev-tab .elev-close {
+  margin-left: 6px;
+  opacity: 0;
+  font-size: 10px;
+  line-height: 1;
+  color: #c00;
+  transition: opacity .15s;
+}
+.elev-tab:hover .elev-close { opacity: 1; }
+.btn-add-elev {
+  padding: 5px 12px;
+  border: 2px dashed #ccc;
+  border-radius: 20px;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: #888;
+  transition: all .15s;
+  margin-left: 4px;
+}
+.btn-add-elev:hover { border-color: var(--acento); color: var(--acento-oscuro); }
+.isla-tab {
+  margin-left: auto;
+  background: linear-gradient(135deg,#e67e22,#f39c12);
+  color: #fff !important;
+  border-radius: 6px 6px 0 0;
+  padding: 7px 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 3px solid transparent;
+}
+.isla-tab.activo { border-bottom-color: #fff; box-shadow: 0 -2px 8px rgba(230,126,34,.3); }
+/* sub-tabs tipo */
+.etab {
+  padding: 6px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  transition: all .12s;
+}
+.etab.activo { color: #1a1a1a; border-bottom-color: var(--acento); }
+.etab:hover { color: #444; }
+
+/* ── MODULE PALETTE ───────────────────────────────────────── */
+.mod-palette {
+  background: #f8f7f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.palette-section { margin-bottom: 8px; }
+.palette-section:last-child { margin-bottom: 0; }
+.palette-row-label {
+  font-size: 9px; font-weight: 700; color: #999;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 5px;
+}
+.palette-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.pal-chip {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 6px 8px;
+  background: white; border: 1.5px solid #e0e0e0;
+  border-radius: 6px; cursor: grab;
+  transition: all 0.15s; user-select: none;
+  min-width: 52px; max-width: 80px;
+}
+.pal-chip:hover {
+  border-color: var(--acento);
+  box-shadow: 0 2px 8px rgba(200,169,110,0.25);
+  transform: translateY(-1px);
+}
+.pal-chip:active { cursor: grabbing; transform: scale(0.95); }
+.pal-chip .pc-icon { font-size: 16px; line-height: 1; }
+.pal-chip .pc-name {
+  font-size: 9px; color: #666; text-align: center;
+  line-height: 1.2; word-break: break-word;
+}
+.pal-chip.base-chip  { border-left: 3px solid #2c7be5; }
+.pal-chip.aereo-chip { border-left: 3px solid #27ae60; }
+.pal-chip.torre-chip { border-left: 3px solid #8e44ad; }
+.pal-chip.dragging-over { border-color: var(--acento); background: #fffbf0; }
+
+/* ── COMPACT MODULE LIST ─────────────────────────────────── */
+.mod-compact-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; background: #f8f8f8;
+  border: 1px solid #ebebeb;
+  border-radius: 4px; margin-bottom: 3px; font-size: 12px;
+}
+.mod-compact-row:hover { background: #f0f0f0; }
+.mod-compact-icon { font-size: 14px; flex-shrink: 0; }
+.mod-compact-name { flex: 1; color: #333; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mod-compact-qty { color: #888; font-size: 11px; flex-shrink: 0; }
+.mod-compact-btn {
+  padding: 2px 7px; border-radius: 3px; font-size: 11px;
+  cursor: pointer; flex-shrink: 0; transition: background 0.1s;
+}
+.mod-compact-edit { border: 1px solid #ddd; background: white; color: #555; }
+.mod-compact-edit:hover { background: #f0f0f0; }
+.mod-compact-del { border: 1px solid #fdd; background: #fff5f5; color: #c00; }
+.mod-compact-del:hover { background: #ffebee; }
+
+/* ── INLINE POPOVER ──────────────────────────────────────── */
+#mod-popover {
+  position: fixed; background: white;
+  border: 1px solid #ddd; border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 14px; z-index: 9999;
+  width: 300px; display: none;
+}
+#mod-popover .pop-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid #eee;
+}
+#mod-popover .pop-title { font-weight: 700; font-size: 12px; color: #1a1a1a; }
+#mod-popover .pop-close {
+  cursor: pointer; font-size: 14px; color: #999;
+  background: none; border: none; padding: 2px 5px;
+  border-radius: 3px; line-height: 1;
+}
+#mod-popover .pop-close:hover { background: #f0f0f0; color: #333; }
+.pop-section { margin-bottom: 10px; }
+.pop-label {
+  font-size: 10px; font-weight: 700; color: #888;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  display: block; margin-bottom: 5px;
+}
+.pop-subtypes { display: flex; gap: 4px; flex-wrap: wrap; }
+.pop-st {
+  padding: 4px 8px; border: 1px solid #ddd;
+  border-radius: 4px; cursor: pointer; font-size: 11px;
+  background: white; transition: all 0.12s;
+  line-height: 1.3;
+}
+.pop-st:hover { border-color: var(--acento); background: #fffbf0; }
+.pop-st.activo { border-color: var(--acento); background: var(--acento); color: var(--negro); }
+.pop-row { display: flex; gap: 8px; align-items: flex-end; }
+.pop-select {
+  width: 100%; padding: 5px 8px; border: 1px solid #ddd;
+  border-radius: 4px; font-size: 12px; background: white;
+}
+.pop-qty {
+  display: flex; align-items: center; gap: 3px;
+  border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+}
+.pop-qty button {
+  width: 26px; height: 28px; border: none; border-radius: 0;
+  cursor: pointer; font-size: 15px; font-weight: 700;
+  background: #f5f5f5; color: #444; line-height: 1;
+}
+.pop-qty button:hover { background: #e8e8e8; }
+.pop-qty input {
+  width: 34px; text-align: center; border: none;
+  border-left: 1px solid #ddd; border-right: 1px solid #ddd;
+  padding: 4px 2px; font-size: 12px; background: white;
+}
+.pop-desc {
+  width: 100%; padding: 5px 8px; border: 1px solid #ddd;
+  border-radius: 4px; font-size: 12px;
+}
+.pop-delete {
+  background: #fff0f0; border: 1px solid #ffcdd2;
+  color: #c00; border-radius: 4px; padding: 6px 10px;
+  cursor: pointer; font-size: 11px; width: 100%;
+  margin-top: 6px; transition: background 0.1s;
+}
+.pop-delete:hover { background: #ffebee; }
+
+/* Diagrama interactivo de elevación */
+.diag-elevacion {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #eae6e0;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+}
+.diag-pared { position:absolute;inset:0;background:linear-gradient(180deg,#ddd9d3 0%,#e8e4df 60%,#cfc9c0 100%); }
+.diag-suelo { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,#7a6545,#9a8060);z-index:2; }
+.diag-plinto { position:absolute;left:0;right:0;background:linear-gradient(0deg,#b09060,#c8a878);z-index:3; }
+.diag-encimera { position:absolute;left:0;right:0;height:5px;background:linear-gradient(0deg,#5a4030,#8B6545);z-index:3; }
+.diag-zona-base { position:absolute;left:0;right:0;background:rgba(200,169,110,0.08);border-top:1px dashed rgba(200,169,110,0.3);z-index:1; }
+.diag-zona-aereo { position:absolute;left:0;right:0;background:rgba(84,199,192,0.1);border-top:1px dashed rgba(84,199,192,0.4);border-bottom:1px dashed rgba(84,199,192,0.4);z-index:1; }
+.diag-techo { position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(180deg,#b0aaa2,#d0ccc6);z-index:2; }
+.diag-label { position:absolute;right:5px;font-size:9px;color:rgba(0,0,0,0.35);z-index:4;white-space:nowrap; }
+
+/* ─── Diagrama v3 — canvas container ─────────────────────────────── */
+.diag-elevacion-v3 {
+  position: relative;
+  width: 100%;
+  border: 1px solid #b8b0a4;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.1);
+  background: #d8d4cf;
+}
+/* ─── Background layers ───────────────────────────────────────────── */
+.diag-cornice {
+  background: linear-gradient(180deg, #c0bbb4 0%, #d8d4ce 60%, #ccc8c2 100%);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.diag-wall-shadow-l {
+  background: linear-gradient(90deg, rgba(0,0,0,0.22) 0%, transparent 100%);
+  pointer-events: none;
+}
+.diag-wall-shadow-r {
+  background: linear-gradient(-90deg, rgba(0,0,0,0.22) 0%, transparent 100%);
+  pointer-events: none;
+}
+.diag-backsplash {
+  background-color: #e2ddd5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 15px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 15px);
+  z-index: 2;
+}
+.diag-encimera-stone {
+  background: linear-gradient(180deg, #7a6a58 0%, #5c4c3c 40%, #6e5c4a 100%);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.diag-plinto-strip {
+  background: linear-gradient(0deg, #6a5535 0%, #8a7248 100%);
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.diag-floor-parquet {
+  background: linear-gradient(180deg, #8a7248 0%, #7a6238 100%);
+}
+/* ─── Gap / free space zones ──────────────────────────────────────── */
+.diag-gap-zone {
+  position: absolute;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(200,180,140,0.10),
+    rgba(200,180,140,0.10) 3px,
+    transparent 3px,
+    transparent 10px
+  );
+  border: 1px dashed rgba(180,160,120,0.35);
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 2px;
+}
+/* ─── Dimension ruler ─────────────────────────────────────────────── */
+.diag-ruler-wrap {
+  display: flex;
+  width: 100%;
+  margin-top: 4px;
+  border-radius: 3px;
+  overflow: hidden;
+  font-size: 8.5px;
+  font-weight: 600;
+  height: 16px;
+}
+.diag-ruler-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  overflow: hidden;
+  min-width: 1px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  font-size: 8px;
+  letter-spacing: -0.3px;
+}
+.diag-ruler-gap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede9e2;
+  color: #a09888;
+  overflow: hidden;
+  border-right: 1px solid #d8d4cc;
+  font-size: 8px;
+}
+.diag-mod-block {
+  position: absolute;
+  cursor: grab;
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  box-shadow: 1px 2px 5px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: box-shadow 0.1s;
+  z-index: 10;
+}
+.diag-mod-block:hover { box-shadow: 2px 3px 10px rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.7); z-index:20; }
+.diag-mod-block.dragging { opacity:0.25; pointer-events:none; }
+.diag-mod-block.drop-target { outline:2.5px solid #fff; outline-offset:1px; z-index:15; }
+.diag-vacia { display:flex;align-items:center;justify-content:center;height:100%;color:#b0a898;font-size:12px;font-style:italic; }
+/* Leyenda */
+.diag-legend { display:flex;gap:12px;margin-top:5px;font-size:10px;color:#777; }
+.diag-legend-dot { display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:3px; }
+
+/* SUBTIPOS DE MÓDULOS */
+.subtipos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:6px; margin-bottom:12px; }
+.subtipo-card { border:2px solid var(--borde); border-radius:6px; padding:8px 6px; cursor:pointer; text-align:center; transition:all .15s; background:#fafafa; }
+.subtipo-card:hover { border-color:var(--acento); background:#fffdf7; }
+.subtipo-card.activo { border-color:var(--acento); background:#fffbf0; }
+.subtipo-card .st-icon { font-size:22px; margin-bottom:3px; }
+.subtipo-card .st-nombre { font-size:10px; font-weight:700; color:#333; line-height:1.2; }
+.subtipo-card .st-desc { font-size:9px; color:#888; line-height:1.2; margin-top:2px; display:none; }
+.subtipo-card.activo .st-desc { display:block; color:#a07820; }
+.mod-subtipo-badge { display:inline-block; background:var(--acento); color:#fff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; text-transform:uppercase; letter-spacing:.5px; margin-left:6px; }
+
+.tab-btn.tab-activo { border-bottom: 2px solid var(--acento) !important; color: var(--negro) !important; }
+</style>
+
+<script>
+// =====================================================================
+// DATOS DE PRECIOS LEICHT KÜCHEN 2026
+// Puntos por Grupo de Precio (PG1 a PG8) = Euros
+// Fuente: Catálogo PRIMO / CONTINO / AVANCE 1/2026
+// =====================================================================
+
+const GRUPOS_PRECIO = [
+  { id: 1, nombre: 'Estilo Básico', programas: 'SIRIUS, TERRA, ORLANDO, IKONO, SYNTHIA, GEO, CERES, MIRO', indice: 70 },
+  { id: 2, nombre: 'Estilo Intermedio A', programas: 'METURO, BONDI, MINERA', indice: 73 },
+  { id: 3, nombre: 'Estilo Intermedio B', programas: 'CLASSIC-FF, IDEA, TOCCO, AMETIS', indice: 79 },
+  { id: 4, nombre: 'Estilo Medio', programas: 'CLASSIC-FS, PEARL, VERVE-FS, WAKUU-FS, AVENIDA, CARRÉ-FS', indice: 86 },
+  { id: 5, nombre: 'Estilo Premium A', programas: 'MADERO, LARGO-FG, TOPOS', indice: 100 },
+  { id: 6, nombre: 'Estilo Premium B', programas: 'LAIKA, IOS-M, IOS, TOPOS-Q, TERMA, WAKUU', indice: 114 },
+  { id: 7, nombre: 'Estilo Alto', programas: 'BOSSA, BOSSA-FS, TERMA-Q, CONCRETE, STEEL', indice: 124 },
+  { id: 8, nombre: 'Estilo Lujo', programas: 'BAHIA, ALURO', indice: 134 }
+];
+
+// PRECIOS MÓDULOS BASE (PISO) — Carcasa 73cm, Prof. 56cm
+// [PG1, PG2, PG3, PG4, PG5, PG6, PG7, PG8]
+const PRECIOS_BASE_73 = {
+  15: [212, 217, 249, 270, 312, 351, 388, 423],
+  20: [212, 217, 249, 270, 312, 351, 388, 423],
+  30: [212, 217, 249, 270, 312, 351, 388, 423],
+  40: [216, 222, 254, 277, 327, 371, 417, 449],
+  45: [220, 227, 257, 282, 333, 384, 430, 465],
+  50: [224, 235, 260, 288, 345, 401, 446, 479],
+  60: [234, 250, 270, 305, 369, 433, 482, 518],
+  70: [240, 255, 280, 313, 392, 472, 518, 552],
+  80: [299, 316, 359, 410, 507, 605, 676, 725],
+  90: [312, 326, 369, 421, 527, 629, 699, 751],
+  100: [322, 338, 380, 429, 539, 648, 720, 776],
+  120: [333, 359, 397, 451, 575, 697, 768, 825]
+};
+
+// Carcasa 80cm
+const PRECIOS_BASE_80 = {
+  15: [220, 228, 259, 288, 339, 388, 429, 467],
+  20: [220, 228, 259, 288, 339, 388, 429, 467],
+  30: [220, 228, 259, 288, 339, 388, 429, 467],
+  40: [227, 239, 264, 297, 354, 412, 454, 489],
+  45: [238, 249, 271, 305, 363, 422, 472, 508],
+  50: [240, 252, 278, 308, 370, 432, 480, 520],
+  60: [251, 267, 296, 326, 393, 462, 514, 554],
+  70: [260, 277, 313, 346, 420, 492, 540, 582],
+  80: [320, 338, 381, 436, 535, 635, 708, 759],
+  90: [334, 350, 395, 448, 560, 670, 743, 799],
+  100: [348, 362, 410, 464, 582, 700, 776, 835],
+  120: [364, 384, 425, 479, 615, 744, 821, 880]
+};
+
+// Carcasa 86cm
+const PRECIOS_BASE_86 = {
+  15: [227, 239, 274, 305, 357, 407, 450, 493],
+  20: [227, 239, 274, 305, 357, 407, 450, 493],
+  30: [227, 239, 274, 305, 357, 407, 450, 493],
+  40: [234, 249, 281, 316, 374, 430, 478, 517],
+  45: [246, 258, 288, 325, 385, 443, 498, 538],
+  50: [248, 264, 296, 330, 393, 455, 506, 548],
+  60: [260, 279, 313, 347, 418, 488, 542, 588],
+  70: [270, 293, 330, 368, 447, 522, 568, 617],
+  80: [334, 353, 401, 459, 562, 664, 740, 796],
+  90: [349, 369, 415, 473, 591, 706, 783, 844],
+  100: [364, 385, 430, 490, 613, 734, 814, 876],
+  120: [381, 406, 451, 510, 650, 782, 868, 935]
+};
+
+// PRECIOS MÓDULOS AÉREOS (PARED)
+// Carcasa 66cm, Prof. 34cm
+const PRECIOS_AEREO_66 = {
+  20: [163, 173, 201, 228, 282, 335, 381, 411],
+  30: [163, 173, 201, 228, 282, 335, 381, 411],
+  40: [172, 186, 207, 242, 296, 353, 400, 432],
+  45: [183, 192, 213, 250, 308, 364, 418, 454],
+  50: [187, 195, 215, 254, 315, 373, 423, 459],
+  60: [195, 202, 228, 265, 335, 408, 447, 483],
+  70: [201, 209, 244, 277, 357, 442, 472, 510],
+  80: [542, 565, 596, 660, 712, 767, 812, 866],
+  90: [583, 613, 646, 716, 774, 833, 881, 938],
+  100: [628, 660, 698, 773, 836, 899, 948, 1010],
+  120: [710, 752, 799, 883, 957, 1028, 1084, 1156]
+};
+
+// Carcasa 80cm, Prof. 34cm
+const PRECIOS_AEREO_80 = {
+  20: [189, 198, 221, 258, 313, 364, 416, 447],
+  30: [189, 198, 221, 258, 313, 364, 416, 447],
+  40: [195, 202, 228, 264, 327, 388, 442, 474],
+  45: [200, 209, 239, 271, 333, 398, 460, 500],
+  50: [202, 212, 245, 273, 344, 412, 472, 506],
+  60: [210, 221, 256, 291, 370, 448, 498, 537],
+  70: [219, 231, 267, 309, 397, 484, 525, 570],
+  80: [553, 575, 602, 674, 732, 791, 833, 888],
+  90: [593, 624, 653, 731, 794, 855, 901, 960],
+  100: [636, 668, 704, 789, 854, 921, 969, 1033],
+  120: [730, 775, 824, 910, 988, 1061, 1117, 1190]
+};
+
+// Carcasa 93cm, Prof. 34cm
+const PRECIOS_AEREO_93 = {
+  20: [228, 247, 272, 308, 365, 423, 478, 518],
+  30: [228, 247, 272, 308, 365, 423, 478, 518],
+  40: [239, 254, 278, 315, 384, 454, 504, 543],
+  45: [249, 259, 288, 325, 405, 483, 529, 571],
+  50: [252, 261, 291, 328, 415, 501, 534, 579],
+  60: [259, 271, 305, 344, 433, 526, 587, 635],
+  70: [267, 280, 317, 360, 452, 550, 640, 691],
+  80: [636, 668, 704, 789, 854, 921, 969, 1033],
+  90: [593, 624, 653, 731, 794, 855, 901, 960],
+  100: [636, 668, 704, 789, 854, 921, 969, 1033]
+};
+
+// PRECIOS TORRES (COLUMNAS)
+// Carcasa 152.5cm (H153), Frente 73cm
+const PRECIOS_TORRE_153 = {
+  30: [436, 457, 513, 573, 698, 822, 916, 1016],
+  40: [472, 492, 547, 611, 739, 866, 972, 1078],
+  45: [489, 511, 565, 631, 760, 888, 999, 1108],
+  50: [508, 528, 583, 645, 789, 930, 1038, 1141],
+  60: [544, 566, 625, 699, 848, 994, 1112, 1227],
+  90: [893, 932, 1029, 1151, 1327, 1504, 1700, 1879],
+  120: [1241, 1298, 1433, 1603, 1895, 2019, 2289, 2532]
+};
+
+// Carcasa 197.4cm (H197), Frente 73cm
+const PRECIOS_TORRE_197 = {
+  30: [503, 530, 573, 616, 725, 834, 925, 994],
+  40: [518, 547, 605, 660, 769, 877, 975, 1047],
+  45: [527, 553, 621, 682, 792, 900, 999, 1072],
+  50: [536, 576, 641, 709, 818, 929, 1054, 1135],
+  60: [567, 613, 678, 747, 878, 1007, 1125, 1211],
+  75: [619, 668, 729, 803, 967, 1126, 1232, 1329],
+  90: [900, 955, 1052, 1178, 1361, 1537, 1740, 1924],
+  120: [1280, 1350, 1490, 1665, 1970, 2095, 2375, 2625]
+};
+
+// Carcasa 210.65cm (H210), Frente 80cm
+const PRECIOS_TORRE_210 = {
+  30: [538, 565, 610, 658, 774, 890, 988, 1062],
+  40: [553, 584, 645, 706, 820, 936, 1040, 1117],
+  45: [563, 591, 662, 729, 845, 960, 1065, 1145],
+  50: [573, 615, 684, 757, 874, 991, 1125, 1212],
+  60: [605, 654, 723, 798, 938, 1076, 1201, 1293],
+  75: [661, 713, 779, 858, 1033, 1203, 1316, 1420],
+  90: [960, 1020, 1122, 1258, 1453, 1641, 1858, 2054],
+  120: [1366, 1442, 1590, 1778, 2104, 2238, 2537, 2805]
+};
+
+// Carcasa 223.9cm (H224), Frente 73cm
+const PRECIOS_TORRE_224 = {
+  30: [570, 600, 649, 700, 825, 950, 1055, 1135],
+  40: [588, 621, 688, 751, 876, 999, 1110, 1195],
+  45: [600, 630, 707, 778, 903, 1026, 1138, 1225],
+  50: [612, 658, 729, 808, 935, 1059, 1200, 1295],
+  60: [648, 698, 772, 853, 1002, 1149, 1284, 1382],
+  75: [706, 762, 833, 916, 1102, 1284, 1406, 1518],
+  90: [1025, 1090, 1199, 1345, 1554, 1755, 1987, 2198],
+  120: [1460, 1542, 1701, 1900, 2249, 2392, 2714, 2999]
+};
+
+
+// ─── SUBTIPOS MUEBLES BAJOS ────────────────────────────────────────────────
+// Cajonera 3 cajones (S3Z) — catálogo PRIMO 2026, cap. 20
+const PRECIOS_S3Z_73 = {
+  30:[565,587,621,677,765,851,931,1000], 40:[568,590,628,685,789,890,977,1052],
+  45:[573,601,644,704,810,914,998,1078], 50:[584,610,657,718,824,931,1024,1098],
+  60:[599,628,678,747,862,975,1066,1143],70:[829,865,922,998,1177,1354,1487,1593],
+  80:[867,913,970,1052,1235,1418,1555,1663],90:[907,957,1020,1104,1293,1486,1622,1736],
+  100:[945,996,1064,1156,1354,1554,1691,1810],120:[1021,1082,1159,1256,1471,1685,1825,1952]
+};
+const PRECIOS_S3Z_80 = {
+  30:[606,630,667,727,821,913,999,1073], 40:[610,633,674,735,847,955,1049,1129],
+  45:[615,645,691,755,869,981,1071,1157],50:[627,655,705,771,885,999,1099,1178],
+  60:[643,674,728,801,925,1047,1144,1227],70:[890,928,990,1071,1263,1453,1596,1710],
+  80:[931,980,1041,1129,1326,1522,1669,1785],90:[973,1027,1094,1185,1388,1595,1741,1863],
+  100:[1014,1069,1142,1241,1453,1667,1814,1942],120:[1095,1161,1244,1348,1579,1808,1959,2095]
+};
+const PRECIOS_S3Z_86 = {
+  30:[628,652,690,752,850,946,1034,1111], 40:[631,656,698,761,877,989,1086,1169],
+  45:[637,668,715,782,900,1015,1109,1198],50:[649,678,730,798,915,1034,1138,1220],
+  60:[666,698,753,830,958,1083,1185,1270],70:[921,961,1024,1109,1308,1504,1652,1770],
+  80:[964,1014,1078,1169,1372,1575,1728,1848],90:[1008,1063,1133,1227,1437,1651,1802,1929],
+  100:[1050,1107,1182,1284,1505,1727,1879,2011],120:[1134,1202,1288,1396,1634,1872,2028,2169]
+};
+// Extraíble pull-out con cajón interior (SZIZ)
+const PRECIOS_SZIZ_73 = {
+  30:[454,469,495,537,603,667,699,725], 40:[460,473,501,540,613,685,720,748],
+  45:[461,474,503,547,621,695,734,757], 50:[463,476,508,551,626,699,747,772],
+  60:[467,482,518,565,642,720,759,792], 70:[610,627,672,708,801,895,1073,1139]
+};
+const PRECIOS_SZIZ_80 = {
+  30:[487,503,531,576,647,715,750,778], 40:[494,507,537,579,658,735,773,803],
+  45:[495,509,540,587,667,746,788,812], 50:[497,511,545,591,672,750,802,829],
+  60:[501,517,556,606,689,773,815,850], 70:[655,673,721,760,860,961,1151,1222]
+};
+const PRECIOS_SZIZ_86 = {
+  30:[504,521,550,596,670,741,776,806], 40:[511,526,557,600,681,761,800,831],
+  45:[512,527,559,608,690,772,815,841], 50:[514,529,565,612,695,777,830,858],
+  60:[519,536,576,628,713,800,844,880], 70:[678,697,747,787,890,995,1192,1266]
+};
+// Torres con puertas correderas (HV)
+const PRECIOS_HV_197 = {
+  90:[4744,4790,4921,5058,5211,5363,5462,5574],
+  120:[5203,5256,5387,5527,5681,5832,5918,6027]
+};
+const PRECIOS_HV_224 = {
+  90:[5756,5817,5969,6132,6312,6495,6610,6743],
+  120:[6303,6363,6525,6695,6874,7058,7152,7278]
+};
+
+// Catálogo de subtipos por categoría
+const SUBTIPOS = {
+  base: [
+    { id:'puerta',    icon:'\uD83D\uDEAA', nombre:'Puerta(s) est\u00e1ndar',     desc:'1 \u00f3 2 puertas, 2 estantes ajustables' },
+    { id:'cajonera',  icon:'\uD83D\uDCE6', nombre:'Cajonera 3 cajones',          desc:'3 cajones extracci\u00f3n total (S3Z)' },
+    { id:'extraible', icon:'\u2B06\uFE0F',  nombre:'Con extra\u00edble pull-out', desc:'1 extra\u00edble + caj\u00f3n interior (SZIZ)' },
+    { id:'pileta',    icon:'\uD83D\uDEB0', nombre:'Bajo pileta/fregadero',       desc:'Sin panel trasero, para lavaplatos' },
+    { id:'esquina',   icon:'\uD83D\uDD04', nombre:'M\u00f3dulo de esquina',       desc:'Carrusel giratorio 90° / Lazy Susan' },
+    { id:'campana',   icon:'\uD83D\uDCA8', nombre:'Bajo campana extractora',     desc:'Unidad abierta zona de cocci\u00f3n' },
+    { id:'especiero', icon:'\uD83E\uDED9', nombre:'Especiero/Botellero',         desc:'Canastillos extra\u00edbles (SZISK/SZISF)' }
+  ],
+  aereo: [
+    { id:'puerta',       icon:'\uD83D\uDEAA', nombre:'Con puerta(s)',            desc:'1 \u00f3 2 puertas, 2 estantes ajustables' },
+    { id:'estante',      icon:'\uD83D\uDCDA', nombre:'Estante abierto',          desc:'Sin puertas, estantes visibles' },
+    { id:'abatible',     icon:'\uD83D\uDD3C', nombre:'Puertas abatibles',        desc:'Puertas que suben (tipo Aventos)' },
+    { id:'vitrina',      icon:'\uD83E\uDE9F', nombre:'Vitrina Vero',             desc:'Puertas de vidrio Vero \u2014 exhibici\u00f3n y decoraci\u00f3n' },
+    { id:'campana',      icon:'\uD83D\uDCA8', nombre:'Para campana extractora',  desc:'Unidad espec\u00edfica para extractor (OHD)' }
+  ],
+  torre: [
+    { id:'almacen',      icon:'\uD83D\uDDC4\uFE0F', nombre:'Torre almacenamiento',   desc:'1 \u00f3 2 puertas + 5 estantes (H)' },
+    { id:'extraible',    icon:'\uD83D\uDCFC', nombre:'Con extra\u00edbles/cajones',  desc:'M\u00f3dulos extra\u00edbles interiores (HAA)' },
+    { id:'horno',        icon:'\uD83D\uDD32', nombre:'Para horno/microondas',        desc:'Hueco para electrodom\u00e9sticos (HG)' },
+    { id:'correderas',   icon:'\u2194\uFE0F',  nombre:'Puertas correderas',          desc:'Puertas deslizantes (HV) \u2014 Premium' },
+    { id:'vitrina_vero', icon:'\uD83E\uDE9F', nombre:'Torre Vitrina Vero',          desc:'Columna con puertas de vidrio Vero \u2014 exhibici\u00f3n' }
+  ]
+};
+
+// ─── ANCHOS REALES LEICHT POR SUBTIPO ────────────────────────────────────
+// Basado en tablas de precios catálogo PRIMO/Contino 2026
+const ANCHOS_REAL = {
+  base: {
+    puerta:     [30,40,45,50,60,80,90,100,120],
+    cajonera:   [30,40,45,50,60,70,80,90,100,120],
+    extraible:  [30,40,45,50,60,70],
+    pileta:     [60,80,90,100,120],
+    esquina:    [90,100,120],
+    especiero:  [15,20,30],
+    campana:    [60,80,90,100],
+    lavavajilla:[45,60],
+    horno_bajo: [60,90],
+    cocina:     [60,80,90,100,120],
+    trabajo:    [60,80,90,100],
+  },
+  aereo: {
+    puerta:     [20,30,40,45,50,60,70,80,90,100],
+    estante:    [20,30,40,45,50,60,70,80,90,100],
+    abatible:   [30,40,45,50,60,80,90],
+    campana:    [60,80,90,100],
+    vitrina:    [40,50,60,80,90],
+    especiero:  [15,20,30],
+  },
+  torre: {
+    almacen:    [30,40,45,50,60,90,120],
+    horno:      [60,90],
+    extraible:  [60,90],
+    correderas: [90,120],
+    frigorifico:[60,90],
+    freezer:    [60],
+    americano:  [90,120],
+    vinoteca:   [60],
+    vitrina_vero:[45,60,90],
+  }
+};
+
+function getAnchos(tipo, subtipo) {
+  const t = ANCHOS_REAL[tipo];
+  if (t && t[subtipo] && t[subtipo].length) return t[subtipo];
+  if (tipo === 'base')  return [30,40,45,50,60,80,90,100,120];
+  if (tipo === 'aereo') return [20,30,40,45,50,60,70,80,90,100];
+  return [30,40,45,50,60,90,120];
+}
+
+function getAnchoDefault(tipo, subtipo) {
+  const arr = getAnchos(tipo, subtipo);
+  return arr.includes(60) ? 60 : arr[Math.floor(arr.length / 2)];
+}
+
+// ACCESORIOS Y MESÓN
+const ACCESORIOS = [
+  { nombre: 'Mesón Laminado (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 45000 },
+  { nombre: 'Mesón Silestone/Cuarzo (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 95000 },
+  { nombre: 'Mesón Granito Natural (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 120000 },
+  { nombre: 'Fregadero/Lavaplatos (incluido)', unidad: 'ud', precio_base_pts: 0, precio_clp: 180000 },
+  { nombre: 'Panel Lateral Visible (por ud)', unidad: 'ud', precio_base_pts: 85, precio_clp: 0 },
+  { nombre: 'Zócalo (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 15000 },
+  { nombre: 'Iluminación LED interior (por ud)', unidad: 'ud', precio_base_pts: 0, precio_clp: 35000 },
+  { nombre: 'Sistema SensoMatic (por ud)', unidad: 'ud', precio_base_pts: 239, precio_clp: 0 },
+  { nombre: 'Sistema Tip-Softclose (por ud)', unidad: 'ud', precio_base_pts: 66, precio_clp: 0 },
+  { nombre: 'Tiradores / Manillas (juego)', unidad: 'ud', precio_base_pts: 0, precio_clp: 25000 },
+  { nombre: 'Módulo esquinero tipo carrusel', unidad: 'ud', precio_base_pts: 580, precio_clp: 0 },
+  { nombre: 'Accesorio personalizado', unidad: 'ud', precio_base_pts: 0, precio_clp: 0 }
+];
+
+// =====================================================================
+// ESTADO DE LA APP
+// =====================================================================
+
+// Colores para elevaciones
+const ELEV_COLORES = ['#2c7be5','#27ae60','#8e44ad','#c0392b','#2980b9','#16a085','#d35400'];
+
+let estado = {
+  linea: 'PRIMO',
+  carcasa: '73',
+  pg: 1,
+  items: [],
+  contadorId: 0,
+  contadorElev: 2,
+  elevaciones: [
+    { id: 'E1', nombre: 'Elevación 1', color: ELEV_COLORES[0] },
+    { id: 'E2', nombre: 'Elevación 2', color: ELEV_COLORES[1] }
+  ],
+  elevacionActiva: 'E1',
+  tipoTabActivo: 'base',
+  archivos: [],
+  cubierta: { tipo: 'ninguna', precioM2: 350000 }
+};
+
+
+// =====================================================================
+// INICIALIZACIÓN
+// =====================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Fecha de hoy
+  const hoy = new Date();
+  document.getElementById('fecha').value = hoy.toLocaleDateString('es-CL');
+
+  // Número de cotización automático
+  document.getElementById('num-cot').value = 'COT-' + hoy.getFullYear() + '-' +
+    String(hoy.getMonth()+1).padStart(2,'0') + String(hoy.getDate()).padStart(2,'0') + '-001';
+
+  // Renderizar grid de grupos de precio
+  renderizarPG();
+
+  // Escuchar cambios en datos del cliente
+  document.getElementById('cliente').addEventListener('input', actualizarResumenHeader);
+  document.getElementById('num-cot').addEventListener('input', actualizarResumenHeader);
+  // Inicializar elevaciones
+  renderizarTabsElevaciones();
+  renderizarElevacionActiva();
+  // Render module palette
+  renderPaleta();
+});
+
+function renderizarPG() {
+  const grid = document.getElementById('pg-grid');
+  grid.innerHTML = '';
+  GRUPOS_PRECIO.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'pg-card' + (g.id === estado.pg ? ' activo' : '');
+    card.innerHTML = `<div class="pg-num">${g.id}</div><div class="pg-nombre">Idx ${g.indice}</div>`;
+    card.title = g.programas;
+    card.onclick = () => {
+      document.querySelectorAll('.pg-card').forEach(c => c.classList.remove('activo'));
+      card.classList.add('activo');
+      estado.pg = g.id;
+      document.getElementById('pg-seleccionado-nombre').textContent = `PG${g.id} — ${g.nombre} (Índice ${g.indice})`;
+      recalcular();
+    };
+    grid.appendChild(card);
+  });
+}
+
+function setLinea(linea, el) {
+  document.querySelectorAll('.pills .pill').forEach(p => {
+    if (p.onclick && p.onclick.toString().includes('setLinea')) p.classList.remove('activo');
+  });
+  el.classList.add('activo');
+  estado.linea = linea;
+  recalcular();
+}
+
+function setCarcasa(carcasa, el) {
+  // Find siblings in same pills group
+  el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('activo'));
+  el.classList.add('activo');
+  estado.carcasa = carcasa;
+  recalcular();
+}
+
+// =====================================================================
+// FUNCIONES DE PRECIO
+// =====================================================================
+function getPrecioBase(ancho, tipo, subtipo) {
+  const pg_idx = estado.pg - 1;
+  const carcasa = estado.carcasa;
+  function bA(tabla, a) {
+    const ks = Object.keys(tabla).map(Number).sort((x,y)=>x-y);
+    const k = ks.find(x=>x>=a)||ks[ks.length-1];
+    return tabla[k] ? tabla[k][pg_idx] : 0;
+  }
+  if (tipo === 'base') {
+    const st = subtipo || 'puerta';
+    if (st === 'cajonera') {
+      return bA(carcasa==='73'?PRECIOS_S3Z_73:carcasa==='80'?PRECIOS_S3Z_80:PRECIOS_S3Z_86, ancho);
+    }
+    if (st === 'extraible') {
+      return bA(carcasa==='73'?PRECIOS_SZIZ_73:carcasa==='80'?PRECIOS_SZIZ_80:PRECIOS_SZIZ_86, Math.min(ancho,70));
+    }
+    if (st === 'esquina') {
+      const f=[1.0,1.05,1.15,1.28,1.55,1.82,2.03,2.19];
+      return Math.round(580 * f[pg_idx]);
+    }
+    if (st === 'especiero') {
+      const t=carcasa==='73'?PRECIOS_S3Z_73:carcasa==='80'?PRECIOS_S3Z_80:PRECIOS_S3Z_86;
+      return Math.round(bA(t, Math.min(ancho,60)) * 1.05);
+    }
+    // pileta, campana, puerta: tabla estándar
+    return bA(carcasa==='73'?PRECIOS_BASE_73:carcasa==='80'?PRECIOS_BASE_80:PRECIOS_BASE_86, ancho);
+  }
+  if (tipo === 'aereo') {
+    const st = subtipo || 'puerta';
+    const t = carcasa==='73'?PRECIOS_AEREO_66:carcasa==='80'?PRECIOS_AEREO_80:PRECIOS_AEREO_93;
+    const base = bA(t, ancho);
+    if (st === 'estante')  return Math.round(base * 0.80);
+    if (st === 'abatible') return Math.round(base * 1.18);
+    if (st === 'campana')  return Math.round(base * 1.30);
+    if (st === 'vitrina')  return Math.round(base * 1.38); // Vero glass doors +38%
+    return base;
+  }
+  if (tipo === 'torre') return 0;
+  return 0;
+}
+
+function getPrecioTorre(ancho, altura_id, subtipo) {
+  const pg_idx = estado.pg - 1;
+  const st = subtipo || 'almacen';
+  function bA(tabla, a) {
+    const ks = Object.keys(tabla).map(Number).sort((x,y)=>x-y);
+    const k = ks.find(x=>x>=a)||ks[ks.length-1];
+    return tabla[k] ? tabla[k][pg_idx] : 0;
+  }
+  if (st === 'correderas') {
+    const hvT = altura_id==='224' ? PRECIOS_HV_224 : PRECIOS_HV_197;
+    return bA(hvT, ancho >= 120 ? 120 : 90);
+  }
+  const tablas = {'153':PRECIOS_TORRE_153,'197':PRECIOS_TORRE_197,'210':PRECIOS_TORRE_210,'224':PRECIOS_TORRE_224};
+  const base = bA(tablas[altura_id]||PRECIOS_TORRE_197, ancho);
+  if (st === 'horno')       return Math.round(base * 1.10);
+  if (st === 'extraible')   return Math.round(base * 1.35);
+  if (st === 'vitrina_vero') return Math.round(base * 1.30); // Vero glass tower +30%
+  return base;
+}
+
+// =====================================================================
+// MÓDULOS
+// =====================================================================
+function agregarModulo(tipo, subtipo, xCm) {
+  const id = ++estado.contadorId;
+  const _dst = { base:'puerta', aereo:'puerta', torre:'almacen', accesorio:'' };
+  const st = subtipo || _dst[tipo] || 'puerta';
+  const elevId = (tipo === 'accesorio') ? 'general' : estado.elevacionActiva;
+  const ancho = getAnchoDefault ? getAnchoDefault(tipo, st) : 60;
+  const item = {
+    id, tipo, ancho, elevacion: elevId, cantidad: 1,
+    puntos: 0, precioClp: 0, nombre: '',
+    subtipo: st, altura_torre: '197',
+    acc_nombre: ACCESORIOS[0].nombre, acc_unidad: ACCESORIOS[0].unidad,
+    acc_pts: ACCESORIOS[0].precio_base_pts, acc_clp_unit: ACCESORIOS[0].precio_clp, acc_qty: 1
+  };
+  estado.items.push(item);
+
+  // If xCm provided, set position in active elevation
+  if (xCm !== undefined && tipo !== 'accesorio') {
+    const elev = estado.elevaciones.find(e => e.id === elevId);
+    if (elev) {
+      if (!elev.modPos) elev.modPos = {};
+      const PLINTO = 8;
+      const AER_BOT = Math.round((elev.altoCm || 250) * 0.57);
+      elev.modPos[id + '_0'] = { xCm: Math.max(0, xCm), yCm: tipo === 'aereo' ? AER_BOT : PLINTO };
+    }
+  }
+
+  renderizarModulos();
+  recalcular();
+  if (tipo !== 'accesorio') renderizarElevacionActiva();
+  return id;
+}
+
+function eliminarItem(id) {
+  const item = estado.items.find(i => i.id === id);
+  if (item) {
+    // Clean up canvas positions for this item
+    estado.elevaciones.forEach(elev => {
+      if (elev.modPos) {
+        for (let q = 0; q < 20; q++) delete elev.modPos[id + '_' + q];
+      }
+    });
+  }
+  estado.items = estado.items.filter(i => i.id !== id);
+  renderizarModulos();
+  recalcular();
+  renderizarTabsElevaciones();
+  renderizarElevacionActiva();
+}
+
+function renderizarModulos() {
+  // Accesorios: siempre visibles en su propia lista
+  const contAcc = document.getElementById('lista-accesorio');
+  if (contAcc) {
+    const accItems = estado.items.filter(i => i.tipo === 'accesorio');
+    if (accItems.length === 0) { contAcc.innerHTML = ''; }
+    else {
+      let html = '';
+      accItems.forEach(item => {
+        const accOpts = ACCESORIOS.map(a =>
+          `<option value="${a.nombre}" data-pts="${a.precio_base_pts}" data-clp="${a.precio_clp}" data-ud="${a.unidad}" ${a.nombre===item.acc_nombre?'selected':''}>${a.nombre}</option>`
+        ).join('');
+        html += `<div class="mod-config">
+          <div class="mod-config-header">
+            <h4>Accesorio / Mes\u00f3n</h4>
+            <button class="btn-eliminar" onclick="eliminarItem(${item.id})">&#x2715;</button>
+          </div>
+          <div class="fila fila-3">
+            <div style="grid-column:1/3"><label>Tipo</label>
+              <select onchange="cambiarAccesorio(${item.id},this)">${accOpts}</select></div>
+            <div><label>${item.acc_unidad==='ml'?'Metros lineales':'Cantidad'}</label>
+              <input type="number" min="1" step="${item.acc_unidad==='ml'?'0.5':'1'}" value="${item.acc_qty}"
+                onchange="actualizarCampo(${item.id},'acc_qty',parseFloat(this.value));recalcular()"></div>
+          </div>
+          ${item.acc_pts===0&&item.acc_clp_unit===0?`
+          <div class="fila fila-2" style="margin-top:4px">
+            <div><label>Puntos (\u20ac)</label>
+              <input type="number" value="${item.acc_pts}" onchange="actualizarCampo(${item.id},'acc_pts',parseInt(this.value));recalcular()"></div>
+            <div><label>Precio CLP directo</label>
+              <input type="number" value="${item.acc_clp_unit}" step="1000" onchange="actualizarCampo(${item.id},'acc_clp_unit',parseInt(this.value));recalcular()"></div>
+          </div>`:''}
+        </div>`;
+      });
+      contAcc.innerHTML = html;
+    }
+  }
+  // Módulos de la elevación activa
+  renderizarElevacionActiva();
+}
+
+function renderItemsElevacion(items, tipo) {
+  if (!items.length) return '<div style="color:#ccc;font-size:11px;font-style:italic;padding:4px 2px">Sin m\u00f3dulos \u2014 arrastra desde la paleta</div>';
+  let html = '';
+  items.forEach(item => {
+    const subtArr = SUBTIPOS[item.tipo] || [];
+    const stInfo  = subtArr.find(s => s.id === item.subtipo);
+    const icon    = stInfo ? stInfo.icon : (item.tipo==='torre' ? '\uD83D\uDDFC' : item.tipo==='aereo' ? '\uD83C\uDFE0' : '\uD83E\uDEB5');
+    const nom     = stInfo ? stInfo.nombre : item.tipo;
+    const altInfo = item.tipo === 'torre' ? ' \u00b7 ' + item.altura_torre + 'cm' : '';
+    const descPart = item.nombre ? ' \u00b7 <em style="color:#999">' + item.nombre + '</em>' : '';
+    html += `<div class="mod-compact-row">
+      <span class="mod-compact-icon">${icon}</span>
+      <span class="mod-compact-name">${nom} <strong>${item.ancho}cm</strong>${altInfo}${descPart}</span>
+      <span class="mod-compact-qty">\u00d7${item.cantidad}</span>
+      <button class="mod-compact-btn mod-compact-edit" onclick="editarItemDesdeList(${item.id})" title="Configurar">&#9881;</button>
+      <button class="mod-compact-btn mod-compact-del"  onclick="eliminarItem(${item.id})"      title="Eliminar">\u00d7</button>
+    </div>`;
+  });
+  return html;
+}
+
+
+// ─── GESTIÓN DE ELEVACIONES ───────────────────────────────────────────────
+function renderizarTabsElevaciones() {
+  const bar = document.getElementById('elevaciones-tabs');
+  if (!bar) return;
+  let html = '';
+  estado.elevaciones.forEach(elev => {
+    const isIsla = elev.id === 'isla';
+    const isActiva = elev.id === estado.elevacionActiva;
+    if (isIsla) return; // isla al final
+    html += `<button class="elev-tab ${isActiva?'activo':''}"
+      onclick="setElevacionActiva('${elev.id}')" style="border-bottom-color:${isActiva?elev.color:'transparent'}">
+      <span class="elev-dot" style="background:${elev.color}"></span>
+      ${elev.nombre}
+      <span class="elev-close" onclick="event.stopPropagation();eliminarElevacion('${elev.id}')">&#x2715;</span>
+    </button>`;
+  });
+  // Isla siempre visible
+  const islaElev = estado.elevaciones.find(e=>e.id==='isla');
+  if (islaElev) {
+    const isActiva = estado.elevacionActiva === 'isla';
+    html += `<button class="isla-tab ${isActiva?'activo':''}" onclick="setElevacionActiva('isla')" style="margin-left:auto">
+      🏝️ Isla
+    </button>`;
+  }
+  // Botón agregar
+  html += `<button class="btn-add-elev" onclick="agregarElevacion()">+ Elevación</button>`;
+  if (!islaElev) {
+    html += `<button class="btn-add-elev" style="border-color:#e67e22;color:#e67e22" onclick="agregarIsla()">🏝️ Isla</button>`;
+  }
+  bar.innerHTML = html;
+}
+
+function renderizarElevacionActiva() {
+  const elev = estado.elevaciones.find(e=>e.id===estado.elevacionActiva);
+  if (!elev) return;
+
+  // Actualizar nombre
+  const nomInput = document.getElementById('elev-nombre');
+  if (nomInput && nomInput !== document.activeElement) nomInput.value = elev.nombre;
+
+  // Sincronizar inputs de dimensiones
+  const inpAncho = document.getElementById('elev-ancho-cm');
+  const inpAlto  = document.getElementById('elev-alto-cm');
+  const inpProf  = document.getElementById('elev-prof-cm');
+  if (inpAncho && inpAncho !== document.activeElement) inpAncho.value = elev.anchoCm || 360;
+  if (inpAlto  && inpAlto  !== document.activeElement) inpAlto.value  = elev.altoCm  || 250;
+  if (inpProf  && inpProf  !== document.activeElement) inpProf.value  = elev.profCm  || 60;
+
+  // Color del borde del contenido
+  const cont = document.getElementById('elevacion-contenido');
+  if (cont) cont.style.borderTop = `3px solid ${elev.color}`;
+
+  // Filtrar items de esta elevación
+  const myItems = estado.items.filter(i => i.elevacion === elev.id);
+  const basItems = myItems.filter(i=>i.tipo==='base');
+  const aerItems = myItems.filter(i=>i.tipo==='aereo');
+  const torItems = myItems.filter(i=>i.tipo==='torre');
+
+  // Actualizar listas
+  const cont_base  = document.getElementById('elista-base-items');
+  const cont_aereo = document.getElementById('elista-aereo-items');
+  const cont_torre = document.getElementById('elista-torre-items');
+  if (cont_base)  cont_base.innerHTML  = renderItemsElevacion(basItems,'base');
+  if (cont_aereo) cont_aereo.innerHTML = renderItemsElevacion(aerItems,'aereo');
+  if (cont_torre) cont_torre.innerHTML = renderItemsElevacion(torItems,'torre');
+
+  // Calcular anchos
+  const mlBase  = basItems.reduce((s,i)=>s+(i.ancho*i.cantidad),0)
+                + torItems.reduce((s,i)=>s+(i.ancho*i.cantidad),0);
+  const mlAereo = aerItems.reduce((s,i)=>s+(i.ancho*i.cantidad),0);
+
+  const badge = document.getElementById('elev-ml-base');
+  const badgeA = document.getElementById('elev-ml-aereo');
+  if (badge)  badge.textContent  = mlBase + ' cm';
+  if (badgeA) badgeA.textContent = mlAereo + ' cm';
+
+  // Actualizar el badge de ancho de color
+  const badgeBox = document.getElementById('elev-ancho-badge');
+  if (badgeBox) badgeBox.style.borderColor = elev.color;
+
+  // Regla visual
+  renderizarDiagrama(myItems, elev);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// DIAGRAMA INTERACTIVO DE ELEVACIÓN v3
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let _diagDrag = null;
+let _diagDragged = false;  // true while/after dragging to suppress popover click
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function _diagSX(canvas)  { return parseFloat(canvas.dataset.sx  || 2);   }
+function _diagSY(canvas)  { return parseFloat(canvas.dataset.sy  || 1.12);}
+function _diagOX(canvas)  { return parseInt(canvas.dataset.ox   || 10);  }
+function _diagOB(canvas)  { return parseInt(canvas.dataset.ob   || 10);  }
+function _diagACm(canvas) { return parseInt(canvas.dataset.acm  || 360); }
+
+function setElevDim(tipo, val) {
+  const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+  if (!elev) return;
+  const v = parseInt(val) || (tipo==='ancho' ? 360 : tipo==='alto' ? 250 : 60);
+  if (tipo==='ancho') elev.anchoCm = Math.max(80, Math.min(900, v));
+  else if (tipo==='alto') elev.altoCm = Math.max(200, Math.min(320, v));
+  else if (tipo==='prof') elev.profCm = Math.max(40, Math.min(75, v));
+  // ✅ Don't wipe positions — only clamp modules that exceed new wall width
+  if (tipo === 'ancho' && elev.modPos) {
+    const myItems = estado.items.filter(i => i.elevacion === elev.id && i.tipo !== 'accesorio');
+    myItems.forEach(item => {
+      for (let q = 0; q < item.cantidad; q++) {
+        const k = item.id + '_' + q;
+        if (elev.modPos[k]) {
+          elev.modPos[k].xCm = Math.max(0, Math.min(elev.anchoCm - item.ancho, elev.modPos[k].xCm));
+        }
+      }
+    });
+  }
+  renderizarElevacionActiva();
+}
+
+function buildModBlock(instId, itemId, tipo, row, leftPx, botPx, wPx, hPx, icon, anchoCm, subNom, accentCol) {
+  // Thresholds
+  const show3D     = wPx > 24 && hPx > 24;
+  const showDoor   = wPx > 30 && hPx > 36;
+  const showHandle = wPx > 26 && hPx > 32;
+  const showLabel  = wPx > 18;
+  const showSub    = wPx > 50 && hPx > 56;
+  const iconSz     = Math.max(8, Math.min(22, Math.min(wPx, hPx) / 3.0));
+  const lblSz      = Math.max(7, Math.min(11, wPx / 6.5));
+  const subSz      = Math.max(6, Math.min(9, wPx / 9));
+
+  // Body gradient per type
+  const bodyGrad = tipo === 'aereo'
+    ? 'linear-gradient(180deg,#c8bcac 0%,#b0a08a 45%,#9c8c78 100%)'
+    : tipo === 'torre'
+    ? 'linear-gradient(180deg,#7a5c3c 0%,#624830 45%,#503820 100%)'
+    : 'linear-gradient(180deg,#d4aa70 0%,#b08848 45%,#9a7038 100%)';
+
+  // Door panel bg
+  const doorBg  = tipo === 'aereo'  ? 'rgba(255,255,255,0.15)'
+                : tipo === 'torre'  ? 'rgba(255,255,255,0.08)'
+                :                    'rgba(255,255,255,0.14)';
+  const doorBrd = tipo === 'torre'  ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.32)';
+
+  // 3D depth colors
+  const sideCol = tipo === 'torre' ? 'rgba(0,0,0,0.40)' : 'rgba(0,0,0,0.25)';
+  const topCol  = tipo === 'torre' ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.32)';
+
+  // Text colors
+  const numCol = tipo === 'aereo' ? 'rgba(60,40,20,0.70)' : 'rgba(255,255,255,0.88)';
+  const subCol = tipo === 'aereo' ? 'rgba(60,40,20,0.55)' : 'rgba(255,255,255,0.65)';
+
+  const doorTop = 5, doorLeft = 4, doorRight = 4;
+  const doorBot = showHandle ? 16 : 5;
+  const handleBot = 7, handleH = 4;
+
+  // Torre: horizontal compartment dividers
+  const nLines = tipo === 'torre' && hPx > 55 ? Math.min(3, Math.floor(hPx / 28)) : 0;
+  let torreLines = '';
+  for (let li = 1; li <= nLines; li++) {
+    const lBot = Math.round(li * hPx / (nLines + 1));
+    torreLines += `<div style="position:absolute;left:3px;right:3px;height:1px;background:rgba(255,255,255,0.16);bottom:${lBot}px;z-index:2"></div>`;
+  }
+
+  return `<div class="diag-mod-block" id="dmod_${instId}"
+    data-inst="${instId}" data-tipo="${tipo}" data-item="${itemId}"
+    data-row="${row}" data-w="${wPx}" data-h="${hPx}" data-wcm="${anchoCm}"
+    style="left:${leftPx}px;bottom:${botPx}px;width:${wPx}px;height:${hPx}px;background:${bodyGrad}"
+    onmousedown="diagMouseDown(event)"
+    onclick="abrirPopoverModulo(event,'${instId}','${itemId}')"
+    title="Clic para configurar \xb7 Arrastra para mover">
+
+    <!-- Accent strip top -->
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${accentCol};z-index:3;border-radius:2px 2px 0 0;opacity:0.92"></div>
+
+    <!-- 3D side edge -->
+    ${show3D ? `<div style="position:absolute;top:3px;right:-5px;bottom:5px;width:5px;background:${sideCol};z-index:1;clip-path:polygon(0 0,100% 10%,100% 90%,0 100%);border-radius:0 1px 1px 0"></div>` : ''}
+
+    <!-- 3D top edge -->
+    ${show3D ? `<div style="position:absolute;top:-4px;left:0;right:-5px;height:5px;background:${topCol};z-index:1;clip-path:polygon(0 100%,100% 0,100% 100%,0 100%);border-radius:1px 1px 0 0"></div>` : ''}
+
+    <!-- Door panel -->
+    ${showDoor ? `<div style="position:absolute;top:${doorTop}px;left:${doorLeft}px;right:${doorRight}px;bottom:${doorBot}px;background:${doorBg};border:1px solid ${doorBrd};border-radius:1px;z-index:2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.18)"></div>` : ''}
+
+    <!-- Torre compartment lines -->
+    ${torreLines}
+
+    <!-- Content: icon + dimensions -->
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:4;padding-bottom:${showHandle?14:4}px;padding-top:6px;pointer-events:none">
+      <div style="font-size:${iconSz}px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.30))">${icon}</div>
+      ${showLabel ? `<div style="font-size:${lblSz}px;color:${numCol};font-weight:700;margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,0.35)">${anchoCm}</div>` : ''}
+      ${showSub && subNom ? `<div style="font-size:${subSz}px;color:${subCol};text-align:center;line-height:1.2;padding:0 3px;text-shadow:0 1px 1px rgba(0,0,0,0.28)">${subNom.substring(0,12)}</div>` : ''}
+    </div>
+
+    <!-- Handle bar -->
+    ${showHandle ? `<div style="position:absolute;bottom:${handleBot}px;left:20%;right:20%;height:${handleH}px;background:linear-gradient(180deg,#e8e8e8 0%,#a0a0a0 100%);border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,0.50),inset 0 1px 0 rgba(255,255,255,0.60);z-index:4"></div>` : ''}
+
+  </div>`;
+}
+
+function renderizarDiagrama(items, elev) {
+  const el = document.getElementById('elev-diagrama');
+  if (!el) return;
+
+  // Dimensions
+  const anchoCm   = elev.anchoCm || 360;
+  const altoCm    = elev.altoCm  || 250;
+  const carcasaCm = parseInt(estado.carcasa) || 73;
+  const mods = items.filter(i => i.tipo !== 'accesorio');
+
+  // Empty state
+  if (mods.length === 0) {
+    el.innerHTML = `<div style="height:260px;display:flex;align-items:center;justify-content:center;
+      background:#f5f3f0;border:1px solid #ccc;border-radius:4px;color:#b0a898;font-size:12px;font-style:italic">
+      Sin módulos — agrega muebles a esta elevación
+    </div>`;
+    const libEl = document.getElementById('elev-libre-num');
+    if (libEl) { libEl.textContent = anchoCm + ' cm'; libEl.closest('#elev-libre-badge')?.classList.remove('bajo','exceso'); }
+    return;
+  }
+
+  // Canvas geometry
+  const DIAG_W = Math.max(380, (el.clientWidth || 650) - 4);
+  const DIAG_H = 280;
+  const OX = 10;   // left margin px
+  const OB = 10;   // bottom margin px (floor strip)
+
+  const SX = (DIAG_W - OX * 2) / anchoCm;
+  const SY = (DIAG_H - OB)     / altoCm;
+
+  // Heights in cm from floor
+  const PLINTO_CM  = 8;
+  const BASE_TOP   = PLINTO_CM + carcasaCm;
+  const ENCIM_BOT  = BASE_TOP;
+  const ENCIM_H    = 4;
+  const ENCIM_TOP  = ENCIM_BOT + ENCIM_H;
+  const AEREO_BOT  = Math.round(altoCm * 0.575);
+  const AEREO_H_CM = 72;
+  const AEREO_TOP  = AEREO_BOT + AEREO_H_CM;
+
+  const pyB = cm => OB + Math.round(cm * SY);
+  const pxW = cm => Math.max(2, Math.round(cm * SX));
+
+  // ── Positions ────────────────────────────────────────────────────
+  if (!elev.modPos) elev.modPos = {};
+
+  const lowerMods = mods.filter(i => ['torre','base'].includes(i.tipo));
+  const upperMods = mods.filter(i => i.tipo === 'aereo');
+
+  // Helper: find first x position that fits modW within wall, avoiding placed modules
+  function findFreeX(placed, modW, wallW, yCm) {
+    const occupied = placed
+      .filter(p => p.yCm === yCm)
+      .map(p => ({ x: p.xCm, w: p.wCm }))
+      .sort((a, b) => a.x - b.x);
+    let x = 0;
+    for (const seg of occupied) {
+      if (x + modW <= seg.x + 0.5) break;
+      x = Math.max(x, seg.x + seg.w);
+    }
+    return Math.max(0, Math.min(x, Math.max(0, wallW - modW)));
+  }
+
+  let placedLower = [];
+  lowerMods.forEach(item => {
+    for (let q = 0; q < item.cantidad; q++) {
+      const key = item.id + '_' + q;
+      if (elev.modPos[key] === undefined) {
+        const fx = findFreeX(placedLower, item.ancho, anchoCm, PLINTO_CM);
+        elev.modPos[key] = { xCm: fx, yCm: PLINTO_CM };
+      } else {
+        elev.modPos[key].xCm = Math.max(0, Math.min(anchoCm - item.ancho, elev.modPos[key].xCm));
+      }
+      placedLower.push({ xCm: elev.modPos[key].xCm, wCm: item.ancho, yCm: PLINTO_CM });
+    }
+  });
+
+  let placedUpper = [];
+  upperMods.forEach(item => {
+    for (let q = 0; q < item.cantidad; q++) {
+      const key = item.id + '_' + q;
+      if (elev.modPos[key] === undefined) {
+        const fx = findFreeX(placedUpper, item.ancho, anchoCm, AEREO_BOT);
+        elev.modPos[key] = { xCm: fx, yCm: AEREO_BOT };
+      } else {
+        elev.modPos[key].xCm = Math.max(0, Math.min(anchoCm - item.ancho, elev.modPos[key].xCm));
+      }
+      placedUpper.push({ xCm: elev.modPos[key].xCm, wCm: item.ancho, yCm: AEREO_BOT });
+    }
+  });
+
+  // Free space
+  const usadoCm = lowerMods.reduce((s,i) => s + i.ancho * i.cantidad, 0);
+  const libreCm = anchoCm - usadoCm;
+  const libEl = document.getElementById('elev-libre-num');
+  const libBadge = document.getElementById('elev-libre-badge');
+  if (libEl) { libEl.textContent = libreCm + ' cm'; }
+  if (libBadge) {
+    libBadge.classList.remove('bajo','exceso');
+    if (libreCm < 0)  libBadge.classList.add('exceso');
+    else if (libreCm < 30) libBadge.classList.add('bajo');
+  }
+
+  // ── Background layers ─────────────────────────────────────────────
+  const floorPx   = OB;
+  const plintoPx  = pyB(PLINTO_CM);
+  const baseTopPx = pyB(BASE_TOP);
+  const encimBPx  = pyB(ENCIM_BOT);
+  const encimTPx  = pyB(ENCIM_TOP);
+  const backsplTPx = pyB(AEREO_BOT);
+  const aereoBPx  = pyB(AEREO_BOT);
+  const aereoTPx  = pyB(AEREO_TOP);
+  const encimHpx  = Math.max(5, encimTPx - encimBPx);
+  const bsTileSize = Math.max(8, Math.min(20, Math.round(15 * SX / 2)));
+
+  const bgHTML = `
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#d8d4cf 0%,#e5e1db 55%,#cdc9c4 100%)"></div>
+    <div class="diag-cornice" style="position:absolute;top:0;left:0;right:0;height:8px"></div>
+    <div class="diag-wall-shadow-l" style="position:absolute;top:0;left:0;bottom:0;width:10px;z-index:4"></div>
+    <div class="diag-wall-shadow-r" style="position:absolute;top:0;right:0;bottom:0;width:10px;z-index:4"></div>
+    <div class="diag-backsplash" style="position:absolute;bottom:${encimTPx}px;left:${OX}px;right:${OX}px;height:${backsplTPx-encimTPx}px;background-size:${bsTileSize}px ${bsTileSize}px"></div>
+    <div class="diag-encimera-stone" style="position:absolute;bottom:${encimBPx}px;left:${OX}px;right:${OX}px;height:${encimHpx}px;z-index:6"></div>
+    <div class="diag-plinto-strip" style="position:absolute;bottom:${floorPx}px;left:${OX}px;right:${OX}px;height:${plintoPx - floorPx}px;z-index:5"></div>
+    <div class="diag-floor-parquet" style="position:absolute;bottom:0;left:0;right:0;height:${OB}px;z-index:3"></div>
+    <div style="position:absolute;bottom:${aereoBPx}px;left:${OX}px;right:${OX}px;height:${aereoTPx - aereoBPx}px;background:rgba(180,220,240,0.07);border-top:1px dashed rgba(100,160,220,0.2);border-bottom:1px dashed rgba(100,160,220,0.2);z-index:1;pointer-events:none"></div>
+    <div style="position:absolute;bottom:${encimTPx+2}px;right:${OX+4}px;font-size:8.5px;color:rgba(0,0,0,0.28);z-index:8;pointer-events:none">~${AEREO_BOT}cm</div>
+    <div style="position:absolute;bottom:${encimBPx+4}px;right:${OX+4}px;font-size:8.5px;color:rgba(0,0,0,0.28);z-index:8;pointer-events:none">~${ENCIM_BOT}cm</div>
+  `;
+
+  // ── Gap zones in lower area ───────────────────────────────────────
+  let gapHTML = '';
+  const sortedLower = [];
+  lowerMods.forEach(item => {
+    for (let q = 0; q < item.cantidad; q++) {
+      const key = `${item.id}_${q}`;
+      sortedLower.push({ xCm: (elev.modPos[key]||{xCm:0}).xCm, wCm: item.ancho });
+    }
+  });
+  sortedLower.sort((a,b) => a.xCm - b.xCm);
+
+  let gapCursor = 0;
+  sortedLower.forEach(m => {
+    if (m.xCm > gapCursor + 0.5) {
+      const gx = OX + Math.round(gapCursor * SX);
+      const gw = Math.round((m.xCm - gapCursor) * SX);
+      gapHTML += `<div class="diag-gap-zone" style="left:${gx}px;bottom:${pyB(PLINTO_CM)}px;width:${gw}px;height:${baseTopPx - pyB(PLINTO_CM)}px"></div>`;
+    }
+    gapCursor = m.xCm + m.wCm;
+  });
+  if (gapCursor < anchoCm - 0.5) {
+    const gx = OX + Math.round(gapCursor * SX);
+    const gw = Math.round((anchoCm - gapCursor) * SX);
+    gapHTML += `<div class="diag-gap-zone" style="left:${gx}px;bottom:${pyB(PLINTO_CM)}px;width:${Math.max(2,gw)}px;height:${baseTopPx - pyB(PLINTO_CM)}px"></div>`;
+  }
+
+  // ── Module blocks ─────────────────────────────────────────────────
+  const COLORS = {base:'#2c7be5', aereo:'#27ae60', torre:'#8e44ad'};
+  let modsHTML = '';
+
+  lowerMods.forEach(item => {
+    const col   = COLORS[item.tipo];
+    const stInf = (SUBTIPOS[item.tipo]||[]).find(s=>s.id===item.subtipo);
+    const icon  = stInf ? stInf.icon : (item.tipo==='torre' ? '\uD83D\uDDFC' : '\uD83E\uDEB5');
+    const sNom  = stInf ? stInf.nombre : '';
+
+    for (let q = 0; q < item.cantidad; q++) {
+      const key   = `${item.id}_${q}`;
+      const pos   = elev.modPos[key] || {xCm:0, yCm:PLINTO_CM};
+      const wPx   = pxW(item.ancho);
+      let hPx;
+      if (item.tipo === 'torre') {
+        hPx = Math.round((parseInt(item.altura_torre)||197) * SY);
+      } else {
+        hPx = Math.round(carcasaCm * SY);
+      }
+      const leftPx = OX + Math.round(pos.xCm * SX);
+      const botPx  = OB + Math.round(pos.yCm * SY);
+      modsHTML += buildModBlock(key, item.id, item.tipo, 'lower', leftPx, botPx, wPx, hPx, icon, item.ancho, sNom, col);
+    }
+  });
+
+  upperMods.forEach(item => {
+    const stInf = (SUBTIPOS.aereo||[]).find(s=>s.id===item.subtipo);
+    const icon  = stInf ? stInf.icon : '\uD83C\uDFE0';
+    const sNom  = stInf ? stInf.nombre : '';
+
+    for (let q = 0; q < item.cantidad; q++) {
+      const key   = `${item.id}_${q}`;
+      const pos   = elev.modPos[key] || {xCm:0, yCm:AEREO_BOT};
+      const wPx   = pxW(item.ancho);
+      const hPx   = Math.round(AEREO_H_CM * SY);
+      const leftPx = OX + Math.round(pos.xCm * SX);
+      const botPx  = OB + Math.round(pos.yCm * SY);
+      modsHTML += buildModBlock(key, item.id, 'aereo', 'upper', leftPx, botPx, wPx, hPx, icon, item.ancho, sNom, COLORS.aereo);
+    }
+  });
+
+  // ── Dimension ruler ───────────────────────────────────────────────
+  let rulerHTML = '';
+  const RW = DIAG_W;
+  let rulerCur = 0;
+  sortedLower.forEach(m => {
+    if (m.xCm > rulerCur + 0.5) {
+      const gpx = Math.round((m.xCm - rulerCur) / anchoCm * RW);
+      rulerHTML += `<div class="diag-ruler-gap" style="width:${gpx}px">${(m.xCm-rulerCur)>=15 ? (m.xCm-rulerCur)+'cm' : ''}</div>`;
+      rulerCur = m.xCm;
+    }
+    const spx = Math.max(1, Math.round(m.wCm / anchoCm * RW));
+    const col = COLORS[sortedLower.find(s=>s.xCm===m.xCm)?.tipo] || '#888';
+    rulerHTML += `<div class="diag-ruler-seg" style="width:${spx}px;background:${col}">${m.wCm>=25 ? m.wCm+'cm' : ''}</div>`;
+    rulerCur = m.xCm + m.wCm;
+  });
+  if (rulerCur < anchoCm - 0.5) {
+    const gpx = Math.round((anchoCm - rulerCur) / anchoCm * RW);
+    rulerHTML += `<div class="diag-ruler-gap" style="width:${gpx}px;flex-grow:1">${(anchoCm-rulerCur)>=15 ? (anchoCm-rulerCur)+'cm libre' : ''}</div>`;
+  }
+
+  // ── Assemble ─────────────────────────────────────────────────────
+  el.innerHTML = `
+    <div class="diag-elevacion-v3" id="diag-canvas"
+      style="height:${DIAG_H}px"
+      data-sx="${SX.toFixed(4)}" data-sy="${SY.toFixed(4)}"
+      data-ox="${OX}" data-ob="${OB}"
+      data-acm="${anchoCm}" data-altcm="${altoCm}"
+      ondragover="canvasDragOver(event)"
+      ondragleave="canvasDragLeave(event)"
+      ondrop="canvasDrop(event)">
+      ${bgHTML}${gapHTML}${modsHTML}
+    </div>
+    <div class="diag-ruler-wrap">${rulerHTML}</div>
+    <div class="diag-legend">
+      <span><span class="diag-legend-dot" style="background:#8e44ad"></span>Torres</span>
+      <span><span class="diag-legend-dot" style="background:#2c7be5"></span>Bajos</span>
+      <span><span class="diag-legend-dot" style="background:#27ae60"></span>Aéreos</span>
+      <span style="margin-left:auto;color:#ccc;font-size:9px">Arrastra · precisión 1cm</span>
+    </div>`;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PALETA DE MÓDULOS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function renderPaleta() {
+  const el = document.getElementById('mod-paleta');
+  if (!el) return;
+  const filas = [
+    { tipo: 'base',  label: '🪵 Muebles Bajos', cls: 'base-chip' },
+    { tipo: 'aereo', label: '🏠 Aéreos',         cls: 'aereo-chip' },
+    { tipo: 'torre', label: '🗼 Torres',          cls: 'torre-chip' }
+  ];
+  let html = '<div style="font-size:10px;color:#aaa;margin-bottom:8px">💡 <strong>Arrastra</strong> al diagrama o <strong>clic</strong> para agregar</div>';
+  filas.forEach(fila => {
+    const subs = SUBTIPOS[fila.tipo] || [];
+    const chips = subs.map(st => {
+      const ancho = getAnchoDefault(fila.tipo, st.id);
+      return `<div class="pal-chip ${fila.cls}"
+        draggable="true"
+        data-tipo="${fila.tipo}"
+        data-subtipo="${st.id}"
+        data-ancho="${ancho}"
+        ondragstart="paletaDragStart(event)"
+        onclick="agregarDesdePaleta('${fila.tipo}','${st.id}')"
+        title="${st.nombre}: ${st.desc}">
+        <div class="pc-icon">${st.icon}</div>
+        <div class="pc-name">${st.nombre.replace(/ /g,'<br>')}</div>
+      </div>`;
+    }).join('');
+    html += `<div class="palette-section">
+      <div class="palette-row-label">${fila.label}</div>
+      <div class="palette-row">${chips}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function paletaDragStart(e) {
+  const chip = e.currentTarget;
+  e.dataTransfer.setData('application/leicht-mod', JSON.stringify({
+    tipo:    chip.dataset.tipo,
+    subtipo: chip.dataset.subtipo,
+    ancho:   parseInt(chip.dataset.ancho)
+  }));
+  e.dataTransfer.effectAllowed = 'copy';
+}
+
+function agregarDesdePaleta(tipo, subtipo) {
+  const newId = agregarModulo(tipo, subtipo);
+  // Open popover for the newly added module after render
+  setTimeout(() => abrirPopoverPorItem(newId), 80);
+}
+
+// ── Canvas drop zone ──────────────────────────────
+function canvasDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+  const canvas = e.currentTarget;
+  const rect = canvas.getBoundingClientRect();
+  const xPx  = e.clientX - rect.left;
+  let line = document.getElementById('diag-drop-line');
+  if (!line) {
+    line = document.createElement('div');
+    line.id = 'diag-drop-line';
+    line.style.cssText = 'position:absolute;width:2px;top:0;bottom:0;z-index:100;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(200,169,110,0.9) 15%,rgba(200,169,110,0.9) 85%,transparent);transition:left 0.05s';
+    canvas.appendChild(line);
+  }
+  line.style.left = Math.max(0, xPx - 1) + 'px';
+}
+
+function canvasDragLeave(e) {
+  // Only remove if truly leaving canvas (not entering a child)
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    const line = document.getElementById('diag-drop-line');
+    if (line) line.remove();
+  }
+}
+
+function canvasDrop(e) {
+  e.preventDefault();
+  const line = document.getElementById('diag-drop-line');
+  if (line) line.remove();
+  let data;
+  try { data = JSON.parse(e.dataTransfer.getData('application/leicht-mod')); } catch(_) { return; }
+  const canvas = e.currentTarget;
+  const rect = canvas.getBoundingClientRect();
+  const SX = _diagSX(canvas);
+  const OX = _diagOX(canvas);
+  const xPx = e.clientX - rect.left;
+  const xCm = Math.max(0, Math.round((xPx - OX) / SX));
+  const newId = agregarModulo(data.tipo, data.subtipo, xCm);
+  // Adjust default width to dropped type
+  const item = estado.items.find(i => i.id === newId);
+  if (item) item.ancho = data.ancho;
+  recalcular();
+  renderizarElevacionActiva();
+  setTimeout(() => abrirPopoverPorItem(newId), 80);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// POPOVER INLINE DE CONFIGURACIÓN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let _popoverItem = null;
+
+function abrirPopoverModulo(e, instId, itemId) {
+  e.stopPropagation();
+  // Don't open if we just finished dragging
+  if (_diagDrag || _diagDragged) return;
+  const iid = isNaN(itemId) ? itemId : parseInt(itemId);
+  const item = estado.items.find(i => i.id === iid);
+  if (!item) return;
+  _popoverItem = item;
+  const rect = e.currentTarget.getBoundingClientRect();
+  renderPopover(item, rect);
+}
+
+function abrirPopoverPorItem(itemId) {
+  const modEl = document.querySelector('[data-item="' + itemId + '"]');
+  const item = estado.items.find(i => i.id === itemId);
+  if (!item) return;
+  _popoverItem = item;
+  const rect = modEl ? modEl.getBoundingClientRect() : { left: 200, bottom: 300, top: 300 };
+  renderPopover(item, rect);
+}
+
+function editarItemDesdeList(itemId) {
+  const iid = isNaN(itemId) ? itemId : parseInt(itemId);
+  const item = estado.items.find(i => i.id === iid);
+  if (!item) return;
+  _popoverItem = item;
+  // Find the ⚙ button in list as anchor
+  const btn = document.querySelector('button[onclick="editarItemDesdeList(' + itemId + ')"]');
+  const rect = btn ? btn.getBoundingClientRect() : { left: 300, bottom: 300, top: 300 };
+  renderPopover(item, rect);
+}
+
+function renderPopover(item, anchorRect) {
+  let pop = document.getElementById('mod-popover');
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'mod-popover';
+    document.body.appendChild(pop);
+  }
+  const subs   = SUBTIPOS[item.tipo] || [];
+  const stInf  = subs.find(s => s.id === item.subtipo);
+  const anchos = getAnchos(item.tipo, item.subtipo);
+  const titulo = item.tipo === 'base' ? '🪵 Mueble Bajo' :
+                 item.tipo === 'aereo' ? '🏠 Mueble Aéreo' : '🗼 Torre / Columna';
+
+  const stPills = subs.map(s =>
+    `<button class="pop-st ${s.id===item.subtipo?'activo':''}"
+      onclick="popCambiarSub('${s.id}')" title="${s.desc}">${s.icon} ${s.nombre}</button>`
+  ).join('');
+
+  const anchoOpts = anchos.map(a =>
+    `<option value="${a}" ${a===item.ancho?'selected':''}>${a} cm</option>`
+  ).join('');
+
+  const altOpts = item.tipo === 'torre' ?
+    ['153','197','210','224'].map(h =>
+      `<option value="${h}" ${h===item.altura_torre?'selected':''}>${h} cm alt.</option>`
+    ).join('') : '';
+
+  pop.innerHTML = `
+    <div class="pop-header">
+      <div class="pop-title">${titulo}${stInf ? ' · ' + stInf.icon + ' ' + stInf.nombre : ''}</div>
+      <button class="pop-close" onclick="cerrarPopover()">✕</button>
+    </div>
+    <div class="pop-section">
+      <span class="pop-label">Tipo de módulo</span>
+      <div class="pop-subtypes">${stPills}</div>
+    </div>
+    <div class="pop-section pop-row">
+      <div style="flex:1">
+        <span class="pop-label">Ancho</span>
+        <select class="pop-select" onchange="popCambiarCampo('ancho',parseInt(this.value))">${anchoOpts}</select>
+      </div>
+      ${item.tipo === 'torre' ? `<div style="flex:1"><span class="pop-label">Altura carcasa</span>
+        <select class="pop-select" onchange="popCambiarCampo('altura_torre',this.value)">${altOpts}</select></div>` : ''}
+      <div>
+        <span class="pop-label">Cantidad</span>
+        <div class="pop-qty">
+          <button onclick="popAjustarQty(-1)">−</button>
+          <input id="pop-qty-inp" type="number" value="${item.cantidad}" min="1" onchange="popCambiarQtySafe(Math.max(1,parseInt(this.value)||1))">
+          <button onclick="popAjustarQty(1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="pop-section">
+      <span class="pop-label">Descripción / Zona</span>
+      <input class="pop-desc" type="text" placeholder="Ej: Zona cocción" value="${item.nombre||''}" onchange="popCambiarCampo('nombre',this.value)">
+    </div>
+    <button class="pop-delete" onclick="eliminarItem(${item.id});cerrarPopover()">🗑 Eliminar módulo</button>`;
+
+  pop.style.display = 'block';
+  // Position: below anchor, avoid viewport edges
+  const pw = 300; const ph = 320;
+  const vw = window.innerWidth; const vh = window.innerHeight;
+  let left = Math.round(anchorRect.left);
+  let top  = Math.round(anchorRect.bottom + 8);
+  if (left + pw > vw - 8) left = vw - pw - 8;
+  if (left < 4) left = 4;
+  if (top + ph > vh - 8) top = Math.max(4, Math.round(anchorRect.top) - ph - 8);
+  pop.style.left = left + 'px';
+  pop.style.top  = top + 'px';
+}
+
+function popCambiarSub(subtipo) {
+  if (!_popoverItem) return;
+  _popoverItem.subtipo = subtipo;
+  // Reset width to default for new subtype
+  const anchos = getAnchos(_popoverItem.tipo, subtipo);
+  if (!anchos.includes(_popoverItem.ancho)) _popoverItem.ancho = getAnchoDefault(_popoverItem.tipo, subtipo);
+  recalcular();
+  renderizarElevacionActiva();
+  setTimeout(() => {
+    const el = document.querySelector('[data-item="' + _popoverItem.id + '"]');
+    const rect = el ? el.getBoundingClientRect() : { left: 200, bottom: 300, top: 300 };
+    renderPopover(_popoverItem, rect);
+  }, 40);
+}
+
+function popCambiarCampo(campo, valor) {
+  if (!_popoverItem) return;
+  _popoverItem[campo] = valor;
+  // If width changed, clear only this module's positions so auto-layout re-places it
+  if (campo === 'ancho' || campo === 'altura_torre') {
+    const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+    if (elev && elev.modPos) {
+      const maxQ = (_popoverItem.cantidad || 1) + 1;
+      for (let q = 0; q < maxQ; q++) {
+        delete elev.modPos[_popoverItem.id + '_' + q];
+      }
+    }
+  }
+  recalcular();
+  renderizarElevacionActiva();
+  setTimeout(() => {
+    const el = document.querySelector('[data-item="' + _popoverItem.id + '"]');
+    const rect = el ? el.getBoundingClientRect() : { left: 200, bottom: 300, top: 300 };
+    renderPopover(_popoverItem, rect);
+  }, 40);
+}
+
+function popCambiarQtySafe(next) {
+  if (!_popoverItem) return;
+  const cur = _popoverItem.cantidad || 1;
+  if (next > cur) {
+    const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+    if (elev && elev.modPos) {
+      for (let q = cur; q < next; q++) delete elev.modPos[_popoverItem.id + '_' + q];
+    }
+  }
+  popCambiarCampo('cantidad', next);
+}
+
+function popAjustarQty(delta) {
+  if (!_popoverItem) return;
+  const inp = document.getElementById('pop-qty-inp');
+  const cur = parseInt(inp ? inp.value : _popoverItem.cantidad) || 1;
+  const next = Math.max(1, cur + delta);
+  // Pre-clear positions for instances that will be added (gap-finder will place them)
+  if (next > cur) {
+    const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+    if (elev && elev.modPos) {
+      for (let q = cur; q < next; q++) {
+        delete elev.modPos[_popoverItem.id + '_' + q];
+      }
+    }
+  }
+  popCambiarCampo('cantidad', next);
+}
+
+function cerrarPopover() {
+  const pop = document.getElementById('mod-popover');
+  if (pop) pop.style.display = 'none';
+  _popoverItem = null;
+}
+
+// Close popover on outside click
+document.addEventListener('click', function(e) {
+  const pop = document.getElementById('mod-popover');
+  if (!pop || pop.style.display === 'none') return;
+  if (!pop.contains(e.target) && !e.target.closest('#diag-canvas') && !e.target.closest('.mod-compact-row')) {
+    cerrarPopover();
+  }
+}, true);
+
+// ── Tecla Supr/Delete → eliminar módulo seleccionado ─────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+  // Don't intercept when user is typing in an input/select
+  const tag = (document.activeElement?.tagName || '').toUpperCase();
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (_popoverItem) {
+    e.preventDefault();
+    const id = _popoverItem.id;
+    cerrarPopover();
+    eliminarItem(id);
+  }
+});
+
+// ── Drag handlers (cm-based) ──────────────────────────────────────────────
+function diagMouseDown(e) {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  const mod = e.currentTarget;
+  const canvas = document.getElementById('diag-canvas');
+  if (!canvas) return;
+
+  const elev = estado.elevaciones.find(ev => ev.id === estado.elevacionActiva);
+  const instId = mod.dataset.inst;
+  const pos = elev?.modPos?.[instId] || {xCm: 0, yCm: 8};
+
+  _diagDrag = {
+    mod,
+    row:        mod.dataset.row,
+    instId,
+    itemId:     mod.dataset.item,
+    modWcm:     parseInt(mod.dataset.wcm) || 60,
+    startXcm:   pos.xCm,
+    startYcm:   pos.yCm,
+    curXcm:     pos.xCm,
+    curYcm:     pos.yCm,
+    startMouseX: e.clientX,
+    startMouseY: e.clientY
+  };
+
+  mod.classList.add('dragging');
+  mod.style.cursor = 'grabbing';
+  mod.style.zIndex = 50;
+  _diagDragged = false;
+}
+
+document.addEventListener('mousemove', function(e) {
+  if (!_diagDrag) return;
+  e.preventDefault();
+
+  const canvas = document.getElementById('diag-canvas');
+  if (!canvas) return;
+
+  const SX    = _diagSX(canvas);
+  const SY    = _diagSY(canvas);
+  const OX    = _diagOX(canvas);
+  const OB    = _diagOB(canvas);
+  const acm   = _diagACm(canvas);
+  const altCm = parseInt(canvas.dataset.altcm || 250);
+  const { mod, row, startXcm, startYcm, modWcm, startMouseX, startMouseY } = _diagDrag;
+
+  _diagDragged = true;
+  // Delta in cm (1cm snap)
+  const dxCm = (e.clientX - startMouseX) / SX;
+  const dyCm = -(e.clientY - startMouseY) / SY;
+
+  let newXcm = Math.round(startXcm + dxCm);
+  newXcm = Math.max(0, Math.min(acm - modWcm, newXcm));
+
+  mod.style.left = (OX + Math.round(newXcm * SX)) + 'px';
+  _diagDrag.curXcm = newXcm;
+
+  {
+    // Vertical movement — all module types can move freely within canvas
+    const modHpx = parseInt(mod.dataset.h) || hPx;
+    const modHcm = Math.round(modHpx / SY);
+    const minY = 0;
+    const maxY = Math.max(0, altCm - modHcm);
+    let newYcm = Math.round(startYcm + dyCm);
+    newYcm = Math.max(minY, Math.min(maxY, newYcm));
+    mod.style.bottom = (OB + Math.round(newYcm * SY)) + 'px';
+    _diagDrag.curYcm = newYcm;
+  }
+
+  // Swap highlight — same tipo only
+  document.querySelectorAll('.diag-mod-block').forEach(m => {
+    if (m === mod) return;
+    if (m.dataset.tipo !== mod.dataset.tipo) return;
+    m.classList.remove('drop-target');
+    const ml  = parseInt(m.style.left);
+    const mb  = parseInt(m.style.bottom);
+    const mw  = parseInt(m.dataset.w);
+    const mh  = parseInt(m.dataset.h);
+    const myB = OB + Math.round(_diagDrag.curYcm * SY);
+    const myL = OX + Math.round(newXcm * SX);
+    if (Math.abs(myL - ml) < mw * 0.55 && Math.abs(myB - mb) < mh * 0.55) {
+      m.classList.add('drop-target');
+    }
+  });
+});
+
+document.addEventListener('mouseup', function(e) {
+  if (!_diagDrag) return;
+
+  const { mod, row, instId, itemId, curXcm, curYcm, startXcm, startYcm } = _diagDrag;
+  const elev = estado.elevaciones.find(ev => ev.id === estado.elevacionActiva);
+
+  if (elev) {
+    if (!elev.modPos) elev.modPos = {};
+    const finalX = curXcm !== undefined ? curXcm : startXcm;
+    const finalY = curYcm !== undefined ? curYcm : startYcm;
+    elev.modPos[instId] = { xCm: finalX, yCm: finalY };
+
+    // Swap with drop target
+    document.querySelectorAll('.diag-mod-block.drop-target').forEach(target => {
+      const tInst = target.dataset.inst;
+      const tPos  = elev.modPos[tInst] || {xCm: 0, yCm: finalY};
+      elev.modPos[tInst]  = { xCm: finalX, yCm: tPos.yCm };
+      elev.modPos[instId] = { xCm: tPos.xCm, yCm: finalY };
+      target.classList.remove('drop-target');
+      const items = estado.items;
+      const fi = items.findIndex(i => String(i.id) === String(itemId));
+      const ti = items.findIndex(i => String(i.id) === String(target.dataset.item));
+      if (fi !== -1 && ti !== -1 && fi !== ti) { const [mv] = items.splice(fi,1); items.splice(ti,0,mv); }
+    });
+  }
+
+  mod.classList.remove('dragging');
+  mod.style.cursor = 'grab';
+  mod.style.zIndex = 10;
+  _diagDrag = null;
+  setTimeout(() => { _diagDragged = false; }, 50);
+
+  const myItems = estado.items.filter(i => i.elevacion === estado.elevacionActiva);
+  if (elev) renderizarDiagrama(myItems, elev);
+});
+function setElevacionActiva(id) {
+  estado.elevacionActiva = id;
+  renderizarTabsElevaciones();
+  renderizarElevacionActiva();
+}
+
+function agregarElevacion() {
+  const n = estado.contadorElev + 1;
+  const colorIdx = (estado.elevaciones.filter(e=>e.id!=='isla').length) % ELEV_COLORES.length;
+  estado.elevaciones.splice(estado.elevaciones.length - (estado.elevaciones.find(e=>e.id==='isla')?1:0), 0,
+    { id: 'E'+n, nombre: 'Elevaci\u00f3n '+n, color: ELEV_COLORES[colorIdx], anchoCm: 360, altoCm: 250, profCm: 60, modPos: {} }
+  );
+  estado.contadorElev = n;
+  setElevacionActiva('E'+n);
+}
+
+function agregarIsla() {
+  estado.elevaciones.push({ id:'isla', nombre:'Isla Central', color:'#e67e22', anchoCm: 240, altoCm: 95, profCm: 90, modPos: {} });
+  setElevacionActiva('isla');
+}
+
+function eliminarElevacion(id) {
+  if (id === 'isla' || id === 'E1') {
+    alert('No se puede eliminar la primera elevaci\u00f3n ni la isla. Puede renombrarlas.');
+    return;
+  }
+  if (estado.items.filter(i=>i.elevacion===id).length > 0) {
+    if (!confirm('\u00bfEliminar esta elevaci\u00f3n y todos sus m\u00f3dulos?')) return;
+    estado.items = estado.items.filter(i=>i.elevacion!==id);
+  }
+  estado.elevaciones = estado.elevaciones.filter(e=>e.id!==id);
+  if (estado.elevacionActiva === id) {
+    estado.elevacionActiva = estado.elevaciones[0]?.id || 'E1';
+  }
+  renderizarTabsElevaciones();
+  renderizarElevacionActiva();
+  recalcular();
+}
+
+function renombrarElevacionActiva(nombre) {
+  const elev = estado.elevaciones.find(e=>e.id===estado.elevacionActiva);
+  if (elev) elev.nombre = nombre;
+  renderizarTabsElevaciones();
+}
+
+function setETipoTab(tipo) {
+  estado.tipoTabActivo = tipo;
+  ['base','aereo','torre'].forEach(t => {
+    document.getElementById('etab-'+t)?.classList.toggle('activo', t===tipo);
+    const panel = document.getElementById('elista-'+t);
+    if (panel) panel.style.display = t===tipo ? 'block' : 'none';
+  });
+}
+
+function cambiarSubtipo(id, subtipo, tipo) {
+  actualizarCampo(id, 'subtipo', subtipo);
+  renderizarModulos();
+  recalcular();
+}
+
+function cambiarAccesorio(id, sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const acc = ACCESORIOS.find(a => a.nombre === opt.value) || ACCESORIOS[0];
+  const item = estado.items.find(i => i.id === id);
+  if (item) {
+    item.acc_nombre = acc.nombre;
+    item.acc_pts = acc.precio_base_pts;
+    item.acc_clp_unit = acc.precio_clp;
+    item.acc_unidad = acc.unidad;
+  }
+  renderizarModulos();
+  recalcular();
+}
+
+function actualizarCampo(id, campo, valor) {
+  const item = estado.items.find(i => i.id === id);
+  if (item) item[campo] = valor;
+}
+
+// =====================================================================
+// CÁLCULO
+// =====================================================================
+// ── CUBIERTA DE TRABAJO ───────────────────────────────────────────────────
+function setCubiertaTipo(tipo) {
+  estado.cubierta = estado.cubierta || {};
+  estado.cubierta.tipo = tipo;
+  ['ninguna','quarzo','ultracompacto'].forEach(t => {
+    const el = document.getElementById('cub-pill-' + t);
+    if (el) el.classList.toggle('activo', t === tipo);
+  });
+  const params = document.getElementById('cub-params');
+  if (params) params.style.display = tipo !== 'ninguna' ? 'block' : 'none';
+  recalcularCubierta();
+  recalcular();
+}
+
+// Calcula m² y total de cubierta sin tocar el diagrama
+function recalcularCubierta() {
+  const cubTipo = estado.cubierta?.tipo || 'ninguna';
+  if (cubTipo === 'ninguna') { recalcular(); return; }
+
+  const profCm    = parseFloat(document.getElementById('cub-prof-cm')?.value) || 60;
+  const retTipo   = document.getElementById('cub-retorno-tipo')?.value || 'ninguno';
+  const retQty    = parseInt(document.getElementById('cub-retorno-qty')?.value) || 0;
+  const precioM2  = parseFloat(document.getElementById('cub-precio-m2')?.value) || 350000;
+
+  // ML de muebles bajos (base + torres) = frente del mesón
+  const mlBase  = estado.items.filter(i=>i.tipo==='base').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
+  const mlTorre = estado.items.filter(i=>i.tipo==='torre').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
+  const mlMeson = mlBase + mlTorre;
+
+  // m² mesón horizontal
+  const m2Meson = Math.round(mlMeson * (profCm / 100) * 100) / 100;
+
+  // Altura del retorno según tipo
+  // "6cm"      = franja de 6cm de alto a lo largo del mesón
+  // "completo" = desde encimera (~90cm) hasta inicio de aéreos (~150cm) = ~60cm alt.
+  //              O bien usamos la profundidad del mueble como referencia de altura retorno
+  const altoCielo = (() => {
+    const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+    return elev?.altoCm || 250;
+  })();
+  const ENCIMERA_CM = 90;   // altura estándar de encimera sobre el suelo
+  const AEREO_START = Math.round(altoCielo * 0.575); // misma lógica que AEREO_BOT del diagrama
+  const altRetornoCompleto = Math.max(10, AEREO_START - ENCIMERA_CM);
+
+  const altRetorno = retTipo === '6cm' ? 6 : retTipo === 'completo' ? altRetornoCompleto : 0;
+  const m2Retorno = retTipo !== 'ninguno' && retQty > 0
+    ? Math.round(mlMeson * (altRetorno / 100) * retQty * 100) / 100
+    : 0;
+
+  const m2Total = Math.round((m2Meson + m2Retorno) * 100) / 100;
+  const totalCubierta = Math.round(m2Total * precioM2);
+
+  // Guardar en estado para que recalcular() lo use
+  estado.cubierta.m2Total = m2Total;
+  estado.cubierta.totalCubierta = totalCubierta;
+
+  // Actualizar displays
+  const set = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+  set('cub-ml-display',    mlMeson.toFixed(2));
+  set('cub-prof-display',  profCm + ' cm');
+  set('cub-m2-meson',      m2Meson.toFixed(2) + ' m²');
+  set('cub-m2-total',      m2Total.toFixed(2) + ' m²');
+
+  const retRow = document.getElementById('cub-retorno-row');
+  if (retRow) {
+    retRow.style.display = retTipo !== 'ninguno' && retQty > 0 ? 'flex' : 'none';
+    set('cub-retorno-qty-display', retQty);
+    set('cub-retorno-alto-display', altRetorno);
+    set('cub-m2-retorno', m2Retorno.toFixed(2) + ' m²');
+  }
+
+  const tipoLabels = { quarzo: '💎 Quarzo', ultracompacto: '🪨 Ultra Compacto' };
+  set('cub-tipo-label', tipoLabels[cubTipo] || cubTipo);
+  set('cub-m2-label',   m2Total.toFixed(2) + ' m² × $' + precioM2.toLocaleString('es-CL') + '/m²');
+  set('cub-total-num',  '$' + totalCubierta.toLocaleString('es-CL'));
+
+  recalcular();
+}
+
+function recalcular() {
+  const tc = parseFloat(document.getElementById('tc').value) || 1100;
+  const margen = (parseFloat(document.getElementById('margen').value) || 0) / 100;
+  const descuento = (parseFloat(document.getElementById('descuento').value) || 0) / 100;
+  const costoImp = parseFloat(document.getElementById('costo-imp').value) || 1400000;
+  const costoInst = parseFloat(document.getElementById('costo-inst').value) || 700000;
+
+  let totalPuntos = 0;
+  let totalProductosCLP = 0;
+
+  estado.items.forEach(item => {
+    let puntos = 0;
+    let precioCLP = 0;
+
+    if (item.tipo === 'base') {
+      puntos = getPrecioBase(item.ancho, 'base', item.subtipo) * item.cantidad;
+    } else if (item.tipo === 'aereo') {
+      puntos = getPrecioBase(item.ancho, 'aereo', item.subtipo) * item.cantidad;
+    } else if (item.tipo === 'torre') {
+      puntos = getPrecioTorre(item.ancho, item.altura_torre, item.subtipo) * item.cantidad;
+    } else if (item.tipo === 'accesorio') {
+      puntos = (item.acc_pts || 0) * item.acc_qty;
+      precioCLP = (item.acc_clp_unit || 0) * item.acc_qty;
+    }
+
+    item.puntos = puntos;
+    item.precioClp = (puntos * tc) + precioCLP;
+
+    totalPuntos += puntos;
+    totalProductosCLP += item.precioClp;
+  });
+
+  // Precio base productos
+  const baseProductos = totalProductosCLP;
+
+  // Con margen
+  const conMargen = baseProductos * (1 + margen);
+
+  // Descuento
+  const conDescuento = conMargen * (1 - descuento);
+
+  // ── Cubierta de trabajo: leer del estado (calculado por recalcularCubierta)
+  const cubTipo      = estado.cubierta?.tipo || 'ninguna';
+  const cubM2Final   = estado.cubierta?.m2Total || 0;
+  const cubPrecioM2  = parseFloat(document.getElementById('cub-precio-m2')?.value) || 350000;
+  const totalCubierta = estado.cubierta?.totalCubierta || 0;
+
+  // Total con fijos + cubierta
+  const totalFinal = conDescuento + costoImp + costoInst + totalCubierta;
+
+  // ── Metros lineales ───────────────────────────────────────────────────────
+  // ml bajos = base + torres (estos definen el "frente de cocina")
+  const mlBase  = estado.items
+    .filter(i => i.tipo === 'base')
+    .reduce((s, i) => s + (i.ancho * i.cantidad), 0) / 100;
+  const mlTorre = estado.items
+    .filter(i => i.tipo === 'torre')
+    .reduce((s, i) => s + (i.ancho * i.cantidad), 0) / 100;
+  const mlAereo = estado.items
+    .filter(i => i.tipo === 'aereo')
+    .reduce((s, i) => s + (i.ancho * i.cantidad), 0) / 100;
+  const mlTotal = mlBase + mlTorre; // frente lineal total (bajos + torres)
+
+  // Precio/ml sobre el total del proyecto (incluyendo fijos)
+  const precioMl   = mlTotal > 0 ? Math.round(totalFinal / mlTotal) : 0;
+  // También precio/ml solo de módulos (sin fijos) para referencia
+  const precioMlMod = mlTotal > 0 ? Math.round(conDescuento / mlTotal) : 0;
+
+  // Renderizar resumen
+  renderizarResumen({ totalPuntos, baseProductos, conMargen, conDescuento, totalFinal,
+    costoImp, costoInst, tc, margen, descuento,
+    mlBase, mlTorre, mlAereo, mlTotal, precioMl, precioMlMod,
+    cubTipo, cubM2Final, cubPrecioM2, totalCubierta });
+}
+
+function renderizarResumen({ totalPuntos, baseProductos, conMargen, conDescuento, totalFinal,
+    costoImp, costoInst, tc, margen, descuento,
+    mlBase, mlTorre, mlAereo, mlTotal, precioMl, precioMlMod,
+    cubTipo, cubM2Final, cubPrecioM2, totalCubierta }) {
+  const body = document.getElementById('resumen-body');
+  const items = estado.items;
+
+  if (items.length === 0) {
+    body.innerHTML = `<div class="vacio"><div class="icon">📋</div><div>Agregue módulos para ver el resumen</div></div>`;
+    document.getElementById('total-cifra').textContent = '$ 0';
+    return;
+  }
+
+  // Tipo de cambio y PG
+  const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
+
+  let html = `<div style="font-size:11px;color:#888;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee">
+    ${estado.linea} · Carcasa ${estado.carcasa}cm · ${pg ? pg.nombre : ''} · TC: $${tc.toLocaleString('es-CL')}/€
+  </div>`;
+
+  // Agrupar por elevación
+  const elevOrden = [...estado.elevaciones.map(e=>e.id)];
+  elevOrden.forEach(elevId => {
+    const elev = estado.elevaciones.find(e=>e.id===elevId);
+    if (!elev) return;
+    const elevItems = items.filter(i => i.elevacion===elevId && i.tipo!=='accesorio');
+    if (elevItems.length === 0) return;
+    html += `<div style="font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;
+      letter-spacing:.5px;margin:10px 0 4px;background:${elev.color};
+      padding:3px 8px;border-radius:4px;display:flex;align-items:center;gap:6px">
+      ${elev.id==='isla'?'\uD83C\uDFDD\uFE0F':'📐'} ${elev.nombre}
+    </div>`;
+    ['torre','base','aereo'].forEach(tipo => {
+      const sub = elevItems.filter(i=>i.tipo===tipo);
+      if (!sub.length) return;
+      const tipoLbl = {torre:'Torres',base:'Bajos',aereo:'A\u00e9reos'}[tipo];
+      html += `<div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin:4px 0 2px;padding-left:6px">${tipoLbl}</div>`;
+      sub.forEach(item => {
+        let nombre = '';
+        if (item.tipo === 'torre') {
+          const stT=(SUBTIPOS.torre||[]).find(s=>s.id===item.subtipo);
+          nombre = `${stT?stT.icon+' ':'\uD83D\uDDC4\uFE0F '}Torre ${item.ancho}cm\u00d7${item.altura_torre}cm${item.nombre?' \u2014 '+item.nombre:''} \u00d7${item.cantidad}`;
+        } else {
+          const stP=(SUBTIPOS[item.tipo]||[]).find(s=>s.id===item.subtipo);
+          nombre = `${stP?stP.icon+' ':''} ${stP?stP.nombre+' ':''}${item.ancho}cm${item.nombre?' \u2014 '+item.nombre:''} \u00d7${item.cantidad}`;
+        }
+        html += `<div class="linea-resumen">
+          <div class="nombre">
+            ${nombre}
+            ${item.puntos>0?`<small>${item.puntos.toLocaleString()} pts</small>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div class="monto">$${Math.round(item.precioClp).toLocaleString('es-CL')}</div>
+            <button class="btn-del-item" onclick="eliminarItem(${item.id})" title="Eliminar">&times;</button>
+          </div>
+        </div>`;
+      });
+    });
+  });
+  // Accesorios al final
+  const accItems = items.filter(i=>i.tipo==='accesorio');
+  if (accItems.length > 0) {
+    html += `<div style="font-size:10px;font-weight:700;color:#fff;text-transform:uppercase;
+      letter-spacing:.5px;margin:10px 0 4px;background:#555;padding:3px 8px;border-radius:4px">\uD83D\uDD27 Accesorios</div>`;
+    accItems.forEach(item => {
+      const nombre = `${item.acc_nombre} \u00d7${item.acc_qty}`;
+      html += `<div class="linea-resumen">
+        <div class="nombre">${nombre}</div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <div class="monto">$${Math.round(item.precioClp).toLocaleString('es-CL')}</div>
+          <button class="btn-del-item" onclick="eliminarItem(${item.id})" title="Eliminar">&times;</button>
+        </div>
+      </div>`;
+    });
+  }
+  html += `<div class="separador"></div>`;
+  html += `<div class="subtotal-linea"><span>Subtotal Módulos</span><span>$${Math.round(baseProductos).toLocaleString('es-CL')}</span></div>`;
+
+  if (margen > 0) {
+    html += `<div class="subtotal-linea"><span>Margen ${(margen*100).toFixed(0)}%</span><span>+ $${Math.round(conMargen - baseProductos).toLocaleString('es-CL')}</span></div>`;
+  }
+  if (descuento > 0) {
+    html += `<div class="subtotal-linea" style="color:#c00"><span>Descuento ${(descuento*100).toFixed(0)}%</span><span>- $${Math.round(conMargen - conDescuento).toLocaleString('es-CL')}</span></div>`;
+  }
+  html += `<div class="subtotal-linea fijo"><span>Importación Leicht (fijo)</span><span>+ $${costoImp.toLocaleString('es-CL')}</span></div>`;
+  html += `<div class="subtotal-linea fijo"><span>Instalación (fijo)</span><span>+ $${costoInst.toLocaleString('es-CL')}</span></div>`;
+  if (cubTipo && cubTipo !== 'ninguna' && totalCubierta > 0) {
+    const cubLbls = { quarzo: '💎 Quarzo', ultracompacto: '🪨 Ultra Compacto' };
+    html += `<div class="subtotal-linea fijo"><span>${cubLbls[cubTipo]||cubTipo} (${(cubM2Final||0).toFixed(1)}m²)</span><span>+ $${totalCubierta.toLocaleString('es-CL')}</span></div>`;
+  }
+  html += `<div class="separador"></div>`;
+
+  // ── BLOQUE METROS LINEALES ──────────────────────────────────────────────
+  if (mlTotal > 0) {
+    html += `<div style="background:#f0f4fb;border:1px solid #c8d8f0;border-radius:6px;padding:10px 12px;margin:8px 0">
+      <div style="font-size:10px;font-weight:700;color:#1a3a6b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📏 Metros Lineales de Cocina</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+        <div style="text-align:center;background:#fff;border-radius:4px;padding:6px 4px">
+          <div style="font-size:18px;font-weight:700;color:#2c7be5">${mlBase.toFixed(2)}<span style="font-size:11px;font-weight:400"> ml</span></div>
+          <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px">Muebles Bajos</div>
+        </div>
+        ${mlTorre > 0 ? `<div style="text-align:center;background:#fff;border-radius:4px;padding:6px 4px">
+          <div style="font-size:18px;font-weight:700;color:#8e44ad">${mlTorre.toFixed(2)}<span style="font-size:11px;font-weight:400"> ml</span></div>
+          <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px">Torres</div>
+        </div>` : ''}
+        ${mlAereo > 0 ? `<div style="text-align:center;background:#fff;border-radius:4px;padding:6px 4px">
+          <div style="font-size:18px;font-weight:700;color:#54c7c0">${mlAereo.toFixed(2)}<span style="font-size:11px;font-weight:400"> ml</span></div>
+          <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px">Muebles Aéreos</div>
+        </div>` : ''}
+        <div style="text-align:center;background:#1a3a6b;border-radius:4px;padding:6px 4px">
+          <div style="font-size:18px;font-weight:700;color:#c8a96e">${mlTotal.toFixed(2)}<span style="font-size:11px;font-weight:400;color:#fff"> ml</span></div>
+          <div style="font-size:9px;color:#c8d8f0;text-transform:uppercase;letter-spacing:.5px">Frente Total</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid #c8d8f0;padding-top:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:10px;color:#555">Precio/ml módulos</span>
+          <span style="font-size:12px;font-weight:700;color:#2c7be5">$${precioMlMod.toLocaleString('es-CL')}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:#1a3a6b;font-weight:700">Precio/ml proyecto total</span>
+          <span style="font-size:14px;font-weight:700;color:#1a3a6b">$${precioMl.toLocaleString('es-CL')}</span>
+        </div>
+        <div style="font-size:9px;color:#aaa;margin-top:3px">* frente lineal = bajos + torres · ${mlTotal.toFixed(2)} ml</div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="subtotal-linea" style="font-size:11px;color:#888"><span>Total puntos (€)</span><span>${totalPuntos.toLocaleString()} pts = €${totalPuntos.toLocaleString()}</span></div>`;
+
+  body.innerHTML = html;
+  document.getElementById('total-cifra').textContent = '$' + Math.round(totalFinal).toLocaleString('es-CL');
+
+  // Actualizar indicador $/ml bajo el total
+  let mlEl = document.getElementById('total-ml-badge');
+  if (!mlEl) {
+    mlEl = document.createElement('div');
+    mlEl.id = 'total-ml-badge';
+    mlEl.style.cssText = 'font-size:11px;color:#aaa;text-align:right;margin-top:2px';
+    document.getElementById('total-cifra')?.parentElement?.appendChild(mlEl);
+  }
+  mlEl.textContent = mlTotal > 0 ? `$${precioMl.toLocaleString('es-CL')} / ml lineal` : '';
+}
+
+function actualizarResumenHeader() {
+  const cliente = document.getElementById('cliente').value;
+  const num = document.getElementById('num-cot').value;
+  const el = document.getElementById('resumen-cliente');
+  if (cliente) el.textContent = `${cliente} · ${num}`;
+  else el.textContent = 'Complete los datos del proyecto';
+}
+
+// =====================================================================
+// TABS MODAL ODOO
+// =====================================================================
+function setTab(tab) {
+  ['api','webhook','json'].forEach(t => {
+    document.getElementById('panel-'+t).style.display = 'none';
+    document.getElementById('tab-'+t).classList.remove('tab-activo');
+    document.getElementById('tab-'+t).style.color = '#888';
+    document.getElementById('tab-'+t).style.borderBottom = 'none';
+  });
+  document.getElementById('panel-'+tab).style.display = 'block';
+  document.getElementById('tab-'+tab).classList.add('tab-activo');
+  document.getElementById('tab-'+tab).style.color = '#1a1a1a';
+  document.getElementById('tab-'+tab).style.borderBottom = '2px solid #c8a96e';
+
+  if (tab === 'json') {
+    document.getElementById('json-preview').textContent = JSON.stringify(construirPayloadOdoo(), null, 2);
+  }
+}
+
+function guardarConfigOdoo() {
+  // Persistir config en localStorage
+  const cfg = {
+    url: document.getElementById('odoo-url')?.value || '',
+    db: document.getElementById('odoo-db')?.value || '',
+    apikey: document.getElementById('odoo-apikey')?.value || '',
+    prod_id: document.getElementById('odoo-prod-id')?.value || '1',
+    team_id: document.getElementById('odoo-team-id')?.value || '',
+    webhook: document.getElementById('webhook-url')?.value || ''
+  };
+  try { localStorage.setItem('leicht_odoo_cfg', JSON.stringify(cfg)); } catch(e) {}
+}
+
+function cargarConfigOdoo() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('leicht_odoo_cfg') || '{}');
+    if (cfg.url) document.getElementById('odoo-url').value = cfg.url;
+    if (cfg.db) document.getElementById('odoo-db').value = cfg.db;
+    if (cfg.apikey) document.getElementById('odoo-apikey').value = cfg.apikey;
+    if (cfg.prod_id) document.getElementById('odoo-prod-id').value = cfg.prod_id;
+    if (cfg.team_id) document.getElementById('odoo-team-id').value = cfg.team_id;
+    if (cfg.webhook) document.getElementById('webhook-url').value = cfg.webhook;
+  } catch(e) {}
+}
+
+// =====================================================================
+// ODOO API
+// =====================================================================
+function abrirModalOdoo() {
+  if (estado.items.length === 0) { alert('Agregue al menos un módulo antes de enviar a Odoo.'); return; }
+  if (!document.getElementById('cliente').value) { alert('Ingrese el nombre del cliente antes de enviar a Odoo.'); return; }
+  document.getElementById('modal-odoo').classList.add('visible');
+  cargarConfigOdoo();
+  setTab('api');
+}
+
+function cerrarModalOdoo() {
+  document.getElementById('modal-odoo').classList.remove('visible');
+}
+
+function construirPayloadOdoo() {
+  const tc = parseFloat(document.getElementById('tc').value) || 1100;
+  const margen = (parseFloat(document.getElementById('margen').value) || 0) / 100;
+  const descuento = (parseFloat(document.getElementById('descuento').value) || 0) / 100;
+  const costoImp = parseFloat(document.getElementById('costo-imp').value) || 1400000;
+  const costoInst = parseFloat(document.getElementById('costo-inst').value) || 700000;
+  const cliente = document.getElementById('cliente').value;
+  const numCot = document.getElementById('num-cot').value;
+  const obs = document.getElementById('obs').value;
+  const vendedor = document.getElementById('vendedor').value;
+  const tienda = document.getElementById('tienda').value;
+  const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
+
+  let totalProductosCLP = estado.items.reduce((s, i) => s + i.precioClp, 0);
+  const conMargen = totalProductosCLP * (1 + margen);
+  const conDescuento = conMargen * (1 - descuento);
+  const totalFinal = Math.round(conDescuento + costoImp + costoInst);
+  const totalPuntos = estado.items.reduce((s, i) => s + i.puntos, 0);
+
+  const lineas = estado.items.map(item => {
+    let nombre = '';
+    let qty = 1;
+    let precio_unit = 0;
+    if (item.tipo === 'accesorio') {
+      nombre = item.acc_nombre; qty = item.acc_qty;
+      precio_unit = Math.round((item.precioClp / Math.max(item.acc_qty,1)) * (1+margen) * (1-descuento));
+    } else if (item.tipo === 'torre') {
+      nombre = `Torre ${item.ancho}cm Alt.${item.altura_torre}cm${item.nombre?' — '+item.nombre:''}`;
+      qty = item.cantidad;
+      precio_unit = Math.round((item.precioClp / Math.max(item.cantidad,1)) * (1+margen) * (1-descuento));
+    } else if (item.tipo === 'base') {
+      const _stB=(SUBTIPOS.base||[]).find(s=>s.id===item.subtipo);
+      nombre = `Módulo Base ${_stB?_stB.nombre+' ':''}${item.ancho}cm${item.nombre?' — '+item.nombre:''}`;
+      qty = item.cantidad;
+      precio_unit = Math.round((item.precioClp / Math.max(item.cantidad,1)) * (1+margen) * (1-descuento));
+    } else {
+      const _stA=(SUBTIPOS.aereo||[]).find(s=>s.id===item.subtipo);
+      nombre = `Módulo Aéreo ${_stA?_stA.nombre+' ':''}${item.ancho}cm${item.nombre?' — '+item.nombre:''}`;
+      qty = item.cantidad;
+      precio_unit = Math.round((item.precioClp / Math.max(item.cantidad,1)) * (1+margen) * (1-descuento));
+    }
+    return { nombre, qty, precio_unit, puntos: item.puntos, tipo: item.tipo, subtipo: item.subtipo };
+  });
+
+  lineas.push({ nombre: 'Costo Importación Leicht Küchen', qty: 1, precio_unit: costoImp, puntos: 0, tipo: 'fijo' });
+  lineas.push({ nombre: 'Costo Instalación', qty: 1, precio_unit: costoInst, puntos: 0, tipo: 'fijo' });
+
+  return {
+    meta: {
+      fuente: 'Cotizador Leicht Küchen — Concept Home',
+      num_cotizacion: numCot,
+      fecha: document.getElementById('fecha').value,
+      vendedor, tienda,
+      linea: estado.linea, carcasa: estado.carcasa,
+      pg: estado.pg, pg_nombre: pg?.nombre,
+      tc, margen_pct: Math.round(margen*100), descuento_pct: Math.round(descuento*100),
+      total_puntos: totalPuntos, total_euros: totalPuntos,
+      total_clp: totalFinal,
+      archivos_adjuntos: estado.archivos.map(a => a.nombre)
+    },
+    cliente: { nombre: cliente, nota: obs },
+    lineas
+  };
+}
+
+async function probarConexionOdoo() {
+  const url = document.getElementById('odoo-url').value.trim();
+  const db = document.getElementById('odoo-db').value.trim();
+  const apikey = document.getElementById('odoo-apikey').value.trim();
+  const statusEl = document.getElementById('odoo-status');
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '⏳ Probando conexión...';
+  try {
+    const r = await fetch(`${url}/web/dataset/call_kw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc:'2.0', method:'call', id:1,
+        params:{ service:'common', method:'version', args:[] }})
+    });
+    const d = await r.json();
+    if (d.result) {
+      statusEl.innerHTML = `<span style="color:green">✅ Conectado a Odoo ${d.result.server_version || ''} — Base: ${db}</span>`;
+    } else {
+      statusEl.innerHTML = `<span style="color:orange">⚠️ Respuesta inesperada. Verifique la URL.</span>`;
+    }
+  } catch(e) {
+    statusEl.innerHTML = `<span style="color:#c00">❌ Error CORS o URL incorrecta.<br>
+    <small>Odoo Online bloquea llamadas desde archivos locales. Use la pestaña <b>Make/Zapier</b> para evitar este problema.</small></span>`;
+  }
+}
+
+// Enviar via webhook Make/Zapier
+async function enviarWebhook() {
+  const webhookUrl = document.getElementById('webhook-url').value.trim();
+  const statusEl = document.getElementById('webhook-status');
+  if (!webhookUrl) { alert('Ingrese la URL del webhook de Make o Zapier.'); return; }
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '⏳ Enviando datos al webhook...';
+  const payload = construirPayloadOdoo();
+  try {
+    const r = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (r.ok) {
+      statusEl.innerHTML = `<span style="color:green">✅ Datos enviados correctamente a Make/Zapier. Revise su escenario para confirmar que el presupuesto fue creado en Odoo.</span>`;
+      guardarConfigOdoo();
+    } else {
+      statusEl.innerHTML = `<span style="color:#c00">❌ Error HTTP ${r.status}. Verifique que el webhook esté activo.</span>`;
+    }
+  } catch(e) {
+    statusEl.innerHTML = `<span style="color:#c00">❌ Error de red: ${e.message}</span>`;
+  }
+}
+
+// Descargar JSON
+function descargarJSON() {
+  const payload = construirPayloadOdoo();
+  const numCot = document.getElementById('num-cot').value;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cotizacion-${numCot}.json`;
+  a.click();
+}
+
+function copiarJSON() {
+  const payload = construirPayloadOdoo();
+  navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
+    alert('✅ JSON copiado al portapapeles');
+  });
+}
+
+async function enviarOdoo() {
+  const url = document.getElementById('odoo-url').value.trim();
+  const db = document.getElementById('odoo-db').value.trim();
+  const apikey = document.getElementById('odoo-apikey').value.trim();
+  const prodId = parseInt(document.getElementById('odoo-prod-id').value);
+  const teamId = parseInt(document.getElementById('odoo-team-id').value) || false;
+  const statusEl = document.getElementById('odoo-status');
+
+  if (!url || !db || !apikey) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<span style="color:red">⚠️ Complete todos los campos de conexión.</span>';
+    return;
+  }
+
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '⏳ Conectando con Odoo...';
+  guardarConfigOdoo();
+
+  const payload_data = construirPayloadOdoo();
+  const cliente = payload_data.cliente.nombre;
+  const numCot = payload_data.meta.num_cotizacion;
+  const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
+  const descripcionGeneral = `Cotizador Leicht Küchen · ${estado.linea} · Carcasa ${estado.carcasa}cm · ${pg?.nombre || ''} · TC $${payload_data.meta.tc}/€`;
+
+  const lineas = payload_data.lineas.map(l => [0, 0, {
+    product_id: prodId,
+    name: l.nombre,
+    product_uom_qty: l.qty,
+    price_unit: l.precio_unit
+  }]);
+
+  const orderData = {
+    client_order_ref: numCot,
+    note: `${descripcionGeneral}\n\nCliente: ${cliente}\n${payload_data.cliente.nota ? 'Obs: '+payload_data.cliente.nota : ''}`,
+    order_line: lineas
+  };
+  if (teamId) orderData.team_id = teamId;
+
+  const rpcPayload = {
+    jsonrpc: '2.0', method: 'call', id: Date.now(),
+    params: { service: 'object', method: 'execute_kw',
+      args: [db, 2, apikey, 'sale.order', 'create', [orderData]] }
+  };
+
+  try {
+    const response = await fetch(`${url}/web/dataset/call_kw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(rpcPayload)
+    });
+    const data = await response.json();
+    if (data.result) {
+      const orderId = data.result;
+      statusEl.innerHTML = `<span style="color:green">✅ ¡Presupuesto #${orderId} creado en Odoo!<br>
+      <a href="${url}/web#id=${orderId}&model=sale.order&view_type=form" target="_blank">👉 Abrir en Odoo</a></span>`;
+    } else if (data.error) {
+      const msg = data.error.data?.message || data.error.message || JSON.stringify(data.error);
+      statusEl.innerHTML = `<span style="color:orange">⚠️ ${msg}<br><small>Use la pestaña <b>Make/Zapier</b> si persiste el error.</small></span>`;
+    }
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color:#c00">❌ Error CORS: Odoo Online bloquea llamadas desde archivos locales.<br>
+    <b>Solución:</b> Use la pestaña <b>Make/Zapier</b> como intermediario, o descargue el JSON desde la pestaña <b>Exportar JSON</b>.</span>`;
+  }
+}
+
+// =====================================================================
+// EXPORTAR PDF / IMPRIMIR
+// =====================================================================
+function exportarPDF() {
+  // Construir contenido del PDF en ventana separada
+  const cliente = document.getElementById('cliente').value || 'Cliente';
+  const numCot = document.getElementById('num-cot').value;
+  const fecha = document.getElementById('fecha').value;
+  const vendedor = document.getElementById('vendedor').value;
+  const tienda = document.getElementById('tienda').value;
+  const obs = document.getElementById('obs').value;
+  const tc = parseFloat(document.getElementById('tc').value) || 1100;
+  const margen = (parseFloat(document.getElementById('margen').value) || 0) / 100;
+  const descuento = (parseFloat(document.getElementById('descuento').value) || 0) / 100;
+  const costoImp = parseFloat(document.getElementById('costo-imp').value) || 1400000;
+  const costoInst = parseFloat(document.getElementById('costo-inst').value) || 700000;
+  const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
+
+  let totalProductosCLP = estado.items.reduce((s, i) => s + i.precioClp, 0);
+  const conMargen = totalProductosCLP * (1 + margen);
+  const conDescuento = conMargen * (1 - descuento);
+  // Cubierta — leer del estado (ya calculado por recalcularCubierta)
+  const _cubTipo     = estado.cubierta?.tipo || 'ninguna';
+  const _cubM2Final  = estado.cubierta?.m2Total || 0;
+  const _cubPrecioM2 = parseFloat(document.getElementById('cub-precio-m2')?.value) || 350000;
+  const _totalCub    = estado.cubierta?.totalCubierta || 0;
+  const _cubNombres  = { quarzo: '💎 Quarzo', ultracompacto: '🪨 Ultra Compacto' };
+  const totalFinal = Math.round(conDescuento + costoImp + costoInst + _totalCub);
+  const totalPuntos = estado.items.reduce((s, i) => s + i.puntos, 0);
+  // Metros lineales
+  const _mlBase  = estado.items.filter(i=>i.tipo==='base').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
+  const _mlTorre = estado.items.filter(i=>i.tipo==='torre').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
+  const _mlAereo = estado.items.filter(i=>i.tipo==='aereo').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
+  const _mlTotal = _mlBase + _mlTorre;
+  const _precioMlTotal = _mlTotal>0 ? Math.round(totalFinal/_mlTotal) : 0;
+  const _precioMlMod   = _mlTotal>0 ? Math.round(conDescuento/_mlTotal) : 0;
+
+  let itemsHtml = '';
+  const elevsPDF = [...estado.elevaciones];
+  elevsPDF.forEach(elev => {
+    const elevItems = estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
+    if (!elevItems.length) return;
+    itemsHtml += `<tr><td colspan="4" style="background:#1a1a1a;color:#c8a96e;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">
+      ${elev.id==='isla'?'\uD83C\uDFDD\uFE0F':'\uD83D\uDCD0'} ${elev.nombre}
+    </td></tr>`;
+    ['torre','base','aereo'].forEach(tipo=>{
+      const sub = elevItems.filter(i=>i.tipo===tipo);
+      if (!sub.length) return;
+      const tl = {torre:'Torres/Columnas',base:'Muebles Bajos',aereo:'Muebles A\u00e9reos'}[tipo];
+      itemsHtml += `<tr><td colspan="4" style="background:#f5f5f5;font-weight:600;font-size:10px;padding:4px 10px;color:#666">${tl}</td></tr>`;
+      sub.forEach(item=>{
+        let desc = '';
+        if (item.tipo==='torre') {
+          const _stT=(SUBTIPOS.torre||[]).find(s=>s.id===item.subtipo);
+          desc = `${_stT?_stT.icon+' '+_stT.nombre+' ':''}Torre ${item.ancho}cm \u00d7 ${item.altura_torre}cm${item.nombre?' \u2014 '+item.nombre:''} (\u00d7${item.cantidad})`;
+        } else {
+          const _stP=(SUBTIPOS[item.tipo]||[]).find(s=>s.id===item.subtipo);
+          desc = `${_stP?_stP.icon+' '+_stP.nombre+' ':''}${item.ancho}cm${item.nombre?' \u2014 '+item.nombre:''} (\u00d7${item.cantidad})`;
+        }
+        itemsHtml += `<tr>
+          <td>${desc}</td>
+          <td style="text-align:center">${item.puntos>0?item.puntos.toLocaleString()+' pts':'—'}</td>
+          <td style="text-align:center">${item.puntos>0?'\u20ac'+item.puntos.toLocaleString():'—'}</td>
+          <td style="text-align:right;font-weight:600">$${Math.round(item.precioClp).toLocaleString('es-CL')}</td>
+        </tr>`;
+      });
+    });
+  });
+  // Accesorios
+  const accPDF = estado.items.filter(i=>i.tipo==='accesorio');
+  if (accPDF.length) {
+    itemsHtml += `<tr><td colspan="4" style="background:#555;color:#fff;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">\uD83D\uDD27 Accesorios y Mes\u00f3n</td></tr>`;
+    accPDF.forEach(item=>{
+      itemsHtml += `<tr>
+        <td>${item.acc_nombre} \u00d7 ${item.acc_qty}</td>
+        <td style="text-align:center">—</td>
+        <td style="text-align:center">—</td>
+        <td style="text-align:right;font-weight:600">$${Math.round(item.precioClp).toLocaleString('es-CL')}</td>
+      </tr>`;
+    });
+  }
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+  <title>Cotización Leicht Küchen — ${numCot}</title>
+  <style>
+    body{font-family:'Segoe UI',Arial,sans-serif;max-width:800px;margin:20px auto;color:#222;font-size:13px}
+    .header{background:#1a1a1a;color:white;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+    .marca{font-size:20px;font-weight:300;letter-spacing:3px}
+    .marca span{color:#c8a96e;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin:16px 0}
+    th{background:#1a1a1a;color:white;padding:8px 10px;font-size:11px;text-align:left}
+    td{padding:7px 10px;border-bottom:1px solid #eee}
+    .total-row{background:#1a1a1a;color:white;font-size:16px;font-weight:300}
+    .total-row .num{color:#c8a96e;font-size:20px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+    .info-card{border:1px solid #ddd;padding:12px;border-radius:4px}
+    .info-card .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px}
+    .info-card .valor{font-size:14px;font-weight:600;margin-top:4px}
+    .nota{background:#fffbf0;border:1px solid #f0d080;padding:12px;border-radius:4px;font-size:12px;color:#7a5c00;margin-top:12px}
+    @media print{body{margin:0}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="marca">LEICHT <span>KÜCHEN</span></div><div style="font-size:11px;color:#aaa;margin-top:2px">Concept Home Chile — Anteproyecto de Cocina</div></div>
+    <div style="text-align:right;font-size:12px;color:#aaa">
+      <div>${numCot}</div><div>${fecha}</div>
+    </div>
+  </div>
+
+  <div class="info-grid" style="margin-top:16px">
+    <div class="info-card"><div class="label">Cliente</div><div class="valor">${cliente}</div></div>
+    <div class="info-card"><div class="label">Tienda / Vendedor</div><div class="valor">${tienda} · ${vendedor}</div></div>
+    <div class="info-card"><div class="label">Línea / Estilo</div><div class="valor">${estado.linea} · Carcasa ${estado.carcasa}cm</div></div>
+    <div class="info-card"><div class="label">Grupo de Precio</div><div class="valor">PG${estado.pg} — ${pg?.nombre || ''} (Índice ${pg?.indice || ''})</div></div>
+  </div>
+
+  ${obs ? `<div style="background:#fafafa;border:1px solid #ddd;padding:10px;border-radius:4px;margin-bottom:12px;font-size:12px"><strong>Observaciones:</strong> ${obs}</div>` : ''}
+
+  <table>
+    <thead><tr>
+      <th>Módulo / Elemento</th>
+      <th style="text-align:center">Puntos</th>
+      <th style="text-align:center">Euros</th>
+      <th style="text-align:right">Precio CLP</th>
+    </tr></thead>
+    <tbody>${itemsHtml}
+    <tr><td colspan="4" style="height:8px"></td></tr>
+    <tr><td colspan="3" style="text-align:right;color:#666">Subtotal Productos</td><td style="text-align:right;font-weight:700">$${Math.round(totalProductosCLP).toLocaleString('es-CL')}</td></tr>
+    ${margen > 0 ? `<tr><td colspan="3" style="text-align:right;color:#666">Margen ${(margen*100).toFixed(0)}%</td><td style="text-align:right">+ $${Math.round(conMargen-totalProductosCLP).toLocaleString('es-CL')}</td></tr>` : ''}
+    ${descuento > 0 ? `<tr><td colspan="3" style="text-align:right;color:#c00">Descuento ${(descuento*100).toFixed(0)}%</td><td style="text-align:right;color:#c00">- $${Math.round(conMargen-conDescuento).toLocaleString('es-CL')}</td></tr>` : ''}
+    <tr><td colspan="3" style="text-align:right;color:#666">Importación Leicht Küchen (fijo)</td><td style="text-align:right">$${costoImp.toLocaleString('es-CL')}</td></tr>
+    <tr><td colspan="3" style="text-align:right;color:#666">Instalación (fijo)</td><td style="text-align:right">$${costoInst.toLocaleString('es-CL')}</td></tr>
+    ${_cubTipo !== 'ninguna' && _totalCub > 0 ? `<tr><td colspan="3" style="text-align:right;color:#666">Cubierta ${_cubNombres[_cubTipo]||_cubTipo} (${_cubM2Final.toFixed(1)} m² × $${_cubPrecioM2.toLocaleString('es-CL')}/m²)</td><td style="text-align:right;font-weight:600">$${_totalCub.toLocaleString('es-CL')}</td></tr>` : ''}
+    <tr class="total-row"><td colspan="2">TOTAL PROYECTO · ${totalPuntos.toLocaleString()} puntos = €${totalPuntos.toLocaleString()} · TC $${tc}/€</td><td colspan="2" style="text-align:right" class="num">$${totalFinal.toLocaleString('es-CL')}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota">
+    <strong>⚠️ Importante:</strong> Este valor corresponde a un <strong>anteproyecto referencial</strong>. El precio final puede variar según la configuración exacta, acabados específicos, electrodomésticos y condiciones del sitio. IVA no incluido. Precios en pesos chilenos. Cotización válida por 30 días.
+  </div>
+
+  <div style="text-align:center;margin-top:24px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px">
+    Leicht Küchen AG · www.leicht.com · Concept Home Chile · Generado ${fecha}
+  </div>
+  <script>window.print()<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// =====================================================================
+// GESTIÓN DE ARCHIVOS / PLANOS
+// =====================================================================
+function soltarArchivo(ev) {
+  ev.preventDefault();
+  document.getElementById('zona-plano').classList.remove('drag-over');
+  cargarArchivos(ev.dataTransfer.files);
+}
+
+function cargarArchivos(files) {
+  Array.from(files).forEach(file => {
+    if (file.size > 20 * 1024 * 1024) {
+      alert(`El archivo "${file.name}" supera los 20 MB. Por favor comprímalo antes de adjuntarlo.`);
+      return;
+    }
+    const esImagen = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file.name);
+    const esPDF = /\.pdf$/i.test(file.name);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      estado.archivos.push({
+        nombre: file.name,
+        tipo: file.type || 'application/octet-stream',
+        tamano: file.size,
+        dataUrl: e.target.result,
+        esImagen,
+        esPDF
+      });
+      renderizarArchivos();
+    };
+    if (esImagen || esPDF) {
+      reader.readAsDataURL(file);
+    } else {
+      // Archivos CAD u otros: guardar como texto/binario para referencia
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+function renderizarArchivos() {
+  const lista = document.getElementById('archivos-lista');
+  const preview = document.getElementById('plano-preview-container');
+
+  if (estado.archivos.length === 0) {
+    lista.innerHTML = '';
+    preview.innerHTML = '';
+    return;
+  }
+
+  // Lista de archivos
+  lista.innerHTML = estado.archivos.map((a, idx) => {
+    const iconos = { imagen: '🖼️', pdf: '📄', cad: '📐', otro: '📎' };
+    const icono = a.esImagen ? iconos.imagen : a.esPDF ? iconos.pdf : /\.(dxf|dwg)$/i.test(a.nombre) ? iconos.cad : iconos.otro;
+    const kb = (a.tamano / 1024).toFixed(0);
+    const mb = (a.tamano / 1024 / 1024).toFixed(1);
+    const tam = a.tamano > 1024*1024 ? mb+' MB' : kb+' KB';
+    return `<div class="archivo-item">
+      <span class="icono-tipo">${icono}</span>
+      <span class="nombre" title="${a.nombre}">${a.nombre}</span>
+      <span class="tamano">${tam}</span>
+      <button class="btn-quitar-archivo" onclick="quitarArchivo(${idx})" title="Quitar archivo">×</button>
+    </div>`;
+  }).join('');
+
+  // Preview de la primera imagen
+  const primerImg = estado.archivos.find(a => a.esImagen);
+  if (primerImg) {
+    preview.innerHTML = `<div class="plano-preview" style="margin-top:10px">
+      <div class="plano-overlay"><span class="badge-plano">PLANO</span></div>
+      <img src="${primerImg.dataUrl}" alt="Plano del proyecto">
+      <div class="plano-info">
+        <span>${primerImg.nombre}</span>
+        <span>${estado.archivos.length} archivo(s) adjunto(s)</span>
+      </div>
+    </div>`;
+  } else {
+    preview.innerHTML = '';
+  }
+}
+
+function quitarArchivo(idx) {
+  estado.archivos.splice(idx, 1);
+  renderizarArchivos();
+}
+
+// =====================================================================
+// UTILIDADES
+// =====================================================================
+function limpiarTodo() {
+  if (!confirm('¿Está seguro de que desea iniciar una nueva cotización? Se perderán los datos actuales.')) return;
+  estado.items = [];
+  estado.contadorId = 0;
+  estado.archivos = [];
+  renderizarArchivos();
+  document.getElementById('cliente').value = '';
+  document.getElementById('obs').value = '';
+  document.getElementById('vendedor').value = '';
+  document.getElementById('tc').value = '1100';
+  document.getElementById('margen').value = '35';
+  document.getElementById('descuento').value = '0';
+  const hoy = new Date();
+  document.getElementById('num-cot').value = 'COT-' + hoy.getFullYear() + '-' + String(hoy.getMonth()+1).padStart(2,'0') + String(hoy.getDate()).padStart(2,'0') + '-001';
+  renderizarModulos();
+  recalcular();
+  actualizarResumenHeader();
+}
+
+// Inicializar
+recalcular();
+</script>
+</body>
+</html>
