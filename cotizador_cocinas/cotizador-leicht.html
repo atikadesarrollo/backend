@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cotizador Leicht Küchen — Concept Home</title>
+<title>Cotizador Atika — Concept Home</title>
 <style>
   :root {
     --negro: #1a1a1a;
@@ -11,29 +11,34 @@
     --gris-medio: #555;
     --gris-claro: #f0f0f0;
     --borde: #ddd;
-    --acento: #c8a96e;
-    --acento-oscuro: #a8893e;
+    --acento: #cf0521;
+    --acento-oscuro: #a30419;
+    --acento-suave: #fdf2f4;
+    --carbon: #595959;
     --blanco: #ffffff;
-    --rojo: #c0392b;
+    --rojo: #8a1420;
     --verde: #27ae60;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: var(--negro); font-size: 14px; }
+  body { font-family: 'Lato', 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: var(--negro); font-size: 14px; }
 
   /* HEADER */
   header {
-    background: var(--negro);
-    color: var(--blanco);
+    background: var(--blanco);
+    color: var(--negro);
     padding: 16px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 3px solid var(--acento);
   }
-  header .marca { font-size: 22px; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; }
-  header .marca span { color: var(--acento); font-weight: 600; }
-  header .subtitulo { font-size: 11px; color: #aaa; letter-spacing: 1px; margin-top: 2px; }
-  .header-right { text-align: right; font-size: 12px; color: #aaa; }
+  header .marca-atika { display: flex; align-items: center; gap: 16px; }
+  header .logo-atika { height: 34px; width: auto; display: block; }
+  header .subtitulo {
+    font-size: 11px; color: var(--gris-medio); letter-spacing: 1px;
+    text-transform: uppercase; border-left: 1px solid var(--borde); padding-left: 16px;
+  }
+  .header-right { text-align: right; font-size: 12px; color: var(--gris-medio); }
 
   /* LAYOUT */
   .container { display: grid; grid-template-columns: 1fr 380px; gap: 0; min-height: calc(100vh - 70px); }
@@ -49,7 +54,7 @@
     overflow: hidden;
   }
   .seccion-header {
-    background: var(--gris-oscuro);
+    background: var(--carbon);
     color: var(--blanco);
     padding: 10px 16px;
     font-size: 12px;
@@ -93,7 +98,7 @@
     background: var(--blanco);
   }
   .pill:hover { border-color: var(--acento); color: var(--acento-oscuro); }
-  .pill.activo { border-color: var(--acento); background: var(--acento); color: var(--negro); }
+  .pill.activo { border-color: var(--acento); background: var(--acento); color: var(--blanco); }
 
   /* TABLA DE MÓDULOS */
   .tabla-modulos { width: 100%; border-collapse: collapse; }
@@ -114,7 +119,7 @@
     cursor: pointer; font-size: 13px; font-weight: 600;
     transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
   }
-  .btn-agregar { background: var(--acento); color: var(--negro); width: 100%; justify-content: center; margin-top: 8px; }
+  .btn-agregar { background: var(--acento); color: var(--blanco); width: 100%; justify-content: center; margin-top: 8px; }
   .btn-agregar:hover { background: var(--acento-oscuro); color: white; }
   .btn-eliminar { background: none; border: 1px solid #ddd; color: var(--rojo); padding: 4px 8px; font-size: 11px; border-radius: 3px; }
   .btn-eliminar:hover { background: var(--rojo); color: white; border-color: var(--rojo); }
@@ -156,11 +161,12 @@
   .subtotal-linea.fijo { color: #888; }
   .total-final {
     background: var(--negro); color: white;
+    border-top: 2px solid var(--acento);
     padding: 14px 16px; margin: 12px -16px -16px;
     display: flex; justify-content: space-between; align-items: center;
   }
   .total-final .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; }
-  .total-final .cifra { font-size: 22px; font-weight: 300; color: var(--acento); }
+  .total-final .cifra { font-size: 22px; font-weight: 300; color: var(--blanco); }
 
   .acciones-resumen {
     padding: 16px;
@@ -171,11 +177,11 @@
 
   /* BADGE */
   .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
-  .badge-pg { background: var(--acento); color: var(--negro); }
+  .badge-pg { background: var(--acento); color: var(--blanco); }
   .badge-linea { background: #e8f4fd; color: #1a73e8; }
 
   /* INFO BOX */
-  .infobox { background: #fffbf0; border: 1px solid #f0d080; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: #7a5c00; margin-top: 8px; }
+  .infobox { background: #fafafa; border: 1px solid #e6e6e6; border-left: 3px solid var(--acento); border-radius: 4px; padding: 10px 14px; font-size: 12px; color: var(--gris-medio); margin-top: 8px; }
   .infobox strong { display: block; margin-bottom: 4px; }
 
   /* GRUPO DE PRECIOS */
@@ -186,8 +192,8 @@
     text-align: center;
   }
   .pg-card:hover { border-color: var(--acento); }
-  .pg-card.activo { border-color: var(--acento); background: #fffbf0; }
-  .pg-card .pg-num { font-size: 18px; font-weight: 700; color: var(--acento-oscuro); }
+  .pg-card.activo { border-color: var(--acento); background: #fdf2f4; }
+  .pg-card .pg-num { font-size: 18px; font-weight: 700; color: var(--acento); }
   .pg-card .pg-nombre { font-size: 10px; color: var(--gris-medio); margin-top: 2px; }
   .pg-card .pg-idx { font-size: 10px; color: #aaa; }
 
@@ -225,7 +231,7 @@
     padding: 20px; text-align: center; cursor: pointer;
     transition: all 0.2s; background: #fafafa; position: relative;
   }
-  .zona-plano:hover, .zona-plano.drag-over { border-color: var(--acento); background: #fffbf0; }
+  .zona-plano:hover, .zona-plano.drag-over { border-color: var(--acento); background: #fdf2f4; }
   .zona-plano input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .zona-plano .icono { font-size: 32px; margin-bottom: 6px; }
   .zona-plano p { font-size: 12px; color: var(--gris-medio); }
@@ -234,7 +240,7 @@
   .plano-preview img { width: 100%; max-height: 280px; object-fit: contain; background: #fff; }
   .plano-preview .plano-info { padding: 8px 12px; background: #f5f5f5; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666; }
   .plano-overlay { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
-  .badge-plano { background: #1a1a1a; color: var(--acento); padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+  .badge-plano { background: var(--acento); color: var(--blanco); padding: 3px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; }
   .archivos-adjuntos { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
   .archivo-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f9f9f9; border: 1px solid var(--borde); border-radius: 4px; font-size: 12px; }
   .archivo-item .icono-tipo { font-size: 18px; }
@@ -247,9 +253,9 @@
 <body>
 
 <header>
-  <div>
-    <div class="marca">LEICHT <span>KÜCHEN</span></div>
-    <div class="subtitulo">Cotizador Anteproyecto · Concept Home Chile</div>
+  <div class="marca-atika">
+    <img class="logo-atika" src="data:image/png;base64,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" alt="ATIKA">
+    <div class="subtitulo">Cotizador de Cocinas · Anteproyecto · Concept Home Chile</div>
   </div>
   <div class="header-right">
     <div>v2026.1</div>
@@ -603,14 +609,14 @@
 
     <!-- TABS -->
     <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:0">
-      <button class="tab-btn tab-activo" onclick="setTab('api')" id="tab-api" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid #c8a96e;color:#1a1a1a">🔗 API Directa</button>
+      <button class="tab-btn tab-activo" onclick="setTab('api')" id="tab-api" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid #cf0521;color:#1a1a1a">🔗 API Directa</button>
       <button class="tab-btn" onclick="setTab('webhook')" id="tab-webhook" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#888">⚡ Make/Zapier</button>
       <button class="tab-btn" onclick="setTab('json')" id="tab-json" style="padding:8px 14px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;color:#888">📥 Exportar JSON</button>
     </div>
 
     <!-- TAB: API DIRECTA -->
     <div id="panel-api">
-      <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:10px 14px;font-size:12px;color:#7a5c00;margin-bottom:14px">
+      <div style="background:#fafafa;border:1px solid #e6e6e6;border-left:3px solid #cf0521;border-radius:4px;padding:10px 14px;font-size:12px;color:#555;margin-bottom:14px">
         <strong>📋 Pasos previos en Odoo Online:</strong><br>
         1. Ir a <b>Configuración → Usuarios → [su usuario] → Seguridad de cuenta</b><br>
         2. Clic en <b>"Nueva clave API"</b> → copiar la clave<br>
@@ -802,7 +808,7 @@
 .pal-chip.base-chip  { border-left: 3px solid #2c7be5; }
 .pal-chip.aereo-chip { border-left: 3px solid #27ae60; }
 .pal-chip.torre-chip { border-left: 3px solid #8e44ad; }
-.pal-chip.dragging-over { border-color: var(--acento); background: #fffbf0; }
+.pal-chip.dragging-over { border-color: var(--acento); background: #fdf2f4; }
 
 /* ── COMPACT MODULE LIST ─────────────────────────────────── */
 .mod-compact-row {
@@ -857,8 +863,8 @@
   background: white; transition: all 0.12s;
   line-height: 1.3;
 }
-.pop-st:hover { border-color: var(--acento); background: #fffbf0; }
-.pop-st.activo { border-color: var(--acento); background: var(--acento); color: var(--negro); }
+.pop-st:hover { border-color: var(--acento); background: #fdf2f4; }
+.pop-st.activo { border-color: var(--acento); background: var(--acento); color: var(--blanco); }
 .pop-row { display: flex; gap: 8px; align-items: flex-end; }
 .pop-select {
   width: 100%; padding: 5px 8px; border: 1px solid #ddd;
@@ -1025,8 +1031,8 @@
 /* SUBTIPOS DE MÓDULOS */
 .subtipos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:6px; margin-bottom:12px; }
 .subtipo-card { border:2px solid var(--borde); border-radius:6px; padding:8px 6px; cursor:pointer; text-align:center; transition:all .15s; background:#fafafa; }
-.subtipo-card:hover { border-color:var(--acento); background:#fffdf7; }
-.subtipo-card.activo { border-color:var(--acento); background:#fffbf0; }
+.subtipo-card:hover { border-color:var(--acento); background:#fdf7f8; }
+.subtipo-card.activo { border-color:var(--acento); background:#fdf2f4; }
 .subtipo-card .st-icon { font-size:22px; margin-bottom:3px; }
 .subtipo-card .st-nombre { font-size:10px; font-weight:700; color:#333; line-height:1.2; }
 .subtipo-card .st-desc { font-size:9px; color:#888; line-height:1.2; margin-top:2px; display:none; }
@@ -2809,7 +2815,7 @@ function renderizarResumen({ totalPuntos, baseProductos, conMargen, conDescuento
           <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px">Muebles Aéreos</div>
         </div>` : ''}
         <div style="text-align:center;background:#1a3a6b;border-radius:4px;padding:6px 4px">
-          <div style="font-size:18px;font-weight:700;color:#c8a96e">${mlTotal.toFixed(2)}<span style="font-size:11px;font-weight:400;color:#fff"> ml</span></div>
+          <div style="font-size:18px;font-weight:700;color:#fff">${mlTotal.toFixed(2)}<span style="font-size:11px;font-weight:400;color:#c8d8f0"> ml</span></div>
           <div style="font-size:9px;color:#c8d8f0;text-transform:uppercase;letter-spacing:.5px">Frente Total</div>
         </div>
       </div>
@@ -2864,7 +2870,7 @@ function setTab(tab) {
   document.getElementById('panel-'+tab).style.display = 'block';
   document.getElementById('tab-'+tab).classList.add('tab-activo');
   document.getElementById('tab-'+tab).style.color = '#1a1a1a';
-  document.getElementById('tab-'+tab).style.borderBottom = '2px solid #c8a96e';
+  document.getElementById('tab-'+tab).style.borderBottom = '2px solid #cf0521';
 
   if (tab === 'json') {
     document.getElementById('json-preview').textContent = JSON.stringify(construirPayloadOdoo(), null, 2);
@@ -2960,7 +2966,7 @@ function construirPayloadOdoo() {
 
   return {
     meta: {
-      fuente: 'Cotizador Leicht Küchen — Concept Home',
+      fuente: 'Cotizador Atika — Concept Home',
       num_cotizacion: numCot,
       fecha: document.getElementById('fecha').value,
       vendedor, tienda,
@@ -3067,7 +3073,7 @@ async function enviarOdoo() {
   const cliente = payload_data.cliente.nombre;
   const numCot = payload_data.meta.num_cotizacion;
   const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
-  const descripcionGeneral = `Cotizador Leicht Küchen · ${estado.linea} · Carcasa ${estado.carcasa}cm · ${pg?.nombre || ''} · TC $${payload_data.meta.tc}/€`;
+  const descripcionGeneral = `Cotizador Atika · ${estado.linea} · Carcasa ${estado.carcasa}cm · ${pg?.nombre || ''} · TC $${payload_data.meta.tc}/€`;
 
   const lineas = payload_data.lineas.map(l => [0, 0, {
     product_id: prodId,
@@ -3152,7 +3158,7 @@ function exportarPDF() {
   elevsPDF.forEach(elev => {
     const elevItems = estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
     if (!elevItems.length) return;
-    itemsHtml += `<tr><td colspan="4" style="background:#1a1a1a;color:#c8a96e;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">
+    itemsHtml += `<tr><td colspan="4" style="background:#595959;color:#fff;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">
       ${elev.id==='isla'?'\uD83C\uDFDD\uFE0F':'\uD83D\uDCD0'} ${elev.nombre}
     </td></tr>`;
     ['torre','base','aereo'].forEach(tipo=>{
@@ -3194,28 +3200,31 @@ function exportarPDF() {
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-  <title>Cotización Leicht Küchen — ${numCot}</title>
+  <title>Cotización Atika — ${numCot}</title>
   <style>
-    body{font-family:'Segoe UI',Arial,sans-serif;max-width:800px;margin:20px auto;color:#222;font-size:13px}
-    .header{background:#1a1a1a;color:white;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
-    .marca{font-size:20px;font-weight:300;letter-spacing:3px}
-    .marca span{color:#c8a96e;font-weight:700}
+    body{font-family:'Lato','Segoe UI',Arial,sans-serif;max-width:800px;margin:20px auto;color:#222;font-size:13px}
+    .header{background:#fff;color:#1a1a1a;padding:16px 24px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #cf0521}
+    .header .logo-atika{height:38px;width:auto;display:block}
+    .header .bajada{font-size:11px;color:#777;margin-top:8px;text-transform:uppercase;letter-spacing:1px}
     table{width:100%;border-collapse:collapse;margin:16px 0}
-    th{background:#1a1a1a;color:white;padding:8px 10px;font-size:11px;text-align:left}
+    th{background:#595959;color:white;padding:8px 10px;font-size:11px;text-align:left}
     td{padding:7px 10px;border-bottom:1px solid #eee}
-    .total-row{background:#1a1a1a;color:white;font-size:16px;font-weight:300}
-    .total-row .num{color:#c8a96e;font-size:20px}
+    .total-row{background:#1a1a1a;color:white;font-size:16px;font-weight:300;border-top:2px solid #cf0521}
+    .total-row .num{color:#fff;font-size:20px;font-weight:600}
     .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
     .info-card{border:1px solid #ddd;padding:12px;border-radius:4px}
     .info-card .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px}
     .info-card .valor{font-size:14px;font-weight:600;margin-top:4px}
-    .nota{background:#fffbf0;border:1px solid #f0d080;padding:12px;border-radius:4px;font-size:12px;color:#7a5c00;margin-top:12px}
+    .nota{background:#fafafa;border:1px solid #e6e6e6;border-left:3px solid #cf0521;padding:12px;border-radius:4px;font-size:12px;color:#555;margin-top:12px}
     @media print{body{margin:0}}
   </style></head><body>
   <div class="header">
-    <div><div class="marca">LEICHT <span>KÜCHEN</span></div><div style="font-size:11px;color:#aaa;margin-top:2px">Concept Home Chile — Anteproyecto de Cocina</div></div>
-    <div style="text-align:right;font-size:12px;color:#aaa">
-      <div>${numCot}</div><div>${fecha}</div>
+    <div>
+      <img class="logo-atika" src="data:image/png;base64,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" alt="ATIKA">
+      <div class="bajada">Concept Home Chile — Anteproyecto de Cocina</div>
+    </div>
+    <div style="text-align:right;font-size:12px;color:#777">
+      <div style="font-size:15px;color:#1a1a1a;letter-spacing:1px">COTIZACIÓN N° ${numCot}</div><div style="margin-top:4px">${fecha}</div>
     </div>
   </div>
 
@@ -3251,8 +3260,8 @@ function exportarPDF() {
     <strong>⚠️ Importante:</strong> Este valor corresponde a un <strong>anteproyecto referencial</strong>. El precio final puede variar según la configuración exacta, acabados específicos, electrodomésticos y condiciones del sitio. IVA no incluido. Precios en pesos chilenos. Cotización válida por 30 días.
   </div>
 
-  <div style="text-align:center;margin-top:24px;font-size:11px;color:#aaa;border-top:1px solid #eee;padding-top:12px">
-    Leicht Küchen AG · www.leicht.com · Concept Home Chile · Generado ${fecha}
+  <div style="text-align:center;margin-top:24px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:12px">
+    ATIKA · atika.cl · Concept Home Chile · Cocinas Leicht Küchen · Generado ${fecha}
   </div>
   <script>window.print()<\/script>
   </body></html>`);
