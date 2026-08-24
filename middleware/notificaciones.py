@@ -71,14 +71,17 @@ def _notificar_entregable_completado(codigo, tarea_nombre):
 # advertencia en el chatter o aborta la acción, según el flujo).
 
 def notificar_alta_proyecto(destinatarios, codigo, nombre_proyecto, proveedor,
-                            cliente_nombre='', cliente_rut='', valor_contrato=''):
+                            cliente_nombre='', cliente_rut='', valor_contrato='',
+                            adjuntos=None):
     """F1 — aviso de alta de proyecto al proveedor (su casilla CRM crea la oportunidad).
-    cliente_* = el Mandante del proyecto en Atika (nombre y RUT)."""
+    cliente_* = el Mandante del proyecto en Atika (nombre y RUT). `adjuntos` = los PDF
+    del anteproyecto que Odoo exige antes de enviar el proyecto."""
     html = render_template('alta_proyecto.html', codigo=codigo,
                            nombre_proyecto=nombre_proyecto, proveedor=proveedor,
                            cliente_nombre=cliente_nombre, cliente_rut=cliente_rut,
                            valor_contrato=valor_contrato)
-    enviar_email(destinatarios, f"Nuevo proyecto asignado: {codigo}", html)
+    enviar_email(destinatarios, f"Nuevo proyecto asignado: {codigo}", html,
+                 adjuntos=adjuntos)
 
 
 def notificar_pago_hito(destinatarios, codigo, proveedor, hito, monto, fecha, referencia):

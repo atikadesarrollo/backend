@@ -55,7 +55,12 @@ def notify(tipo):
                 destinatarios, payload.get('codigo', ''),
                 payload.get('nombre_proyecto', ''), payload.get('proveedor', ''),
                 payload.get('cliente_nombre', ''), payload.get('cliente_rut', ''),
-                payload.get('valor_contrato', ''))
+                payload.get('valor_contrato', ''),
+                # Se descartan las entradas incompletas: Resend responde 4xx si
+                # falta filename o content, y eso abortaría el envío de F1.
+                adjuntos=[a for a in (payload.get('adjuntos') or [])
+                          if isinstance(a, dict) and a.get('filename')
+                          and a.get('content')])
         elif tipo == 'pago-hito':
             notificaciones.notificar_pago_hito(
                 destinatarios, payload.get('codigo', ''), payload.get('proveedor', ''),
