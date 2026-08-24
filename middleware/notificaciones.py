@@ -91,6 +91,31 @@ def notificar_pago_hito(destinatarios, codigo, proveedor, hito, monto, fecha, re
     enviar_email(destinatarios, f"Pago registrado: {hito} ({codigo})", html)
 
 
+def notificar_pago_anteproyecto(destinatarios, codigo, proveedor, pedido, monto,
+                                facturas=None, fecha=''):
+    """Avisa al proveedor que Atika pagó el anteproyecto (marca la etapa
+    Confirmación Anteproyecto). Distinto de notificar_pago_hito: ese sale del
+    wizard sobre una tarea espejo de CH, este sale de un pedido de venta de Atika
+    facturado y pagado."""
+    html = render_template('pago_anteproyecto.html', codigo=codigo,
+                           proveedor=proveedor, pedido=pedido, monto=monto,
+                           facturas=facturas or [], fecha=fecha)
+    enviar_email(destinatarios, f"Pago del anteproyecto registrado: {codigo}", html)
+
+
+def notificar_confirmacion_instalacion(destinatarios, codigo, proveedor, pedido,
+                                       total_pedido='', monto_pagado='',
+                                       facturas=None, fecha=''):
+    """Avisa al proveedor que la instalación quedó confirmada: la orden de venta de la
+    Oferta está confirmada y su primer hito pagado. No se valida ningún porcentaje —
+    basta la primera factura pagada (decisión del usuario 2026-08-24)."""
+    html = render_template('confirmacion_instalacion.html', codigo=codigo,
+                           proveedor=proveedor, pedido=pedido,
+                           total_pedido=total_pedido, monto_pagado=monto_pagado,
+                           facturas=facturas or [], fecha=fecha)
+    enviar_email(destinatarios, f"Instalación confirmada: {codigo}", html)
+
+
 def notificar_cotizacion_confirmada(destinatarios, codigo, pedido, lineas):
     """Trazabilidad — cotización confirmada, detalle de líneas a ambas partes."""
     html = render_template('cotizacion_confirmada.html', codigo=codigo,
