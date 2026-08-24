@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cotizador Atika — Concept Home</title>
+<title>Cotizador Atika</title>
+<meta name="theme-color" content="#cf0521">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9Ijk2IiBmaWxsPSIjMWExYTFhIi8+PHJlY3QgeD0iNjAiIHk9IjM5MiIgd2lkdGg9IjM5MiIgaGVpZ2h0PSIyNCIgZmlsbD0iI2NmMDUyMSIvPjx0ZXh0IHg9IjI1NiIgeT0iMzMwIiBmb250LWZhbWlseT0iTGF0byxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzMDAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PHRleHQgeD0iMjU2IiB5PSIzNjgiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0MiIgbGV0dGVyLXNwYWNpbmc9IjgiIGZpbGw9IiNjZjA1MjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNPVElaQURPUjwvdGV4dD48L3N2Zz4=">
 <style>
   :root {
     --negro: #1a1a1a;
@@ -18,6 +20,10 @@
     --blanco: #ffffff;
     --rojo: #8a1420;
     --verde: #27ae60;
+    --deco-piso: #9a8060;
+    --deco-piso-d: #7a6545;
+    --deco-cielo: #d0ccc6;
+    --deco-cielo-d: #b0aaa2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Lato', 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: var(--negro); font-size: 14px; }
@@ -162,7 +168,7 @@
   .total-final {
     background: var(--negro); color: white;
     border-top: 2px solid var(--acento);
-    padding: 14px 16px; margin: 12px -16px -16px;
+    padding: 14px 16px; margin: 12px 0 0;
     display: flex; justify-content: space-between; align-items: center;
   }
   .total-final .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; }
@@ -255,7 +261,7 @@
 <header>
   <div class="marca-atika">
     <img class="logo-atika" src="data:image/png;base64,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" alt="ATIKA">
-    <div class="subtitulo">Cotizador de Cocinas · Anteproyecto · Concept Home Chile</div>
+    <div class="subtitulo">Cotizador de Cocinas · Anteproyecto</div>
   </div>
   <div class="header-right">
     <div>v2026.1</div>
@@ -294,9 +300,7 @@
           <div>
             <label>Tienda</label>
             <select id="tienda">
-              <option>Concept Home - Santiago</option>
-              <option>Concept Home - Providencia</option>
-              <option>Concept Home - Las Condes</option>
+              <option>Vitacura</option>
             </select>
           </div>
         </div>
@@ -330,6 +334,32 @@
         <div>
           <label>Grupo de Precio (estilo de frente)</label>
           <div class="pg-grid" id="pg-grid"></div>
+          <div id="pg8-recargo-box" style="display:none;margin-top:10px">
+            <label>Programa exclusivo PG8 (recargo catálogo 2026)</label>
+            <select id="pg8-recargo" onchange="setRecargoPG8(this.value)">
+              <option value="0">ALURO / BAHIA — sin recargo</option>
+              <option value="0.5">KERA — PG8 +50%</option>
+              <option value="0.6">ROCCA-01 — PG8 +60%</option>
+              <option value="0.7">ROCCA-02 — PG8 +70%</option>
+              <option value="0.8">ROCCA-03 — PG8 +80%</option>
+              <option value="1.0">ROCCA-04 — PG8 +100%</option>
+              <option value="1.1">ROCCA-05 — PG8 +110%</option>
+            </select>
+          </div>
+          <div style="border-top:1px solid #eee;margin-top:12px;padding-top:10px">
+            <label>Terminación del proyecto — aplica a todos los módulos (modificable por módulo)</label>
+            <div id="acabados-grid" style="margin-top:6px"></div>
+          </div>
+          <div style="border-top:1px solid #eee;margin-top:12px;padding-top:10px">
+            <label>Sistema de apertura — modificable por módulo</label>
+            <div style="display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap">
+              <button type="button" id="apert-tirador" class="pill activo" onclick="setApertura('tirador')">🪝 Tirador</button>
+              <button type="button" id="apert-gola" class="pill" onclick="setApertura('gola')">▬ Gola (sin tirador)</button>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;text-transform:none;margin:0">Color
+                <input type="color" id="apert-color" value="#8f8f8f" style="width:32px;height:26px;border:1px solid #ccc;border-radius:4px;padding:1px;cursor:pointer" onchange="setGolaColor(this.value)">
+              </label>
+            </div>
+          </div>
           <div class="infobox" style="margin-top:8px">
             <strong>📋 Grupo seleccionado: <span id="pg-seleccionado-nombre">PG1 — Estilo Básico (Índice 70)</span></strong>
             Los valores en puntos se multiplican por el tipo de cambio EUR/CLP para obtener el precio en pesos.
@@ -342,28 +372,30 @@
     <div class="seccion">
       <div class="seccion-header"><span class="num">3</span> Tipo de Cambio y Márgenes</div>
       <div class="seccion-body">
-        <div class="fila fila-3">
+        <div class="fila fila-2">
+          <div>
+            <label>Descuento Cliente (%)</label>
+            <input type="number" id="descuento" value="0" min="0" max="50" step="1" oninput="recalcular()">
+          </div>
+          <div>
+            <label>Costo Instalación (CLP fijo)</label>
+            <input type="number" id="costo-inst" value="700000" step="50000" oninput="recalcular()">
+          </div>
+        </div>
+        <!-- Parámetros internos ocultos de la vista (2026-08-24). Los inputs siguen en el DOM
+             porque alimentan recalcular(), el resumen y el PDF; volver a mostrarlos = quitar el display:none. -->
+        <div style="display:none">
           <div>
             <label>EUR → CLP (1 Euro = ? Pesos)</label>
             <input type="number" id="tc" value="1100" min="800" max="1600" step="10" oninput="recalcular()">
           </div>
           <div>
             <label>Margen Comercial (%)</label>
-            <input type="number" id="margen" value="35" min="0" max="200" step="1" oninput="recalcular()">
+            <input type="number" id="margen" value="15" min="0" max="200" step="1" oninput="recalcular()">
           </div>
-          <div>
-            <label>Descuento Cliente (%)</label>
-            <input type="number" id="descuento" value="0" min="0" max="50" step="1" oninput="recalcular()">
-          </div>
-        </div>
-        <div class="fila fila-2">
           <div>
             <label>Costo Importación (CLP fijo)</label>
             <input type="number" id="costo-imp" value="1400000" step="50000" oninput="recalcular()">
-          </div>
-          <div>
-            <label>Costo Instalación (CLP fijo)</label>
-            <input type="number" id="costo-inst" value="700000" step="50000" oninput="recalcular()">
           </div>
         </div>
       </div>
@@ -452,7 +484,35 @@
           </div>
 
           <!-- Diagrama interactivo de elevación -->
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:5px;margin:0;font-size:11px;text-transform:none">Piso <input type="color" value="#9a8060" style="width:28px;height:22px;border:1px solid #ccc;border-radius:4px;padding:1px;cursor:pointer" onchange="setDecoColor('piso',this.value)"></label>
+              <label style="display:flex;align-items:center;gap:5px;margin:0;font-size:11px;text-transform:none">Cielo <input type="color" value="#d0ccc6" style="width:28px;height:22px;border:1px solid #ccc;border-radius:4px;padding:1px;cursor:pointer" onchange="setDecoColor('cielo',this.value)"></label>
+              <button class="btn btn-secundario btn-sm" onclick="agregarAbertura('ventana')">+ 🪟 Ventana</button>
+              <button class="btn btn-secundario btn-sm" onclick="agregarAbertura('puerta')">+ 🚪 Puerta</button>
+              <button class="btn btn-secundario btn-sm" onclick="agregarAbertura('pasada')">+ ⬜ Pasada</button>
+              <label style="display:flex;align-items:center;gap:5px;margin:0;font-size:11px;text-transform:none">Muro
+                <select id="muro-sel" onchange="setMuroActivo(this.value)" style="width:110px;padding:4px 6px;font-size:11px">
+                  <option value="">— sin asignar —</option>
+                  <option value="fondo">Fondo</option>
+                  <option value="izquierda">Izquierda</option>
+                  <option value="derecha">Derecha</option>
+                </select>
+              </label>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-secundario btn-sm" onclick="abrirVista3D()">🧊 Vista 3D</button>
+              <button class="btn btn-secundario btn-sm" onclick="abrirVistaPremium()">🖼️ Vista Presentación</button>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding:8px 10px;background:#faf6ec;border:1px solid #e4d5aa;border-radius:6px">
+            <label style="display:flex;align-items:center;gap:6px;margin:0;font-size:11.5px;text-transform:none;cursor:pointer">
+              <input type="checkbox" id="modo-cliente" onchange="estado.modoCliente=this.checked" style="cursor:pointer">
+              <strong>Propuesta Cliente</strong> — oculta desglose por módulo, importación e instalación (solo total muebles + total cubiertas)
+            </label>
+          </div>
           <div id="elev-diagrama" style="margin-bottom:14px"></div>
+          <div id="planta-proyecto" style="margin-bottom:14px"></div>
 
           <!-- Paleta drag-and-drop de módulos -->
           <div id="mod-paleta" class="mod-palette">
@@ -586,7 +646,9 @@
         <div class="label">TOTAL PROYECTO</div>
         <div style="font-size:11px;color:#888;margin-top:2px">IVA no incluido</div>
       </div>
-      <div class="cifra" id="total-cifra">$ 0</div>
+      <div style="text-align:right">
+        <div class="cifra" id="total-cifra">$ 0</div>
+      </div>
     </div>
 
     <div class="acciones-resumen">
@@ -624,12 +686,12 @@
       </div>
       <div class="fila">
         <label>URL de Odoo</label>
-        <input type="text" id="odoo-url" placeholder="https://concepthome.odoo.com" oninput="guardarConfigOdoo()">
+        <input type="text" id="odoo-url" placeholder="https://atika.odoo.com" oninput="guardarConfigOdoo()">
       </div>
       <div class="fila fila-2">
         <div>
           <label>Base de Datos (subdominio)</label>
-          <input type="text" id="odoo-db" placeholder="concepthome" oninput="guardarConfigOdoo()">
+          <input type="text" id="odoo-db" placeholder="atika" oninput="guardarConfigOdoo()">
         </div>
         <div>
           <label>API Key</label>
@@ -909,12 +971,20 @@
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
 }
 .diag-pared { position:absolute;inset:0;background:linear-gradient(180deg,#ddd9d3 0%,#e8e4df 60%,#cfc9c0 100%); }
-.diag-suelo { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,#7a6545,#9a8060);z-index:2; }
+.diag-suelo { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,var(--deco-piso-d),var(--deco-piso));z-index:2; }
 .diag-plinto { position:absolute;left:0;right:0;background:linear-gradient(0deg,#b09060,#c8a878);z-index:3; }
 .diag-encimera { position:absolute;left:0;right:0;height:5px;background:linear-gradient(0deg,#5a4030,#8B6545);z-index:3; }
 .diag-zona-base { position:absolute;left:0;right:0;background:rgba(200,169,110,0.08);border-top:1px dashed rgba(200,169,110,0.3);z-index:1; }
 .diag-zona-aereo { position:absolute;left:0;right:0;background:rgba(84,199,192,0.1);border-top:1px dashed rgba(84,199,192,0.4);border-bottom:1px dashed rgba(84,199,192,0.4);z-index:1; }
-.diag-techo { position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(180deg,#b0aaa2,#d0ccc6);z-index:2; }
+.diag-techo { position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(180deg,var(--deco-cielo-d),var(--deco-cielo));z-index:2; }
+.diag-mod-block .dmod-x { position:absolute;top:-8px;right:-8px;width:17px;height:17px;border-radius:50%;background:#c0392b;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:8;box-shadow:0 1px 4px rgba(0,0,0,0.4);line-height:1; }
+.diag-mod-block:hover .dmod-x { display:flex; }
+.diag-abertura { position:absolute;z-index:3;cursor:grab;border-radius:2px; }
+.diag-abertura:active { cursor:grabbing; }
+.diag-abertura .ab-x { position:absolute;top:-8px;right:-8px;width:17px;height:17px;border-radius:50%;background:#c0392b;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:8;box-shadow:0 1px 4px rgba(0,0,0,0.4);line-height:1; }
+.diag-abertura:hover .ab-x { display:flex; }
+.diag-abertura .ab-lbl { position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9px;color:#445;opacity:0.85;pointer-events:none;text-shadow:0 1px 2px rgba(255,255,255,0.6); }
+.diag-gap-zone { pointer-events:none; }
 .diag-label { position:absolute;right:5px;font-size:9px;color:rgba(0,0,0,0.35);z-index:4;white-space:nowrap; }
 
 /* ─── Diagrama v3 — canvas container ─────────────────────────────── */
@@ -1050,14 +1120,14 @@
 // =====================================================================
 
 const GRUPOS_PRECIO = [
-  { id: 1, nombre: 'Estilo Básico', programas: 'SIRIUS, TERRA, ORLANDO, IKONO, SYNTHIA, GEO, CERES, MIRO', indice: 70 },
-  { id: 2, nombre: 'Estilo Intermedio A', programas: 'METURO, BONDI, MINERA', indice: 73 },
-  { id: 3, nombre: 'Estilo Intermedio B', programas: 'CLASSIC-FF, IDEA, TOCCO, AMETIS', indice: 79 },
-  { id: 4, nombre: 'Estilo Medio', programas: 'CLASSIC-FS, PEARL, VERVE-FS, WAKUU-FS, AVENIDA, CARRÉ-FS', indice: 86 },
-  { id: 5, nombre: 'Estilo Premium A', programas: 'MADERO, LARGO-FG, TOPOS', indice: 100 },
-  { id: 6, nombre: 'Estilo Premium B', programas: 'LAIKA, IOS-M, IOS, TOPOS-Q, TERMA, WAKUU', indice: 114 },
-  { id: 7, nombre: 'Estilo Alto', programas: 'BOSSA, BOSSA-FS, TERMA-Q, CONCRETE, STEEL', indice: 124 },
-  { id: 8, nombre: 'Estilo Lujo', programas: 'BAHIA, ALURO', indice: 134 }
+  { id: 1, nombre: 'Estilo Básico', programas: 'CERES, SIRIUS, MIRO, GEO, TERRA, IKONO, SYNTHIA, ORLANDO', indice: 70 },
+  { id: 2, nombre: 'Estilo Intermedio A', programas: 'BONDI, MINERA, METURO', indice: 73 },
+  { id: 3, nombre: 'Estilo Intermedio B', programas: 'CLASSIC-FF, CLASSIC-FF-Q, TOCCO, IDEA', indice: 79 },
+  { id: 4, nombre: 'Estilo Medio', programas: 'F45, PEARL, AVENIDA, CLASSIC-FS, CLASSIC-FS-Q, VERVE-FS, WAKUU-FS, CARRÉ-FS, AMETIS', indice: 86 },
+  { id: 5, nombre: 'Estilo Premium A', programas: 'LARGO-FG, MADERO, TOPOS', indice: 100 },
+  { id: 6, nombre: 'Estilo Premium B', programas: 'IOS-M, IOS, LAIKA, TOPOS-Q, TERMA, WAKUU', indice: 114 },
+  { id: 7, nombre: 'Estilo Alto', programas: 'CONCRETE, STEEL, BOSSA, BOSSA-FS, TERMA-Q', indice: 124 },
+  { id: 8, nombre: 'Estilo Lujo', programas: 'ALURO, BAHIA · Exclusivos con recargo: KERA +50%, ROCCA-01..05 +60% a +110%', indice: 134 }
 ];
 
 // PRECIOS MÓDULOS BASE (PISO) — Carcasa 73cm, Prof. 56cm
@@ -1261,7 +1331,10 @@ const SUBTIPOS = {
     { id:'pileta',    icon:'\uD83D\uDEB0', nombre:'Bajo pileta/fregadero',       desc:'Sin panel trasero, para lavaplatos' },
     { id:'esquina',   icon:'\uD83D\uDD04', nombre:'M\u00f3dulo de esquina',       desc:'Carrusel giratorio 90° / Lazy Susan' },
     { id:'campana',   icon:'\uD83D\uDCA8', nombre:'Bajo campana extractora',     desc:'Unidad abierta zona de cocci\u00f3n' },
-    { id:'especiero', icon:'\uD83E\uDED9', nombre:'Especiero/Botellero',         desc:'Canastillos extra\u00edbles (SZISK/SZISF)' }
+    { id:'especiero', icon:'\uD83E\uDED9', nombre:'Especiero/Botellero',         desc:'Canastillos extra\u00edbles (SZISK/SZISF)' },
+    { id:'cocina',    icon:'🔥', nombre:'Bajo placa de cocción',       desc:'Cajón superior preparado para encimera/placa de cocción' },
+    { id:'horno_bajo',icon:'♨️', nombre:'Horno bajo encimera',         desc:'Hueco para horno empotrado bajo cubierta (equipo no incluido)' },
+    { id:'lavavajilla',icon:'🫧', nombre:'Panel lavavajillas',          desc:'Frente panelable para lavavajillas integrado (equipo no incluido)' }
   ],
   aereo: [
     { id:'puerta',       icon:'\uD83D\uDEAA', nombre:'Con puerta(s)',            desc:'1 \u00f3 2 puertas, 2 estantes ajustables' },
@@ -1275,7 +1348,11 @@ const SUBTIPOS = {
     { id:'extraible',    icon:'\uD83D\uDCFC', nombre:'Con extra\u00edbles/cajones',  desc:'M\u00f3dulos extra\u00edbles interiores (HAA)' },
     { id:'horno',        icon:'\uD83D\uDD32', nombre:'Para horno/microondas',        desc:'Hueco para electrodom\u00e9sticos (HG)' },
     { id:'correderas',   icon:'\u2194\uFE0F',  nombre:'Puertas correderas',          desc:'Puertas deslizantes (HV) \u2014 Premium' },
-    { id:'vitrina_vero', icon:'\uD83E\uDE9F', nombre:'Torre Vitrina Vero',          desc:'Columna con puertas de vidrio Vero \u2014 exhibici\u00f3n' }
+    { id:'vitrina_vero', icon:'\uD83E\uDE9F', nombre:'Torre Vitrina Vero',          desc:'Columna con puertas de vidrio Vero \u2014 exhibici\u00f3n' },
+    { id:'frigorifico',  icon:'❄️', nombre:'Torre frigorífico integrado', desc:'Columna para refrigerador empotrado (equipo no incluido)' },
+    { id:'freezer',      icon:'🧊', nombre:'Torre freezer integrado',     desc:'Columna para congelador empotrado (equipo no incluido)' },
+    { id:'americano',    icon:'🚪', nombre:'Nicho refrigerador americano',desc:'Paneles y nicho para side-by-side (equipo no incluido)' },
+    { id:'vinoteca',     icon:'🍷', nombre:'Torre vinoteca',              desc:'Columna para cava de vinos integrada (equipo no incluido)' }
   ]
 };
 
@@ -1338,6 +1415,11 @@ const ACCESORIOS = [
   { nombre: 'Panel Lateral Visible (por ud)', unidad: 'ud', precio_base_pts: 85, precio_clp: 0 },
   { nombre: 'Zócalo (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 15000 },
   { nombre: 'Iluminación LED interior (por ud)', unidad: 'ud', precio_base_pts: 0, precio_clp: 35000 },
+  { nombre: 'Iluminación LED bajo aéreos (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 42000 },
+  { nombre: 'Tira LED zócalo (por ml)', unidad: 'ml', precio_base_pts: 0, precio_clp: 38000 },
+  { nombre: 'Iluminación interior vitrina Vero (por ud)', unidad: 'ud', precio_base_pts: 0, precio_clp: 55000 },
+  { nombre: 'Spot LED empotrado (por ud)', unidad: 'ud', precio_base_pts: 0, precio_clp: 28000 },
+  { nombre: 'Transformador / Driver LED (por ud)', unidad: 'ud', precio_base_pts: 0, precio_clp: 45000 },
   { nombre: 'Sistema SensoMatic (por ud)', unidad: 'ud', precio_base_pts: 239, precio_clp: 0 },
   { nombre: 'Sistema Tip-Softclose (por ud)', unidad: 'ud', precio_base_pts: 66, precio_clp: 0 },
   { nombre: 'Tiradores / Manillas (juego)', unidad: 'ud', precio_base_pts: 0, precio_clp: 25000 },
@@ -1356,6 +1438,12 @@ let estado = {
   linea: 'PRIMO',
   carcasa: '73',
   pg: 1,
+  recargoPG8: 0,
+  acabadoProyecto: null,
+  apertura: 'tirador',
+  golaColor: '#8f8f8f',
+  modoCliente: false,
+  deco: { piso: '#9a8060', cielo: '#d0ccc6' },
   items: [],
   contadorId: 0,
   contadorElev: 2,
@@ -1393,6 +1481,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderizarElevacionActiva();
   // Render module palette
   renderPaleta();
+  renderAcabados();
+  aplicarDeco();
 });
 
 function renderizarPG() {
@@ -1408,6 +1498,12 @@ function renderizarPG() {
       card.classList.add('activo');
       estado.pg = g.id;
       document.getElementById('pg-seleccionado-nombre').textContent = `PG${g.id} — ${g.nombre} (Índice ${g.indice})`;
+      const rb = document.getElementById('pg8-recargo-box');
+      if (rb) rb.style.display = g.id === 8 ? 'block' : 'none';
+      if (g.id !== 8) { estado.recargoPG8 = 0; const rs = document.getElementById('pg8-recargo'); if (rs) rs.value = '0'; }
+      const _famAct = estado.acabadoProyecto ? FAMILIAS_ACABADO.find(f => f.items.some(a => a.id === estado.acabadoProyecto)) : null;
+      if (_famAct && _famAct.pgs && !_famAct.pgs.includes(g.id)) estado.acabadoProyecto = null;
+      renderAcabados();
       recalcular();
     };
     grid.appendChild(card);
@@ -1458,6 +1554,11 @@ function getPrecioBase(ancho, tipo, subtipo) {
       const t=carcasa==='73'?PRECIOS_S3Z_73:carcasa==='80'?PRECIOS_S3Z_80:PRECIOS_S3Z_86;
       return Math.round(bA(t, Math.min(ancho,60)) * 1.05);
     }
+    if (st === 'cocina' || st === 'horno_bajo' || st === 'lavavajilla') {
+      const tb = carcasa==='73'?PRECIOS_BASE_73:carcasa==='80'?PRECIOS_BASE_80:PRECIOS_BASE_86;
+      const f = st==='cocina' ? 1.06 : st==='horno_bajo' ? 1.12 : 0.55;
+      return Math.round(bA(tb, ancho) * f);
+    }
     // pileta, campana, puerta: tabla estándar
     return bA(carcasa==='73'?PRECIOS_BASE_73:carcasa==='80'?PRECIOS_BASE_80:PRECIOS_BASE_86, ancho);
   }
@@ -1492,6 +1593,10 @@ function getPrecioTorre(ancho, altura_id, subtipo) {
   if (st === 'horno')       return Math.round(base * 1.10);
   if (st === 'extraible')   return Math.round(base * 1.35);
   if (st === 'vitrina_vero') return Math.round(base * 1.30); // Vero glass tower +30%
+  if (st === 'frigorifico')  return Math.round(base * 1.15); // housing frigorífico
+  if (st === 'freezer')      return Math.round(base * 1.15);
+  if (st === 'americano')    return Math.round(base * 0.80); // nicho + paneles
+  if (st === 'vinoteca')     return Math.round(base * 1.25);
   return base;
 }
 
@@ -1644,6 +1749,7 @@ function renderizarTabsElevaciones() {
 function renderizarElevacionActiva() {
   const elev = estado.elevaciones.find(e=>e.id===estado.elevacionActiva);
   if (!elev) return;
+  setTimeout(renderizarPlanta, 30);
 
   // Actualizar nombre
   const nomInput = document.getElementById('elev-nombre');
@@ -1739,8 +1845,12 @@ function buildModBlock(instId, itemId, tipo, row, leftPx, botPx, wPx, hPx, icon,
   const lblSz      = Math.max(7, Math.min(11, wPx / 6.5));
   const subSz      = Math.max(6, Math.min(9, wPx / 9));
 
-  // Body gradient per type
-  const bodyGrad = tipo === 'aereo'
+  // Body gradient — terminación por módulo/proyecto, o por tipo si no hay
+  const _itFin = estado.items.find(i => i.id === (isNaN(itemId) ? itemId : parseInt(itemId)));
+  const _fin = _itFin ? _paletaDe(_itFin) : null;
+  const bodyGrad = _fin
+    ? `linear-gradient(180deg,${_fin.f} 0%,${_fin.f2} 55%,${_shade(_fin.f2,-14)} 100%)`
+    : tipo === 'aereo'
     ? 'linear-gradient(180deg,#c8bcac 0%,#b0a08a 45%,#9c8c78 100%)'
     : tipo === 'torre'
     ? 'linear-gradient(180deg,#7a5c3c 0%,#624830 45%,#503820 100%)'
@@ -1757,8 +1867,9 @@ function buildModBlock(instId, itemId, tipo, row, leftPx, botPx, wPx, hPx, icon,
   const topCol  = tipo === 'torre' ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.32)';
 
   // Text colors
-  const numCol = tipo === 'aereo' ? 'rgba(60,40,20,0.70)' : 'rgba(255,255,255,0.88)';
-  const subCol = tipo === 'aereo' ? 'rgba(60,40,20,0.55)' : 'rgba(255,255,255,0.65)';
+  const _finClaro = _fin ? (_lum(_fin.f) > 150) : (tipo === 'aereo');
+  const numCol = _finClaro ? 'rgba(50,40,28,0.78)' : 'rgba(255,255,255,0.88)';
+  const subCol = _finClaro ? 'rgba(50,40,28,0.58)' : 'rgba(255,255,255,0.65)';
 
   const doorTop = 5, doorLeft = 4, doorRight = 4;
   const doorBot = showHandle ? 16 : 5;
@@ -1783,6 +1894,9 @@ function buildModBlock(instId, itemId, tipo, row, leftPx, botPx, wPx, hPx, icon,
     <!-- Accent strip top -->
     <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${accentCol};z-index:3;border-radius:2px 2px 0 0;opacity:0.92"></div>
 
+    <!-- Eliminar instancia -->
+    <div class="dmod-x" title="Eliminar este módulo" onmousedown="event.stopPropagation()" onclick="event.stopPropagation();eliminarInstancia('${itemId}','${instId}')">✕</div>
+
     <!-- 3D side edge -->
     ${show3D ? `<div style="position:absolute;top:3px;right:-5px;bottom:5px;width:5px;background:${sideCol};z-index:1;clip-path:polygon(0 0,100% 10%,100% 90%,0 100%);border-radius:0 1px 1px 0"></div>` : ''}
 
@@ -1802,8 +1916,21 @@ function buildModBlock(instId, itemId, tipo, row, leftPx, botPx, wPx, hPx, icon,
       ${showSub && subNom ? `<div style="font-size:${subSz}px;color:${subCol};text-align:center;line-height:1.2;padding:0 3px;text-shadow:0 1px 1px rgba(0,0,0,0.28)">${subNom.substring(0,12)}</div>` : ''}
     </div>
 
-    <!-- Handle bar -->
-    ${showHandle ? `<div style="position:absolute;bottom:${handleBot}px;left:20%;right:20%;height:${handleH}px;background:linear-gradient(180deg,#e8e8e8 0%,#a0a0a0 100%);border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,0.50),inset 0 1px 0 rgba(255,255,255,0.60);z-index:4"></div>` : ''}
+    <!-- Handle bar / Gola -->
+    ${(function(){
+      const _it = estado.items.find(i => i.id === (isNaN(itemId) ? itemId : parseInt(itemId)));
+      const _ap = _aperturaDe(_it);
+      if (_ap === 'gola') {
+        const gc = _colorGola(_it);
+        const dark = _shade(gc, -25);
+        const highlight = _shade(gc, 20);
+        if (tipo === 'aereo') {
+          return `<div style="position:absolute;left:-2px;right:-2px;bottom:0;height:5px;background:${dark};z-index:5;border-bottom:1px solid ${highlight}"></div>`;
+        }
+        return `<div style="position:absolute;left:-2px;right:-2px;top:0;height:5px;background:${dark};z-index:5;border-top:1px solid ${highlight}"></div>`;
+      }
+      return showHandle ? `<div style="position:absolute;bottom:${handleBot}px;left:20%;right:20%;height:${handleH}px;background:linear-gradient(180deg,#e8e8e8 0%,#a0a0a0 100%);border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,0.50),inset 0 1px 0 rgba(255,255,255,0.60);z-index:4"></div>` : '';
+    })()}
 
   </div>`;
 }
@@ -2035,7 +2162,7 @@ function renderizarDiagrama(items, elev) {
       ondragover="canvasDragOver(event)"
       ondragleave="canvasDragLeave(event)"
       ondrop="canvasDrop(event)">
-      ${bgHTML}${gapHTML}${modsHTML}
+      ${bgHTML}${_aberturasHTML(elev, SX, SY, OX, OB)}${gapHTML}${modsHTML}
     </div>
     <div class="diag-ruler-wrap">${rulerHTML}</div>
     <div class="diag-legend">
@@ -2237,11 +2364,26 @@ function renderPopover(item, anchorRect) {
       <span class="pop-label">Descripción / Zona</span>
       <input class="pop-desc" type="text" placeholder="Ej: Zona cocción" value="${item.nombre||''}" onchange="popCambiarCampo('nombre',this.value)">
     </div>
+    <div class="pop-section">
+      <span class="pop-label">Apertura de este módulo</span>
+      <div style="display:flex;gap:6px;margin-top:4px;align-items:center;flex-wrap:wrap">
+        <button class="pop-st ${_aperturaDe(item)==='tirador'?'activo':''}" onclick="popCambiarCampo('apertura','tirador')">🪝 Tirador</button>
+        <button class="pop-st ${_aperturaDe(item)==='gola'?'activo':''}" onclick="popCambiarCampo('apertura','gola')">▬ Gola</button>
+        <input type="color" value="${_colorGola(item)}" style="width:30px;height:28px;padding:1px;border:1px solid #ccc;border-radius:4px;cursor:pointer" onchange="popCambiarCampo('aperturaColor',this.value)">
+      </div>
+    </div>
+    <div class="pop-section">
+      <span class="pop-label">Terminación de este módulo</span>
+      <select class="pop-select" onchange="popCambiarCampo('acabado', this.value || null)">
+        <option value="">— Según proyecto —</option>
+        ${FAMILIAS_ACABADO.map(f => `<optgroup label="${f.nombre}">${f.items.map(a => `<option value="${a.id}" ${item.acabado===a.id?'selected':''}>${a.nombre}</option>`).join('')}</optgroup>`).join('')}
+      </select>
+    </div>
     <button class="pop-delete" onclick="eliminarItem(${item.id});cerrarPopover()">🗑 Eliminar módulo</button>`;
 
   pop.style.display = 'block';
   // Position: below anchor, avoid viewport edges
-  const pw = 300; const ph = 320;
+  const pw = 320; const ph = 520;
   const vw = window.innerWidth; const vh = window.innerHeight;
   let left = Math.round(anchorRect.left);
   let top  = Math.round(anchorRect.bottom + 8);
@@ -2655,6 +2797,7 @@ function recalcular() {
       precioCLP = (item.acc_clp_unit || 0) * item.acc_qty;
     }
 
+    if (estado.pg === 8 && estado.recargoPG8 > 0 && item.tipo !== 'accesorio') puntos = Math.round(puntos * (1 + estado.recargoPG8));
     item.puntos = puntos;
     item.precioClp = (puntos * tc) + precioCLP;
 
@@ -2966,7 +3109,7 @@ function construirPayloadOdoo() {
 
   return {
     meta: {
-      fuente: 'Cotizador Atika — Concept Home',
+      fuente: 'Cotizador Atika',
       num_cotizacion: numCot,
       fecha: document.getElementById('fecha').value,
       vendedor, tienda,
@@ -3119,8 +3262,954 @@ async function enviarOdoo() {
 // =====================================================================
 // EXPORTAR PDF / IMPRIMIR
 // =====================================================================
+// =====================================================================
+// V2.3 — PLANTA DEL PROYECTO (asignación de muros + esquinas)
+// =====================================================================
+function setMuroActivo(muro){
+  const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+  if (!elev || elev.id === 'isla') { renderizarPlanta(); return; }
+  if (muro) estado.elevaciones.forEach(e => { if (e.id !== elev.id && e.muro === muro) e.muro = null; });
+  elev.muro = muro || null;
+  renderizarElevacionActiva();
+}
+function asignarMuroClick(muro){
+  setMuroActivo(muro);
+}
+function _muroDe(nombre){ return estado.elevaciones.find(e => e.id !== 'isla' && e.muro === nombre) || null; }
+
+function renderizarPlanta(){
+  const cont = document.getElementById('planta-proyecto');
+  if (!cont) return;
+  // defaults la primera vez
+  if (!estado.elevaciones.some(e => e.muro && e.id !== 'isla')) {
+    const evs = estado.elevaciones.filter(e => e.id !== 'isla');
+    if (evs[0]) evs[0].muro = 'fondo';
+    if (evs[1]) evs[1].muro = 'izquierda';
+  }
+  const fondo = _muroDe('fondo'), izq = _muroDe('izquierda'), der = _muroDe('derecha');
+  const isla = estado.elevaciones.find(e => e.id === 'isla');
+  const conMod = e => e && estado.items.some(i => i.elevacion === e.id && i.tipo !== 'accesorio');
+
+  const RW = (fondo && fondo.anchoCm) || 360;
+  const RD = Math.max((izq && izq.anchoCm) || 0, (der && der.anchoCm) || 0, 260);
+  const k = Math.min(520 / RW, 260 / RD);
+  const W = RW * k, H = RD * k;
+  const PAD = 34, LEG = 190;
+  let s = '';
+
+  // piso
+  s += `<rect x="0" y="0" width="${W}" height="${H}" fill="${estado.deco.piso}" opacity="0.25"/>`;
+  s += `<rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="#c8c2b8" stroke-width="1"/>`;
+
+  // bandas de muro (clic para asignar elevación activa)
+  const muroFill = (m, el) => el ? el.color : '#d8d3ca';
+  s += `<g style="cursor:pointer" onclick="asignarMuroClick('fondo')"><rect x="-8" y="-10" width="${W+16}" height="10" fill="${muroFill('fondo',fondo)}" rx="2"><title>Muro FONDO — clic para asignar la elevación activa</title></rect></g>`;
+  s += `<g style="cursor:pointer" onclick="asignarMuroClick('izquierda')"><rect x="-10" y="-8" width="10" height="${H+16}" fill="${muroFill('izquierda',izq)}" rx="2"><title>Muro IZQUIERDA — clic para asignar la elevación activa</title></rect></g>`;
+  s += `<g style="cursor:pointer" onclick="asignarMuroClick('derecha')"><rect x="${W}" y="-8" width="10" height="${H+16}" fill="${muroFill('derecha',der)}" rx="2"><title>Muro DERECHA — clic para asignar la elevación activa</title></rect></g>`;
+
+  // huellas de módulos por muro
+  const D = 58 * k, DA = 34 * k;
+  function huella(el, muro){
+    if (!el) return;
+    const inst = _instanciasElevacion(el);
+    inst.forEach(mi => {
+      const a = mi.x * k, w = mi.w * k;
+      const esAereo = mi.tipo === 'aereo';
+      const d = esAereo ? DA : D;
+      const esq = mi.subtipo === 'esquina';
+      let r = '';
+      if (muro === 'fondo')      r = `x="${a}" y="0" width="${w}" height="${d}"`;
+      else if (muro === 'izquierda') r = `x="0" y="${a}" width="${d}" height="${w}"`;
+      else                       r = `x="${W-d}" y="${a}" width="${d}" height="${w}"`;
+      s += `<rect ${r} fill="${esq?'#e67e22':el.color}" opacity="${esAereo?0.28:0.72}" stroke="${el.color}" stroke-width="0.8" ${esAereo?'stroke-dasharray="3 2"':''}/>`;
+      if (esq) {
+        const cx = muro==='fondo' ? a+w/2 : (muro==='izquierda' ? D/2 : W-D/2);
+        const cy = muro==='fondo' ? D/2 : a+w/2;
+        s += `<text x="${cx}" y="${cy+3}" font-size="9" text-anchor="middle" fill="#fff" font-weight="700">◣</text>`;
+      }
+    });
+    // aberturas sobre el muro
+    (el.aberturas||[]).forEach(ab => {
+      const a0 = ab.xCm * k, aw = ab.wCm * k;
+      const col = ab.tipo==='ventana' ? '#5aa2c8' : ab.tipo==='puerta' ? _shade(ab.color,-20) : '#ffffff';
+      if (muro === 'fondo')      s += `<rect x="${a0}" y="-9" width="${aw}" height="8" fill="${col}" stroke="#8a8378" stroke-width="0.6"/>`;
+      else if (muro === 'izquierda') s += `<rect x="-9" y="${a0}" width="8" height="${aw}" fill="${col}" stroke="#8a8378" stroke-width="0.6"/>`;
+      else                       s += `<rect x="${W+1}" y="${a0}" width="8" height="${aw}" fill="${col}" stroke="#8a8378" stroke-width="0.6"/>`;
+    });
+    // etiqueta
+    const lbl = el.nombre + (conMod(el)?'':' (vacía)');
+    if (muro === 'fondo') s += `<text x="${W/2}" y="${D+14}" font-size="10" text-anchor="middle" fill="${el.color}" font-weight="700">${_svgEsc(lbl)}</text>`;
+    else if (muro === 'izquierda') s += `<text x="${D+8}" y="${H/2}" font-size="10" fill="${el.color}" font-weight="700" transform="rotate(-90 ${D+8} ${H/2})" text-anchor="middle">${_svgEsc(lbl)}</text>`;
+    else s += `<text x="${W-D-8}" y="${H/2}" font-size="10" fill="${el.color}" font-weight="700" transform="rotate(90 ${W-D-8} ${H/2})" text-anchor="middle">${_svgEsc(lbl)}</text>`;
+  }
+  huella(fondo,'fondo'); huella(izq,'izquierda'); huella(der,'derecha');
+
+  // isla
+  if (isla && conMod(isla)) {
+    const inst = _instanciasElevacion(isla);
+    const totW = Math.max(...inst.map(m=>m.x+m.w), 120) * k;
+    const ip = 95 * k;
+    s += `<rect x="${(W-totW)/2}" y="${H*0.5 - ip/2}" width="${totW}" height="${ip}" fill="${isla.color}" opacity="0.72" stroke="${isla.color}" rx="2"/>`;
+    s += `<text x="${W/2}" y="${H*0.5+3}" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">${_svgEsc(isla.nombre)}</text>`;
+  }
+
+  // esquinas: verificación de módulos esquineros
+  function chequeoEsquina(elA, elB, cercaA, cercaB){
+    if (!elA || !elB || !conMod(elA) || !conMod(elB)) return null;
+    const lowsA = _instanciasElevacion(elA).filter(m=>m.tipo!=='aereo');
+    const lowsB = _instanciasElevacion(elB).filter(m=>m.tipo!=='aereo');
+    const ocupA = lowsA.some(m => cercaA(m));
+    const ocupB = lowsB.some(m => cercaB(m));
+    if (!ocupA || !ocupB) return null;
+    const hayEsq = lowsA.some(m => m.subtipo==='esquina' && cercaA(m)) || lowsB.some(m => m.subtipo==='esquina' && cercaB(m));
+    return hayEsq ? 'ok' : 'warn';
+  }
+  const eIzq = chequeoEsquina(fondo, izq, m=>m.x<65, m=>m.x<65);
+  const eDer = chequeoEsquina(fondo, der, m=>m.x+m.w>RW-65, m=>m.x<65);
+  function marcaEsquina(cx, cy, st){
+    if (!st) return;
+    const col = st==='ok' ? '#27ae60' : '#e67e22';
+    s += `<circle cx="${cx}" cy="${cy}" r="10" fill="${col}"/><text x="${cx}" y="${cy+4}" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${st==='ok'?'✓':'!'}</text>`;
+  }
+  marcaEsquina(4, 4, eIzq);
+  marcaEsquina(W-4, 4, eDer);
+
+  // leyenda
+  let leg = '';
+  let ly = 6;
+  estado.elevaciones.forEach(el => {
+    const act = el.id === estado.elevacionActiva;
+    const muroTxt = el.id==='isla' ? 'centro' : (el.muro || 'sin muro');
+    leg += `<g style="cursor:pointer" onclick="setElevacionActiva('${el.id}')">
+      <rect x="${W+24}" y="${ly-9}" width="${LEG-30}" height="17" rx="8" fill="${act?'#fdf2f4':'transparent'}" stroke="${act?'#cf0521':'transparent'}"/>
+      <circle cx="${W+34}" cy="${ly}" r="5" fill="${el.color}"/>
+      <text x="${W+44}" y="${ly+3.5}" font-size="10.5" fill="#444" font-weight="${act?'700':'400'}">${_svgEsc(el.nombre)} — ${muroTxt}</text>
+    </g>`;
+    ly += 21;
+  });
+  const advEsq = (eIzq==='warn'||eDer==='warn') ? `<text x="${W+24}" y="${ly+6}" font-size="9.5" fill="#e67e22">⚠ Esquina ocupada sin módulo esquinero</text>` : '';
+
+  cont.innerHTML = `<div style="border:1px solid var(--borde,#ddd);border-radius:6px;background:white;padding:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#555">🗺️ PLANTA DEL PROYECTO</span>
+      <span style="font-size:10px;color:#999">Selecciona una elevación (pestañas o leyenda) y haz clic en un muro para asignarla</span>
+    </div>
+    <svg viewBox="${-PAD} ${-PAD} ${W+PAD*2+LEG} ${H+PAD*2}" width="100%" style="max-height:320px">${s}${leg}${advEsq}</svg>
+  </div>`;
+  const sel = document.getElementById('muro-sel');
+  if (sel) { const elA = estado.elevaciones.find(e=>e.id===estado.elevacionActiva); sel.value = (elA && elA.muro) || ''; }
+}
+
+// =====================================================================
+// V2.2 — VENTANAS Y PUERTAS EN EL DIAGRAMA
+// =====================================================================
+function agregarAbertura(tipo){
+  const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+  if (!elev) return;
+  if (!elev.aberturas) elev.aberturas = [];
+  const id = ++estado.contadorId;
+  if (tipo === 'ventana')      elev.aberturas.push({ id, tipo, xCm: 20, yCm: 100, wCm: 120, hCm: 120, color: '#f5f5f0' });
+  else if (tipo === 'pasada')  elev.aberturas.push({ id, tipo, xCm: 20, yCm: 0,   wCm: 150, hCm: 220, color: '#b8b2a8' });
+  else                         elev.aberturas.push({ id, tipo, xCm: 20, yCm: 0,   wCm: 90,  hCm: 210, color: '#8a6d4e' });
+  renderizarElevacionActiva();
+}
+function eliminarAbertura(abId){
+  estado.elevaciones.forEach(e => { if (e.aberturas) e.aberturas = e.aberturas.filter(a => a.id !== abId); });
+  const pop = document.getElementById('ab-popover'); if (pop) pop.style.display = 'none';
+  renderizarElevacionActiva();
+}
+function _aberturasHTML(elev, SX, SY, OX, OB){
+  if (!elev.aberturas || !elev.aberturas.length) return '';
+  let h = '';
+  elev.aberturas.forEach(ab => {
+    ab.xCm = Math.max(0, Math.min((elev.anchoCm||360) - ab.wCm, ab.xCm));
+    const left = OX + Math.round(ab.xCm*SX), bot = OB + Math.round(ab.yCm*SY);
+    const w = Math.round(ab.wCm*SX), ht = Math.round(ab.hCm*SY);
+    const dk = _shade(ab.color, -45);
+    const comun = `id="ab_${ab.id}" class="diag-abertura" onmousedown="abMouseDown(event,${ab.id})" onclick="abClick(event,${ab.id})"`;
+    if (ab.tipo === 'ventana') {
+      h += `<div ${comun} style="left:${left}px;bottom:${bot}px;width:${w}px;height:${ht}px;background:linear-gradient(180deg,#dceaf2,#c2d8e4);border:3px solid ${ab.color};box-shadow:inset 0 0 0 1px ${dk},0 1px 4px rgba(0,0,0,0.25)" title="Ventana ${ab.wCm}×${ab.hCm} · clic: editar · arrastrar: mover">
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:${ab.color};pointer-events:none"></div>
+        <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:${ab.color};pointer-events:none"></div>
+        <div style="position:absolute;left:-6px;right:-6px;bottom:-5px;height:4px;background:${dk};pointer-events:none"></div>
+        <div class="ab-x" onmousedown="event.stopPropagation()" onclick="event.stopPropagation();eliminarAbertura(${ab.id})">✕</div>
+        <div class="ab-lbl">🪟 ${ab.wCm}×${ab.hCm}</div>
+      </div>`;
+    } else if (ab.tipo === 'pasada') {
+      h += `<div ${comun} style="left:${left}px;bottom:${bot}px;width:${w}px;height:${ht}px;background:linear-gradient(180deg,#4a453e,#5c564e);border:4px solid ${ab.color};border-bottom:none;box-shadow:inset 0 0 18px rgba(0,0,0,0.5)" title="Pasada abierta ${ab.wCm}×${ab.hCm} · clic: editar · arrastrar: mover">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#cfc9c0;pointer-events:none;letter-spacing:1px">VANO</div>
+        <div class="ab-x" onmousedown="event.stopPropagation()" onclick="event.stopPropagation();eliminarAbertura(${ab.id})">✕</div>
+        <div class="ab-lbl" style="color:#ddd">⬜ ${ab.wCm}×${ab.hCm}</div>
+      </div>`;
+    } else {
+      h += `<div ${comun} style="left:${left}px;bottom:${bot}px;width:${w}px;height:${ht}px;background:linear-gradient(180deg,${ab.color},${_shade(ab.color,-18)});border:3px solid ${dk};box-shadow:0 1px 4px rgba(0,0,0,0.25)" title="Puerta ${ab.wCm}×${ab.hCm} · clic: editar · arrastrar: mover">
+        <div style="position:absolute;inset:10% 16%;border:2px solid ${dk};opacity:0.45;pointer-events:none"></div>
+        <div style="position:absolute;right:7%;top:48%;width:6px;height:6px;border-radius:50%;background:#d8d8d8;box-shadow:0 1px 2px rgba(0,0,0,0.4);pointer-events:none"></div>
+        <div class="ab-x" onmousedown="event.stopPropagation()" onclick="event.stopPropagation();eliminarAbertura(${ab.id})">✕</div>
+        <div class="ab-lbl">🚪 ${ab.wCm}×${ab.hCm}</div>
+      </div>`;
+    }
+  });
+  return h;
+}
+// arrastre de aberturas
+let _abDrag = null, _abMovido = false;
+function abMouseDown(e, abId){
+  e.preventDefault(); e.stopPropagation();
+  const elev = estado.elevaciones.find(v => v.id === estado.elevacionActiva);
+  const ab = (elev && elev.aberturas || []).find(a => a.id === abId);
+  const canvas = document.getElementById('diag-canvas');
+  if (!ab || !canvas) return;
+  _abMovido = false;
+  _abDrag = { ab, elev, startX: e.clientX, startY: e.clientY, origX: ab.xCm, origY: ab.yCm,
+    sx: parseFloat(canvas.dataset.sx), sy: parseFloat(canvas.dataset.sy),
+    ox: parseInt(canvas.dataset.ox||10), ob: parseInt(canvas.dataset.ob||10) };
+}
+document.addEventListener('mousemove', function(e){
+  if (!_abDrag) return;
+  const d = _abDrag;
+  const dx = (e.clientX - d.startX) / d.sx;
+  const dy = -(e.clientY - d.startY) / d.sy;
+  if (Math.abs(e.clientX-d.startX) + Math.abs(e.clientY-d.startY) > 4) _abMovido = true;
+  d.ab.xCm = Math.round(Math.max(0, Math.min((d.elev.anchoCm||360) - d.ab.wCm, d.origX + dx)));
+  if (d.ab.tipo === 'ventana') d.ab.yCm = Math.round(Math.max(0, Math.min((d.elev.altoCm||250) - d.ab.hCm, d.origY + dy)));
+  const el = document.getElementById('ab_' + d.ab.id);
+  if (el) { el.style.left = (d.ox + d.ab.xCm*d.sx) + 'px'; el.style.bottom = (d.ob + d.ab.yCm*d.sy) + 'px'; }
+});
+document.addEventListener('mouseup', function(){
+  if (!_abDrag) return;
+  const movido = _abMovido; _abDrag = null;
+  if (movido) { renderizarElevacionActiva(); setTimeout(()=>{_abMovido=false;},80); }
+});
+function abClick(e, abId){
+  e.stopPropagation();
+  if (_abMovido) return;
+  abrirPopoverAbertura(e, abId);
+}
+function abrirPopoverAbertura(evt, abId){
+  const elev = estado.elevaciones.find(v => v.id === estado.elevacionActiva);
+  const ab = (elev && elev.aberturas || []).find(a => a.id === abId);
+  if (!ab) return;
+  let pop = document.getElementById('ab-popover');
+  if (!pop) {
+    pop = document.createElement('div'); pop.id = 'ab-popover';
+    pop.style.cssText = 'position:fixed;z-index:10000;background:white;border:1px solid #ccc;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,0.25);padding:14px;width:256px;font-size:12px';
+    document.body.appendChild(pop);
+  }
+  pop.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <strong style="font-size:12px">${ab.tipo==='ventana'?'🪟 Ventana':ab.tipo==='pasada'?'⬜ Pasada abierta':'🚪 Puerta'}</strong>
+      <button onclick="document.getElementById('ab-popover').style.display='none'" style="border:none;background:none;cursor:pointer;font-size:13px;color:#888">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label>Ancho (cm)</label><input type="number" value="${ab.wCm}" min="30" max="400" onchange="abCampo(${ab.id},'wCm',parseInt(this.value)||90)"></div>
+      <div><label>Alto (cm)</label><input type="number" value="${ab.hCm}" min="40" max="280" onchange="abCampo(${ab.id},'hCm',parseInt(this.value)||120)"></div>
+      ${ab.tipo!=='puerta'?`<div><label>Antepecho (cm)</label><input type="number" value="${ab.yCm}" min="0" max="220" onchange="abCampo(${ab.id},'yCm',parseInt(this.value)||100)"></div>`:''}
+      <div><label>Color marco/jamba</label><input type="color" value="${ab.color}" style="width:100%;height:30px;padding:1px;cursor:pointer" onchange="abCampo(${ab.id},'color',this.value)"></div>
+    </div>
+    <button onclick="eliminarAbertura(${ab.id})" style="margin-top:10px;width:100%;background:none;border:1px solid #e0b4b4;color:#c0392b;border-radius:4px;padding:6px;cursor:pointer;font-size:12px">🗑 Eliminar</button>`;
+  pop.style.display = 'block';
+  let left = evt.clientX + 10, top = evt.clientY + 10;
+  if (left + 270 > window.innerWidth)  left = window.innerWidth - 276;
+  if (top + 260 > window.innerHeight) top = window.innerHeight - 266;
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+}
+function abCampo(abId, k, v){
+  const elev = estado.elevaciones.find(e => e.id === estado.elevacionActiva);
+  const ab = (elev && elev.aberturas || []).find(a => a.id === abId);
+  if (!ab) return;
+  ab[k] = v;
+  if (k === 'wCm') ab.xCm = Math.max(0, Math.min((elev.anchoCm||360) - ab.wCm, ab.xCm));
+  renderizarElevacionActiva();
+}
+
+// =====================================================================
+// V2 — ELEVACIONES PREMIUM (SVG ARQUITECTÓNICO)
+// =====================================================================
+const PALETA_PG = {
+  1:{f:'#f5f3ef',f2:'#eceae4',grain:null,      h:'#9aa0a6',nombre:'Laminado blanco mate'},
+  2:{f:'#eae7e1',f2:'#dfdbd3',grain:null,      h:'#9aa0a6',nombre:'Laminado claro'},
+  3:{f:'#e0d8c8',f2:'#d5ccb9',grain:null,      h:'#8f9296',nombre:'Cashmere'},
+  4:{f:'#cfc4b0',f2:'#c2b6a0',grain:null,      h:'#84878b',nombre:'Greige seda'},
+  5:{f:'#c9a877',f2:'#ba9765',grain:'#a5854f', h:'#6f7276',nombre:'Roble natural'},
+  6:{f:'#8a6d4e',f2:'#7c6044',grain:'#654c30', h:'#55585c',nombre:'Madera oscura'},
+  7:{f:'#a9a9a5',f2:'#9b9b97',grain:null,      h:'#3c3f43',nombre:'Concreto / Steel'},
+  8:{f:'#2f2c29',f2:'#262421',grain:null,      h:'#c8a96e',nombre:'Negro elegante'}
+};
+function _svgEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function setRecargoPG8(v){ estado.recargoPG8 = parseFloat(v)||0; recalcular(); }
+
+function _instanciasElevacion(elev){
+  const carc = parseInt(estado.carcasa)||73;
+  const PLINTO = 8;
+  const altoCm = elev.altoCm||250;
+  const AEREO_BOT = Math.round(altoCm*0.575);
+  const items = estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
+  if(!elev.modPos) elev.modPos = {};
+  const inst=[]; let curLow=0, curUp=0;
+  items.forEach(item=>{
+    for(let q=0;q<item.cantidad;q++){
+      const k=item.id+'_'+q;
+      let p=elev.modPos[k];
+      if(!p) p = item.tipo==='aereo' ? {xCm:curUp,yCm:AEREO_BOT} : {xCm:curLow,yCm:PLINTO};
+      const hCm = item.tipo==='aereo' ? 72 : item.tipo==='torre' ? ((parseInt(item.altura_torre)||197)) : carc;
+      inst.push({item,x:p.xCm,y:p.yCm,w:item.ancho,h:hCm,tipo:item.tipo,subtipo:item.subtipo});
+      if(item.tipo==='aereo') curUp=p.xCm+item.ancho; else curLow=p.xCm+item.ancho;
+    }
+  });
+  return inst;
+}
+
+function svgElevacionPremium(elev){
+  const S=2.4, MX=70, MTOP=52, MBOT=76;
+  const anchoCm=elev.anchoCm||360, altoCm=elev.altoCm||250;
+  const carc=parseInt(estado.carcasa)||73;
+  const PLINTO=8, BASE_TOP=PLINTO+carc, ENC_H=4;
+  const pal=PALETA_PG[estado.pg]||PALETA_PG[1];
+  const pg = GRUPOS_PRECIO.find(g=>g.id===estado.pg);
+  const inst=_instanciasElevacion(elev);
+  const W=Math.round(anchoCm*S+MX*2), H=Math.round(altoCm*S+MTOP+MBOT);
+  const X=cm=>MX+cm*S;
+  const Yt=cm=>MTOP+(altoCm-cm)*S;             // top px of a point 'cm' above floor
+  const GAP=1.0;                                // px gap between fronts
+  let s='';
+
+  // fondo pared + piso
+  s+=`<defs>
+    <linearGradient id="gw${elev.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f2ee"/><stop offset="1" stop-color="#e7e4de"/>
+    </linearGradient>
+    <linearGradient id="gl${elev.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05"/><stop offset="1" stop-color="#000000" stop-opacity="0.10"/>
+    </linearGradient>
+    <linearGradient id="gt${elev.id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4038"/><stop offset="1" stop-color="#2e2620"/>
+    </linearGradient>
+  </defs>`;
+  s+=`<rect x="${MX-14}" y="${MTOP-14}" width="${anchoCm*S+28}" height="${altoCm*S+14}" fill="url(#gw${elev.id})" stroke="#d8d4cd" stroke-width="1"/>`;
+  // cielo
+  s+=`<rect x="${MX-14}" y="${MTOP-14}" width="${anchoCm*S+28}" height="9" fill="${estado.deco.cielo}"/>`;
+  // piso
+  s+=`<rect x="${MX-24}" y="${Yt(0)}" width="${anchoCm*S+48}" height="13" fill="${estado.deco.piso}"/>`;
+  s+=`<rect x="${MX-24}" y="${Yt(0)}" width="${anchoCm*S+48}" height="13" fill="#000" opacity="0.10"/>`;
+  s+=`<line x1="${MX-24}" y1="${Yt(0)}" x2="${X(anchoCm)+24}" y2="${Yt(0)}" stroke="${_shade(estado.deco.piso,-45)}" stroke-width="2"/>`;
+
+  // aberturas: ventanas y puertas
+  (elev.aberturas||[]).forEach(ab=>{
+    ab.xCm=Math.max(0,Math.min((elev.anchoCm||360)-ab.wCm,ab.xCm));
+    ab.yCm=Math.max(0,Math.min((elev.altoCm||250)-ab.hCm,ab.yCm));
+    const ax=X(ab.xCm), ay=Yt(ab.yCm+ab.hCm), aw=ab.wCm*S, ah=ab.hCm*S;
+    const dk=_shade(ab.color,-45);
+    if(ab.tipo==='ventana'){
+      s+=`<rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="${ab.color}" stroke="${dk}" stroke-width="1"/>`;
+      s+=`<rect x="${ax+3.5}" y="${ay+3.5}" width="${aw-7}" height="${ah-7}" fill="#d3e4ee"/>`;
+      s+=`<line x1="${ax+aw/2}" y1="${ay+3}" x2="${ax+aw/2}" y2="${ay+ah-3}" stroke="${ab.color}" stroke-width="2.5"/>`;
+      s+=`<line x1="${ax+3}" y1="${ay+ah/2}" x2="${ax+aw-3}" y2="${ay+ah/2}" stroke="${ab.color}" stroke-width="2.5"/>`;
+      s+=`<line x1="${ax+6}" y1="${ay+9}" x2="${ax+aw*0.45}" y2="${ay+4.5}" stroke="#ffffff" stroke-width="1.6" opacity="0.6"/>`;
+      s+=`<rect x="${ax-4}" y="${ay+ah}" width="${aw+8}" height="3.5" fill="${dk}"/>`;
+      s+=`<text x="${ax+aw/2}" y="${ay-4}" font-size="9.5" fill="#8a8378" text-anchor="middle" font-family="Lato,Segoe UI,Arial">Ventana ${ab.wCm}×${ab.hCm}</text>`;
+    } else if(ab.tipo==='pasada'){
+      s+=`<rect x="${ax-3}" y="${ay-3}" width="${aw+6}" height="${ah+3}" fill="${ab.color}"/>`;
+      s+=`<rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="#46413a"/>`;
+      s+=`<rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="url(#gw${elev.id})" opacity="0.12"/>`;
+      s+=`<line x1="${ax+aw*0.18}" y1="${ay+ah}" x2="${ax+aw*0.30}" y2="${ay+ah*0.55}" stroke="#59534a" stroke-width="1"/>`;
+      s+=`<line x1="${ax+aw*0.82}" y1="${ay+ah}" x2="${ax+aw*0.70}" y2="${ay+ah*0.55}" stroke="#59534a" stroke-width="1"/>`;
+      s+=`<text x="${ax+aw/2}" y="${ay-4}" font-size="9.5" fill="#8a8378" text-anchor="middle" font-family="Lato,Segoe UI,Arial">Pasada abierta ${ab.wCm}×${ab.hCm}</text>`;
+    } else {
+      s+=`<rect x="${ax-3}" y="${ay-3}" width="${aw+6}" height="${ah+3}" fill="${dk}"/>`;
+      s+=`<rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="${ab.color}" stroke="${dk}" stroke-width="0.8"/>`;
+      s+=`<rect x="${ax+aw*0.16}" y="${ay+ah*0.10}" width="${aw*0.68}" height="${ah*0.80}" fill="none" stroke="${dk}" stroke-width="1" opacity="0.5"/>`;
+      s+=`<circle cx="${ax+aw*0.84}" cy="${ay+ah*0.5}" r="2.4" fill="#c8c8c8"/>`;
+      s+=`<text x="${ax+aw/2}" y="${ay-4}" font-size="9.5" fill="#8a8378" text-anchor="middle" font-family="Lato,Segoe UI,Arial">Puerta ${ab.wCm}×${ab.hCm}</text>`;
+    }
+  });
+
+  // sombras de módulos (suaves)
+  inst.forEach(mi=>{
+    s+=`<rect x="${X(mi.x)+3}" y="${Yt(mi.y+mi.h)+4}" width="${mi.w*S}" height="${mi.h*S}" rx="1.5" fill="#000" opacity="0.10"/>`;
+  });
+
+  // zócalos bajo módulos inferiores
+  const lows = inst.filter(m=>m.tipo!=='aereo').sort((a,b)=>a.x-b.x);
+  lows.forEach(mi=>{
+    s+=`<rect x="${X(mi.x)+2}" y="${Yt(PLINTO)}" width="${mi.w*S-4}" height="${PLINTO*S}" fill="#26221e"/>`;
+  });
+
+  // módulos
+  inst.forEach(mi=>{ s+=_frenteSVG(mi,pal,S,X,Yt,GAP); });
+
+  // encimera: tramos continuos de bases (torres interrumpen)
+  const bases = inst.filter(m=>m.tipo==='base').sort((a,b)=>a.x-b.x);
+  const torres = inst.filter(m=>m.tipo==='torre');
+  let runs=[]; 
+  bases.forEach(b=>{
+    const last=runs[runs.length-1];
+    if(last && b.x<=last.x2+3){ last.x2=Math.max(last.x2,b.x+b.w); }
+    else runs.push({x1:b.x,x2:b.x+b.w});
+  });
+  runs.forEach(r=>{
+    s+=`<rect x="${X(r.x1)-2}" y="${Yt(BASE_TOP+ENC_H)}" width="${(r.x2-r.x1)*S+4}" height="${ENC_H*S}" fill="url(#gt${elev.id})" rx="1"/>`;
+    s+=`<line x1="${X(r.x1)-2}" y1="${Yt(BASE_TOP+ENC_H)+1}" x2="${X(r.x2)+2}" y2="${Yt(BASE_TOP+ENC_H)+1}" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>`;
+  });
+
+  // Capa gola sobre bajos y torres — banda perfil J visible con contornos
+  inst.filter(m => m.tipo!=='aereo' && _aperturaDe(m.item)==='gola').forEach(m=>{
+    const gc = _colorGola(m.item), gh = 6.0;
+    const shadow = _shade(gc,-65), base = gc, shine = _shade(gc,45);
+    const gx = X(m.x)-1.5, gw = m.w*S+3;
+    const gy = Yt(m.y+m.h);
+    // sombra superior (canto negro bajo la encimera)
+    s += `<rect x="${gx}" y="${gy-0.5}" width="${gw}" height="1.5" fill="#000" opacity="0.55"/>`;
+    // perfil J con color
+    s += `<rect x="${gx}" y="${gy+1}" width="${gw}" height="${gh}" fill="${shadow}"/>`;
+    s += `<rect x="${gx+0.4}" y="${gy+1.8}" width="${gw-0.8}" height="${gh-2.2}" fill="${base}" stroke="${_shade(gc,-40)}" stroke-width="0.4"/>`;
+    s += `<rect x="${gx+0.4}" y="${gy+gh-0.4}" width="${gw-0.8}" height="0.9" fill="${shine}" opacity="0.9"/>`;
+  });
+
+  // placas de cocción sobre encimera
+  inst.filter(m=>m.tipo==='base'&&m.subtipo==='cocina').forEach(m=>{
+    const hx1=X(m.x+m.w*0.12), hw=m.w*S*0.76;
+    s+=`<rect x="${hx1}" y="${Yt(BASE_TOP+ENC_H)-3.5}" width="${hw}" height="4.5" rx="1.5" fill="#141414"/>`;
+    for(let i=0;i<4;i++) s+=`<circle cx="${hx1+hw*(0.15+0.235*i)}" cy="${Yt(BASE_TOP+ENC_H)-1.2}" r="1.3" fill="#3f3f3f"/>`;
+  });
+
+  // COTAS — cadena inferior
+  const dimY=Yt(0)+26, dimY2=Yt(0)+52;
+  const chain = lows.length? lows : inst.slice().sort((a,b)=>a.x-b.x);
+  if(chain.length){
+    let ticks=new Set();
+    chain.forEach(m=>{ticks.add(m.x); ticks.add(m.x+m.w);});
+    ticks=[...ticks].sort((a,b)=>a-b);
+    s+=`<line x1="${X(ticks[0])}" y1="${dimY}" x2="${X(ticks[ticks.length-1])}" y2="${dimY}" stroke="#8a8378" stroke-width="1"/>`;
+    ticks.forEach(t=>{ s+=`<line x1="${X(t)}" y1="${dimY-5}" x2="${X(t)}" y2="${dimY+5}" stroke="#8a8378" stroke-width="1"/>`; });
+    chain.forEach(m=>{
+      s+=`<text x="${X(m.x+m.w/2)}" y="${dimY-7}" font-size="11" fill="#6b645a" text-anchor="middle" font-family="Lato,Segoe UI,Arial">${m.w}</text>`;
+    });
+  }
+  // cota total
+  s+=`<line x1="${X(0)}" y1="${dimY2}" x2="${X(anchoCm)}" y2="${dimY2}" stroke="#5f584e" stroke-width="1.2"/>`;
+  s+=`<line x1="${X(0)}" y1="${dimY2-6}" x2="${X(0)}" y2="${dimY2+6}" stroke="#5f584e" stroke-width="1.2"/>`;
+  s+=`<line x1="${X(anchoCm)}" y1="${dimY2-6}" x2="${X(anchoCm)}" y2="${dimY2+6}" stroke="#5f584e" stroke-width="1.2"/>`;
+  s+=`<text x="${X(anchoCm/2)}" y="${dimY2-7}" font-size="12" font-weight="700" fill="#4d463c" text-anchor="middle" font-family="Lato,Segoe UI,Arial">${anchoCm} cm</text>`;
+
+  // cotas de altura (izquierda)
+  const hx=MX-34;
+  s+=`<line x1="${hx}" y1="${Yt(altoCm)}" x2="${hx}" y2="${Yt(0)}" stroke="#8a8378" stroke-width="1"/>`;
+  [[0,'',0],[BASE_TOP+ENC_H,(BASE_TOP+ENC_H),0],[altoCm,altoCm,0]].forEach(t=>{
+    s+=`<line x1="${hx-5}" y1="${Yt(t[0])}" x2="${hx+5}" y2="${Yt(t[0])}" stroke="#8a8378" stroke-width="1"/>`;
+    if(t[1]!=='' && t[1]!==0) s+=`<text x="${hx-9}" y="${Yt(t[0])+4}" font-size="10.5" fill="#6b645a" text-anchor="end" font-family="Lato,Segoe UI,Arial">${t[1]}</text>`;
+  });
+
+  // título
+  s+=`<text x="${MX-14}" y="${MTOP-24}" font-size="16" font-weight="700" fill="#1a1a1a" font-family="Lato,Segoe UI,Arial" letter-spacing="1">${_svgEsc(elev.nombre).toUpperCase()}</text>`;
+  s+=`<text x="${W-MX+14}" y="${MTOP-24}" font-size="10.5" fill="#8a8378" text-anchor="end" font-family="Lato,Segoe UI,Arial">ATIKA · Leicht ${_svgEsc(estado.linea)} · PG${estado.pg} ${_svgEsc(pal.nombre)} · Carcasa ${carc} cm</text>`;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;background:#fdfcfa">${s}</svg>`;
+}
+
+function _frenteSVG(mi,pal,S,X,Yt,GAP){
+  pal = _paletaDe(mi.item) || pal;
+  const x=X(mi.x), yTop=Yt(mi.y+mi.h), w=mi.w*S, h=mi.h*S;
+  const pg8 = estado.pg===8;
+  const _apert = _aperturaDe(mi.item);
+  const _esGola = _apert === 'gola';
+  const golaCol = _colorGola(mi.item);
+  const manija = pg8 ? '#c8a96e' : '#8f8f8f';
+  let g='';
+  // carcasa
+  g+=`<rect x="${x}" y="${yTop}" width="${w}" height="${h}" fill="${pal.f2}" stroke="#b8b2a8" stroke-width="0.8" rx="1"/>`;
+  const inX=x+1.5, inY=yTop+1.5, inW=w-3, inH=h-3;
+
+  const panel=(px,py,pw,ph,extra)=>{
+    let p=`<rect x="${px}" y="${py}" width="${Math.max(2,pw)}" height="${Math.max(2,ph)}" fill="${pal.f}" stroke="#a9a298" stroke-width="0.6" rx="0.8"/>`;
+    if(pal.grain){ for(let i=1;i<=3;i++){ const gx=px+pw*i/4+(i%2? 1.5:-1.5); p+=`<path d="M ${gx} ${py+2} C ${gx+2} ${py+ph*0.3}, ${gx-2} ${py+ph*0.7}, ${gx} ${py+ph-2}" stroke="${pal.grain}" stroke-width="0.7" fill="none" opacity="0.5"/>`; } }
+    p+=`<rect x="${px}" y="${py}" width="${Math.max(2,pw)}" height="${Math.max(2,ph)}" fill="url(#gl${'ELV'})" rx="0.8" style="fill:none"/>`;
+    p+=`<rect x="${px}" y="${py}" width="${Math.max(2,pw)}" height="${Math.max(2,ph)}" fill="#ffffff" opacity="0.06" rx="0.8"/>`;
+    return p+(extra||'');
+  };
+  const hBar=(cx,cy,horiz,len)=>{
+    if(_esGola) return '';
+    return `<rect x="${horiz?cx-len/2:cx-1.2}" y="${horiz?cy-1.2:cy-len/2}" width="${horiz?len:2.4}" height="${horiz?2.4:len}" rx="1.2" fill="${manija}"/>`;
+  };
+  const golaBar=()=>{
+    if(!_esGola) return '';
+    const gh = 5.5;
+    const shadow = _shade(golaCol, -55);
+    const base = golaCol;
+    const shine = _shade(golaCol, 45);
+    if(mi.tipo==='aereo'){
+      // gola bajo aéreos: canto inferior con sombra + banda dorada + brillo superior
+      return `<rect x="${x-1.5}" y="${yTop+h-gh}" width="${w+3}" height="${gh}" fill="${shadow}"/>`+
+             `<rect x="${x-1.5}" y="${yTop+h-gh+0.8}" width="${w+3}" height="${gh-1.6}" fill="${base}"/>`+
+             `<rect x="${x-1.5}" y="${yTop+h-gh+0.8}" width="${w+3}" height="0.9" fill="${shine}" opacity="0.85"/>`;
+    }
+    // gola sobre bajos/torres: canto superior con sombra + banda dorada + brillo
+    // bajos/torres: banda gola dentro del frente, en el borde superior
+    return `<rect x="${x-1.5}" y="${yTop+0.4}" width="${w+3}" height="${gh}" fill="${shadow}"/>`+
+           `<rect x="${x-1.5}" y="${yTop+0.4+1.0}" width="${w+3}" height="${gh-2.0}" fill="${base}"/>`+
+           `<rect x="${x-1.5}" y="${yTop+0.4+gh-1.6}" width="${w+3}" height="0.9" fill="${shine}" opacity="0.9"/>`;
+  };
+  const glassPanel=(px,py,pw,ph)=>{
+    let p=`<rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="${pal.f}" stroke="#a9a298" stroke-width="0.6" rx="0.8"/>`;
+    p+=`<rect x="${px+3}" y="${py+3}" width="${pw-6}" height="${ph-6}" fill="#cfe3ea" opacity="0.55" stroke="#9db4bc" stroke-width="0.6"/>`;
+    p+=`<line x1="${px+4}" y1="${py+6}" x2="${px+pw*0.55}" y2="${py+3}" stroke="#ffffff" stroke-width="1.4" opacity="0.55"/>`;
+    for(let i=1;i<=2;i++) p+=`<line x1="${px+3}" y1="${py+ph*i/3}" x2="${px+pw-3}" y2="${py+ph*i/3}" stroke="#8fa5ad" stroke-width="0.8" opacity="0.8"/>`;
+    return p;
+  };
+
+  const st=mi.subtipo||'puerta';
+  if(mi.tipo==='base'){
+    if(st==='cajonera'){
+      const fr=[0.24,0.36,0.40]; let cy=inY;
+      fr.forEach(f=>{ const ph=inH*f-GAP; g+=panel(inX,cy,inW,ph); g+=hBar(inX+inW/2,cy+5,true,Math.min(inW*0.5,46)); cy+=inH*f; });
+    } else if(st==='extraible'){
+      g+=panel(inX,inY,inW,inH*0.3-GAP); g+=hBar(inX+inW/2,inY+5,true,Math.min(inW*0.5,42));
+      g+=panel(inX,inY+inH*0.3,inW,inH*0.7); g+=hBar(inX+inW/2,inY+inH*0.3+5,true,Math.min(inW*0.5,42));
+    } else if(st==='campana'){
+      g+=`<rect x="${inX}" y="${inY}" width="${inW}" height="${inH}" fill="#3a352f" rx="0.8"/><line x1="${inX+4}" y1="${inY+inH*0.45}" x2="${inX+inW-4}" y2="${inY+inH*0.45}" stroke="#5c554c" stroke-width="1"/>`;
+    } else if(st==='cocina'){
+      g+=panel(inX,inY,inW,inH*0.5-GAP); g+=hBar(inX+inW/2,inY+5,true,Math.min(inW*0.5,46));
+      g+=panel(inX,inY+inH*0.5,inW,inH*0.5); g+=hBar(inX+inW/2,inY+inH*0.5+5,true,Math.min(inW*0.5,46));
+    } else if(st==='horno_bajo'){
+      g+=`<rect x="${inX}" y="${inY}" width="${inW}" height="${inH}" fill="#1f1d1b" rx="1"/><rect x="${inX+4}" y="${inY+8}" width="${inW-8}" height="${inH-16}" fill="#3a3a3c" rx="1"/><line x1="${inX+5}" y1="${inY+4.5}" x2="${inX+inW-5}" y2="${inY+4.5}" stroke="#c8a96e" stroke-width="1.8"/>`;
+    } else if(st==='lavavajilla'){
+      g+=panel(inX,inY,inW,inH);
+      g+=`<line x1="${inX+4}" y1="${inY+6}" x2="${inX+inW-4}" y2="${inY+6}" stroke="#8f887d" stroke-width="1.2"/>`;
+      g+=hBar(inX+inW/2,inY+12,true,Math.min(inW*0.5,46));
+    } else if(st==='esquina'){
+      g+=panel(inX,inY,inW,inH); g+=`<line x1="${inX+3}" y1="${inY+inH-3}" x2="${inX+inW-3}" y2="${inY+3}" stroke="#a9a298" stroke-width="0.7" stroke-dasharray="4 3"/>`; g+=hBar(inX+inW*0.72,inY+inH/2,false,Math.min(inH*0.4,40));
+    } else {
+      const dos = mi.w>=60;
+      if(dos){ const pw=inW/2-GAP/2;
+        g+=panel(inX,inY,pw,inH); g+=panel(inX+inW/2+GAP/2,inY,pw,inH);
+        g+=hBar(inX+inW/2-6,inY+10,false,Math.min(inH*0.35,38)); g+=hBar(inX+inW/2+6,inY+10+Math.min(inH*0.35,38)/2-Math.min(inH*0.35,38)/2,false,Math.min(inH*0.35,38));
+      } else { g+=panel(inX,inY,inW,inH); g+=hBar(inX+inW-7,inY+10+Math.min(inH*0.35,38)/2,false,Math.min(inH*0.35,38)); }
+      if(st==='pileta'){ g+=`<rect x="${x+w*0.25}" y="${yTop-7}" width="${w*0.5}" height="4" fill="#6f7982" rx="1"/><rect x="${x+w*0.47}" y="${yTop-16}" width="2.4" height="10" fill="#6f7982" rx="1"/><rect x="${x+w*0.47-4}" y="${yTop-17.5}" width="11" height="2.4" fill="#6f7982" rx="1"/>`; }
+    }
+  } else if(mi.tipo==='aereo'){
+    if(st==='estante'){
+      g+=`<rect x="${inX}" y="${inY}" width="${inW}" height="${inH}" fill="#efece6" stroke="#b8b2a8" stroke-width="0.6"/>`;
+      for(let i=1;i<=2;i++) g+=`<line x1="${inX+2}" y1="${inY+inH*i/3}" x2="${inX+inW-2}" y2="${inY+inH*i/3}" stroke="#9d968b" stroke-width="1.6"/>`;
+    } else if(st==='vitrina'){ g+=glassPanel(inX,inY,inW,inH);
+    } else if(st==='abatible'){
+      g+=panel(inX,inY,inW,inH/2-GAP); g+=panel(inX,inY+inH/2,inW,inH/2);
+      g+=hBar(inX+inW/2,inY+inH-6,true,Math.min(inW*0.4,42));
+    } else if(st==='campana'){
+      g+=`<rect x="${inX}" y="${inY+inH*0.35}" width="${inW}" height="${inH*0.65}" fill="#565d63" rx="1"/><rect x="${inX+inW*0.2}" y="${inY}" width="${inW*0.6}" height="${inH*0.35}" fill="#6a7178" rx="1"/><line x1="${inX+6}" y1="${inY+inH*0.75}" x2="${inX+inW-6}" y2="${inY+inH*0.75}" stroke="#8a9299" stroke-width="1.4"/>`;
+    } else {
+      const dos = mi.w>=60;
+      if(dos){ const pw=inW/2-GAP/2; g+=panel(inX,inY,pw,inH); g+=panel(inX+inW/2+GAP/2,inY,pw,inH); g+=hBar(inX+inW/2-6,inY+inH-14,false,Math.min(inH*0.3,26)); g+=hBar(inX+inW/2+6,inY+inH-14,false,Math.min(inH*0.3,26)); }
+      else { g+=panel(inX,inY,inW,inH); g+=hBar(inX+inW-7,inY+inH-14,false,Math.min(inH*0.3,26)); }
+    }
+  } else { // torre
+    if(st==='horno'){
+      g+=panel(inX,inY,inW,inH*0.32-GAP);
+      g+=`<rect x="${inX}" y="${inY+inH*0.32}" width="${inW}" height="${inH*0.30}" fill="#1f1d1b" rx="1"/><rect x="${inX+4}" y="${inY+inH*0.32+5}" width="${inW-8}" height="${inH*0.30-14}" fill="#3a3a3c" rx="1"/><line x1="${inX+5}" y1="${inY+inH*0.32+inH*0.30-6}" x2="${inX+inW-5}" y2="${inY+inH*0.32+inH*0.30-6}" stroke="#c8a96e" stroke-width="1.6"/>`;
+      g+=panel(inX,inY+inH*0.62+GAP,inW,inH*0.38-GAP); g+=hBar(inX+inW/2,inY+inH*0.62+GAP+8,true,Math.min(inW*0.5,44));
+    } else if(st==='correderas'){
+      g+=panel(inX,inY,inW*0.52,inH); g+=`<rect x="${inX+inW*0.48}" y="${inY-1}" width="${inW*0.52}" height="${inH+2}" fill="${pal.f}" stroke="#8f887d" stroke-width="0.8" rx="0.8"/>`;
+      g+=hBar(inX+inW*0.48+5,inY+inH/2,false,Math.min(inH*0.28,60)); g+=`<line x1="${inX+inW*0.48}" y1="${inY+3}" x2="${inX+inW*0.48}" y2="${inY+inH-3}" stroke="#00000030" stroke-width="1.6"/>`;
+    } else if(st==='vinoteca'){
+      g+=`<rect x="${inX}" y="${inY}" width="${inW}" height="${inH}" fill="#23282c" rx="1"/><rect x="${inX+3}" y="${inY+3}" width="${inW-6}" height="${inH-6}" fill="#39424a" rx="1"/>`;
+      for(let i=1;i<=4;i++) g+=`<line x1="${inX+4}" y1="${inY+inH*i/5}" x2="${inX+inW-4}" y2="${inY+inH*i/5}" stroke="#5a646c" stroke-width="1"/>`;
+      g+=`<line x1="${inX+5}" y1="${inY+7}" x2="${inX+inW*0.5}" y2="${inY+3.5}" stroke="#ffffff" stroke-width="1.2" opacity="0.35"/>`;
+    } else if(st==='vitrina_vero'){ g+=glassPanel(inX,inY,inW,inH);
+    } else if(st==='extraible'){
+      const n=4; for(let i=0;i<n;i++){ g+=panel(inX,inY+inH*i/n,inW,inH/n-GAP); g+=hBar(inX+inW/2,inY+inH*i/n+5,true,Math.min(inW*0.45,40)); }
+    } else if(st==='frigorifico'||st==='freezer'||st==='americano'){
+      g+=`<rect x="${inX}" y="${inY}" width="${inW}" height="${inH}" fill="#c8ccd0" stroke="#9aa0a6" stroke-width="0.8" rx="1"/><line x1="${inX+3}" y1="${inY+inH*0.4}" x2="${inX+inW-3}" y2="${inY+inH*0.4}" stroke="#9aa0a6" stroke-width="1"/>`;
+      g+=`<rect x="${inX+4}" y="${inY+8}" width="2.4" height="${inH*0.25}" rx="1.2" fill="#7c8288"/>`;
+    } else {
+      const dos = mi.w>=60;
+      if(dos){ const pw=inW/2-GAP/2; g+=panel(inX,inY,pw,inH); g+=panel(inX+inW/2+GAP/2,inY,pw,inH); g+=hBar(inX+inW/2-6,inY+inH/2,false,Math.min(inH*0.3,64)); g+=hBar(inX+inW/2+6,inY+inH/2,false,Math.min(inH*0.3,64)); }
+      else { g+=panel(inX,inY,inW,inH); g+=hBar(inX+inW-7,inY+inH/2,false,Math.min(inH*0.3,64)); }
+    }
+  }
+  return `<g>${g}${golaBar()}</g>`;
+}
+
+// ── Vista Presentación (modal) ───────────────────────────────────────
+function abrirVistaPremium(){
+  recalcular();
+  let inner='';
+  estado.elevaciones.forEach(elev=>{
+    const items=estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
+    if(!items.length) return;
+    inner+=`<div style="background:white;border:1px solid #ddd;border-radius:8px;padding:18px;margin-bottom:18px">${svgElevacionPremium(elev)}</div>`;
+  });
+  if(!inner) inner='<div style="color:#888;padding:40px;text-align:center">No hay módulos en las elevaciones todavía.</div>';
+  let m=document.getElementById('modal-premium');
+  if(!m){ m=document.createElement('div'); m.id='modal-premium';
+    m.style.cssText='position:fixed;inset:0;background:rgba(20,18,15,0.82);z-index:9999;display:flex;flex-direction:column;padding:24px;overflow:auto';
+    document.body.appendChild(m);
+  }
+  m.innerHTML=`<div style="max-width:1100px;margin:0 auto;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="color:white;font-size:16px;letter-spacing:2px">🖼️ VISTA PRESENTACIÓN — <span style="color:#fff">ELEVACIONES PREMIUM</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secundario btn-sm" onclick="abrirVista3D()">🧊 Vista 3D</button>
+        <button class="btn btn-secundario btn-sm" onclick="exportarPDF()">📄 Generar Propuesta PDF</button>
+        <button class="btn btn-primario btn-sm" onclick="document.getElementById('modal-premium').style.display='none'">✕ Cerrar</button>
+      </div>
+    </div>${inner}</div>`;
+  m.style.display='flex';
+}
+
+// =====================================================================
+// V2.1 — TERMINACIONES POR FAMILIA (catálogo Leicht 2026)
+// =====================================================================
+const FAMILIAS_ACABADO = [
+ { id:'blancos', pgs:[1,2,3,4,5,6,7,8], nombre:'Blancos & Claros', items:[
+   {id:'032',nombre:'032 Magnolia',f:'#f3efe4',f2:'#e9e4d6'},
+   {id:'100',nombre:'100 Arctic',f:'#f6f6f4',f2:'#ececea'},
+   {id:'106',nombre:'106 Brilliant White',f:'#fbfbfa',f2:'#f1f1ef'},
+   {id:'120',nombre:'120 Frosty White',f:'#f0f2f2',f2:'#e4e7e7'},
+   {id:'103',nombre:'103 Merino',f:'#ece7dc',f2:'#e0dacd'} ]},
+ { id:'neutros', pgs:[2,3,4,5,6,7,8], nombre:'Neutros & Greige', items:[
+   {id:'126',nombre:'126 Cashmere',f:'#ddd3c1',f2:'#d1c6b2'},
+   {id:'130',nombre:'130 Mohair',f:'#cfc3ae',f2:'#c2b59e'},
+   {id:'136',nombre:'136 Sand Grey',f:'#c4baa8',f2:'#b7ac98'},
+   {id:'137',nombre:'137 Taupe Grey',f:'#b0a696',f2:'#a29886'},
+   {id:'122',nombre:'122 Nimbus',f:'#d4d2cc',f2:'#c7c5be'} ]},
+ { id:'lamimadera', pgs:[1,2,3,4,5,6,7,8], nombre:'Laminados Madera (decor)', items:[
+   {id:'L221',nombre:'221 Textured Oak',f:'#c9a877',f2:'#ba9765',grain:'#a5854f'},
+   {id:'L218',nombre:'218 Elm Natural',f:'#d3b98f',f2:'#c6ab7e',grain:'#b09263'},
+   {id:'L227',nombre:'227 Japanese Pine',f:'#e0cba4',f2:'#d4bd92',grain:'#bfa678'},
+   {id:'L234',nombre:'234 Highland Oak',f:'#b99a6e',f2:'#ab8c5f',grain:'#93764c'},
+   {id:'L247',nombre:'247 Summer Oak',f:'#d8bc8c',f2:'#ccae7a',grain:'#b6975f'},
+   {id:'L228',nombre:'228 Weather Oak',f:'#8a7358',f2:'#7c664c',grain:'#65523c'},
+   {id:'L232',nombre:'232 Olmo Grigio',f:'#9a8d7c',f2:'#8c7f6e',grain:'#75695a'},
+   {id:'L240',nombre:'240 Walnut Le Midi',f:'#8a6d4e',f2:'#7c6044',grain:'#654c30',h:'#c8a96e'},
+   {id:'L241',nombre:'241 Black Walnut',f:'#4c3c2e',f2:'#403226',grain:'#2f2419',h:'#c8a96e'} ]},
+ { id:'grises', pgs:[3,4,5,6,7,8], nombre:'Grises & Oscuros', items:[
+   {id:'138',nombre:'138 Fossil Grey',f:'#8f8b83',f2:'#817d75',h:'#3c3f43'},
+   {id:'139',nombre:'139 Lava',f:'#6a6560',f2:'#5c5752',h:'#c8a96e'},
+   {id:'133',nombre:'133 Ember',f:'#54504c',f2:'#474340',h:'#c8a96e'},
+   {id:'cgrey',nombre:'Carbon Grey',f:'#43413e',f2:'#383634',h:'#c8a96e'},
+   {id:'bslate',nombre:'Black Slate',f:'#2f2c29',f2:'#262421',h:'#c8a96e'} ]},
+ { id:'colores', pgs:[4,5,6,7,8], nombre:'Colores', items:[
+   {id:'134',nombre:'134 Olive Grey',f:'#9a9a82',f2:'#8c8c74'},
+   {id:'172',nombre:'172 Sage Green',f:'#a9b2a0',f2:'#9ba490'},
+   {id:'140',nombre:'140 Boreal Green',f:'#5c6e62',f2:'#4f6055',h:'#c8a96e'},
+   {id:'142',nombre:'142 Jade Green',f:'#39524a',f2:'#2f453e',h:'#c8a96e'},
+   {id:'173',nombre:'173 Crimson',f:'#7e3b3b',f2:'#6e3232',h:'#c8a96e'} ]},
+ { id:'madclara', pgs:[5,6,7,8], nombre:'Maderas Naturales Claras (chapa)', items:[
+   {id:'218',nombre:'218 Elm Natural',f:'#d3b98f',f2:'#c6ab7e',grain:'#b09263'},
+   {id:'221',nombre:'221 Textured Oak',f:'#c9a877',f2:'#ba9765',grain:'#a5854f'},
+   {id:'227',nombre:'227 Japanese Pine',f:'#e0cba4',f2:'#d4bd92',grain:'#bfa678'},
+   {id:'234',nombre:'234 Highland Oak',f:'#b99a6e',f2:'#ab8c5f',grain:'#93764c'},
+   {id:'247',nombre:'247 Summer Oak',f:'#d8bc8c',f2:'#ccae7a',grain:'#b6975f'} ]},
+ { id:'madoscura', pgs:[5,6,7,8], nombre:'Maderas Naturales Oscuras (chapa)', items:[
+   {id:'232',nombre:'232 Olmo Grigio',f:'#9a8d7c',f2:'#8c7f6e',grain:'#75695a'},
+   {id:'228',nombre:'228 Weather Oak',f:'#8a7358',f2:'#7c664c',grain:'#65523c'},
+   {id:'240',nombre:'240 Walnut Le Midi',f:'#8a6d4e',f2:'#7c6044',grain:'#654c30',h:'#c8a96e'},
+   {id:'256',nombre:'256 Celano Walnut',f:'#6e563e',f2:'#604a34',grain:'#4c3a27',h:'#c8a96e'},
+   {id:'241',nombre:'241 Black Walnut',f:'#4c3c2e',f2:'#403226',grain:'#2f2419',h:'#c8a96e'} ]},
+ { id:'metal', pgs:[7,8], nombre:'Metal & Concreto', items:[
+   {id:'188',nombre:'188 Dakar (concreto)',f:'#b5aea2',f2:'#a7a094'},
+   {id:'189',nombre:'189 Manhattan',f:'#a9a9a5',f2:'#9b9b97',h:'#3c3f43'},
+   {id:'199',nombre:'199 Steel Shadow',f:'#7c7f83',f2:'#6e7175',h:'#2c2f33'},
+   {id:'167',nombre:'167 Oxid Silver',f:'#a3a5a8',f2:'#94969a',h:'#3c3f43'},
+   {id:'168',nombre:'168 Oxid Bronze',f:'#8a7358',f2:'#7a6549',h:'#c8a96e'} ]}
+];
+const ACABADOS_MAP = {};
+FAMILIAS_ACABADO.forEach(fam => fam.items.forEach(a => { a.familia = fam.nombre; ACABADOS_MAP[a.id] = a; }));
+
+function _shade(hex, p) {
+  const n = parseInt(hex.slice(1), 16);
+  const cl = v => Math.max(0, Math.min(255, v));
+  const r = cl((n>>16) + p), g = cl(((n>>8)&255) + p), b = cl((n&255) + p);
+  return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+}
+function _lum(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return 0.299*(n>>16) + 0.587*((n>>8)&255) + 0.114*(n&255);
+}
+function _acabadoDe(item) {
+  const id = (item && item.acabado) || estado.acabadoProyecto;
+  return id ? (ACABADOS_MAP[id] || null) : null;
+}
+function _paletaDe(item) {
+  const a = _acabadoDe(item);
+  if (!a) return null;
+  return { f:a.f, f2:a.f2, grain:a.grain||null, h:a.h||'#8f8f8f', nombre:a.nombre };
+}
+function setApertura(a){
+  estado.apertura = a;
+  const t = document.getElementById('apert-tirador'); if (t) t.classList.toggle('activo', a==='tirador');
+  const gg = document.getElementById('apert-gola'); if (gg) gg.classList.toggle('activo', a==='gola');
+  renderizarElevacionActiva();
+  if (typeof renderizarModulos === 'function') renderizarModulos();
+}
+function setGolaColor(v){ estado.golaColor = v; renderizarElevacionActiva(); if (typeof renderizarModulos === 'function') renderizarModulos(); }
+function _aperturaDe(item){ return (item && item.apertura) || estado.apertura || 'tirador'; }
+function _colorGola(item){
+  const a = _acabadoDe(item);
+  return (item && item.aperturaColor) || estado.golaColor || (a && a.h) || '#8f8f8f';
+}
+
+function setAcabadoProyecto(id) {
+  estado.acabadoProyecto = id || null;
+  renderAcabados();
+  renderizarElevacionActiva();
+}
+function renderAcabados() {
+  const el = document.getElementById('acabados-grid');
+  if (!el) return;
+  let h = `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+    <div onclick="setAcabadoProyecto(null)" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:14px;cursor:pointer;font-size:11px;border:2px solid ${!estado.acabadoProyecto?'var(--acento)':'#ddd'};background:${!estado.acabadoProyecto?'#faf5ea':'white'}">
+      <span style="width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#f5f3ef,#8a6d4e)"></span> Auto según PG
+    </div></div>`;
+  h += `<div style="font-size:10.5px;color:#595959;margin-bottom:4px">Terminaciones disponibles en PG${estado.pg} según catálogo — otras familias siguen disponibles módulo a módulo</div>`;
+  FAMILIAS_ACABADO.filter(f => !f.pgs || f.pgs.includes(estado.pg)).forEach(fam => {
+    h += `<div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 4px">${fam.nombre}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">`;
+    fam.items.forEach(a => {
+      const act = estado.acabadoProyecto === a.id;
+      h += `<div onclick="setAcabadoProyecto('${a.id}')" title="${a.nombre}" style="display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:14px;cursor:pointer;font-size:11px;border:2px solid ${act?'var(--acento)':'#ddd'};background:${act?'#faf5ea':'white'}">
+        <span style="width:14px;height:14px;border-radius:50%;border:1px solid #00000022;background:${a.grain?`repeating-linear-gradient(90deg,${a.f},${a.f} 3px,${a.grain} 3px,${a.grain} 4px)`:a.f}"></span>${a.nombre.replace(/^\d+ /,'')}
+      </div>`;
+    });
+    h += `</div>`;
+  });
+  el.innerHTML = h;
+}
+
+// ── Colores de piso y cielo ─────────────────────────────────────────
+function aplicarDeco() {
+  const r = document.documentElement.style;
+  r.setProperty('--deco-piso', estado.deco.piso);
+  r.setProperty('--deco-piso-d', _shade(estado.deco.piso, -30));
+  r.setProperty('--deco-cielo', estado.deco.cielo);
+  r.setProperty('--deco-cielo-d', _shade(estado.deco.cielo, -18));
+}
+function setDecoColor(k, v) {
+  estado.deco[k] = v;
+  aplicarDeco();
+  renderizarElevacionActiva();
+}
+
+// ── Eliminar instancia directo del diagrama ─────────────────────────
+function eliminarInstancia(itemId, instId) {
+  const iid = isNaN(itemId) ? itemId : parseInt(itemId);
+  const item = estado.items.find(i => i.id === iid);
+  if (!item) return;
+  const q = parseInt(String(instId).split('_').pop()) || 0;
+  const elev = estado.elevaciones.find(e => e.id === item.elevacion);
+  if (item.cantidad > 1) {
+    if (elev && elev.modPos) {
+      delete elev.modPos[item.id + '_' + q];
+      for (let k = q + 1; k < item.cantidad; k++) {
+        if (elev.modPos[item.id + '_' + k] !== undefined) {
+          elev.modPos[item.id + '_' + (k-1)] = elev.modPos[item.id + '_' + k];
+          delete elev.modPos[item.id + '_' + k];
+        }
+      }
+    }
+    item.cantidad--;
+    recalcular();
+    renderizarModulos();
+    renderizarElevacionActiva();
+  } else {
+    eliminarItem(item.id);
+  }
+}
+
+// =====================================================================
+// V2.1 — VISTA 3D AXONOMÉTRICA (sin dependencias)
+// =====================================================================
+function svgVista3D() {
+  const K = 2.0, c = Math.cos(Math.PI/6)*K, s = Math.sin(Math.PI/6)*K;
+  const P = (x,y,z) => ({ X:(x - z)*c, Y:(x + z)*s - y*K });
+  const conMod = e => estado.items.some(i => i.elevacion===e.id && i.tipo!=='accesorio');
+  const paredes = estado.elevaciones.filter(e => e.id!=='isla' && conMod(e));
+  const isla = estado.elevaciones.find(e => e.id==='isla' && conMod(e));
+  const back  = estado.elevaciones.find(e => e.id!=='isla' && e.muro==='fondo'     && conMod(e)) || paredes[0] || null;
+  const left  = estado.elevaciones.find(e => e.id!=='isla' && e.muro==='izquierda' && conMod(e)) || (paredes.find(p => p!==back) || null);
+  const right = estado.elevaciones.find(e => e.id!=='isla' && e.muro==='derecha'   && conMod(e)) || null;
+  const RW = Math.max(back ? (back.anchoCm||360) : 360, 240);
+  const RD = Math.max(left ? (left.anchoCm||300) : 0, right ? (right.anchoCm||300) : 0, 280);
+  const WH = Math.max(back?(back.altoCm||250):250, left?(left.altoCm||250):250);
+  const piso = estado.deco.piso, cielo = estado.deco.cielo;
+  const polys = [];
+  const quad = (pts, fill, opts={}) => polys.push({ pts:pts.map(p=>P(p[0],p[1],p[2])), fill, ...opts });
+
+  // piso + muros
+  quad([[0,0,0],[RW,0,0],[RW,0,RD],[0,0,RD]], piso, {stroke:_shade(piso,-40)});
+  // líneas de piso (tablones)
+  const lineas3d = [];
+  for (let gx=60; gx<RW; gx+=60) lineas3d.push([P(gx,0,0), P(gx,0,RD)]);
+  quad([[0,0,0],[RW,0,0],[RW,WH,0],[0,WH,0]], '#eeece7', {stroke:'#d8d4cd'});   // muro fondo
+  quad([[0,0,0],[0,WH,0],[0,WH,RD],[0,0,RD]], '#e4e1db', {stroke:'#d8d4cd'});   // muro izq
+  // cornisa cielo
+  quad([[0,WH,0],[RW,WH,0],[RW,WH-10,0],[0,WH-10,0]], cielo, {});
+  quad([[0,WH,0],[0,WH,RD],[0,WH-10,RD],[0,WH-10,0]], _shade(cielo,-10), {});
+
+  // aberturas en muros
+  function abertura3D(elev, orient){
+    const murW = orient==='z' ? RW : RD;
+    (elev.aberturas||[]).forEach(ab=>{
+      const dk=_shade(ab.color,-40);
+      const ax=Math.max(0,Math.min(murW-ab.wCm,ab.xCm));
+      const y0=ab.yCm, y1=Math.min(ab.yCm+ab.hCm,WH-2), a0=ax, a1=ax+ab.wCm;
+      const fillP = ab.tipo==='pasada' ? '#46413a' : ab.color;
+      if(orient==='z'){
+        polys.push({pts:[P(a0,y0,1.5),P(a1,y0,1.5),P(a1,y1,1.5),P(a0,y1,1.5)],fill:fillP,ord:-1500,stroke:dk});
+        if(ab.tipo==='ventana') polys.push({pts:[P(a0+5,y0+5,2.2),P(a1-5,y0+5,2.2),P(a1-5,y1-5,2.2),P(a0+5,y1-5,2.2)],fill:'#cfe3ee',ord:-1400,stroke:'#9db4c0'});
+      } else {
+        polys.push({pts:[P(1.5,y0,a0),P(1.5,y0,a1),P(1.5,y1,a1),P(1.5,y1,a0)],fill:fillP,ord:-1500,stroke:dk});
+        if(ab.tipo==='ventana') polys.push({pts:[P(2.2,y0+5,a0+5),P(2.2,y0+5,a1-5),P(2.2,y1-5,a1-5),P(2.2,y1-5,a0+5)],fill:'#cfe3ee',ord:-1400,stroke:'#9db4c0'});
+      }
+    });
+  }
+  if (back) abertura3D(back,'z');
+  if (left) abertura3D(left,'x');
+
+  const carc = parseInt(estado.carcasa)||73;
+  const PLINTO=8, BASE_TOP=PLINTO+carc;
+
+  // Caja 3D: orient 'z' (muro fondo, frente hacia +z) u 'x' (muro izq, frente hacia +x)
+  function caja(x0,y0,z0,dx,dy,dz,fin,orient,det,ordOff){
+    const F=fin.f, F2=fin.f2, top=_shade(fin.f,22), lado=_shade(fin.f2,-26);
+    const ord = x0+z0+(ordOff||0);
+    // top
+    polys.push({pts:[P(x0,y0+dy,z0),P(x0+dx,y0+dy,z0),P(x0+dx,y0+dy,z0+dz),P(x0,y0+dy,z0+dz)].slice(),fill:top,ord,stroke:_shade(top,-20)});
+    if (orient==='z'){
+      polys.push({pts:[P(x0+dx,y0,z0),P(x0+dx,y0+dy,z0),P(x0+dx,y0+dy,z0+dz),P(x0+dx,y0,z0+dz)],fill:lado,ord,stroke:_shade(lado,-15)});  // lado x+
+      polys.push({pts:[P(x0,y0,z0+dz),P(x0+dx,y0,z0+dz),P(x0+dx,y0+dy,z0+dz),P(x0,y0+dy,z0+dz)],fill:F,ord,stroke:_shade(F2,-20),det:det?{a:[x0,y0,z0+dz],ux:[1,0,0],w:dx,h:dy,fin,tipo:det}:null});
+    } else if (orient==='xr'){
+      polys.push({pts:[P(x0,y0,z0+dz),P(x0+dx,y0,z0+dz),P(x0+dx,y0+dy,z0+dz),P(x0,y0+dy,z0+dz)],fill:F,ord,stroke:_shade(F2,-20)});  // testero z+ con acabado
+    } else {
+      polys.push({pts:[P(x0,y0,z0+dz),P(x0+dx,y0,z0+dz),P(x0+dx,y0+dy,z0+dz),P(x0,y0+dy,z0+dz)],fill:lado,ord,stroke:_shade(lado,-15)});  // lado z+
+      polys.push({pts:[P(x0+dx,y0,z0),P(x0+dx,y0,z0+dz),P(x0+dx,y0+dy,z0+dz),P(x0+dx,y0+dy,z0)],fill:F,ord,stroke:_shade(F2,-20),det:det?{a:[x0+dx,y0,z0],ux:[0,0,1],w:dz,h:dy,fin,tipo:det}:null});
+    }
+  }
+
+  // módulos de una pared
+  function modsPared(elev, orient){
+    const inst = _instanciasElevacion(elev);
+    inst.forEach(mi=>{
+      let fin = _paletaDe(mi.item) || PALETA_PG[estado.pg] || PALETA_PG[1];
+      if (['frigorifico','freezer','americano'].includes(mi.subtipo)) fin = {f:'#c8ccd0',f2:'#b4b8bc',h:'#7c8288'};
+      else if (mi.subtipo==='vinoteca') fin = {f:'#39424a',f2:'#2e363c',h:'#c8a96e'};
+      else if (mi.subtipo==='horno_bajo') fin = {f:'#2a2a2c',f2:'#222224',h:'#c8a96e'};
+      const prof = mi.tipo==='aereo' ? 34 : 58;
+      const det = mi.tipo==='base' ? (mi.subtipo||'puerta') : mi.tipo==='torre' ? 'torre' : 'aereo';
+      if (orient==='z')       caja(mi.x, mi.y, 0, mi.w, mi.h, prof, fin, 'z', det);
+      else if (orient==='xr') caja(RW-prof, mi.y, mi.x, prof, mi.h, mi.w, fin, 'xr', det);
+      else                    caja(0, mi.y, mi.x, prof, mi.h, mi.w, fin, 'x', det);
+      // zócalo
+      if (mi.tipo!=='aereo'){
+        const zf={f:'#26221e',f2:'#1d1a17'};
+        if (orient==='z')       caja(mi.x+1, 0, 0, mi.w-2, PLINTO, prof-4, zf, 'z', null, -800);
+        else if (orient==='xr') caja(RW-prof+4, 0, mi.x+1, prof-4, PLINTO, mi.w-2, zf, 'xr', null, -800);
+        else                    caja(0, 0, mi.x+1, prof-4, PLINTO, mi.w-2, zf, 'x', null, -800);
+      }
+    });
+    // encimera sobre bases contiguas
+    const bases = inst.filter(m=>m.tipo==='base').sort((a,b)=>a.x-b.x);
+    let runs=[];
+    bases.forEach(b=>{ const l=runs[runs.length-1]; if(l&&b.x<=l.x2+3) l.x2=Math.max(l.x2,b.x+b.w); else runs.push({x1:b.x,x2:b.x+b.w}); });
+    const enc={f:'#3a322a',f2:'#2e2620'};
+    runs.forEach(r=>{
+      if (orient==='z')       caja(r.x1-1, BASE_TOP, 0, r.x2-r.x1+2, 4, 61, enc, 'z', null, 600);
+      else if (orient==='xr') caja(RW-61, BASE_TOP, r.x1-1, 61, 4, r.x2-r.x1+2, enc, 'xr', null, 600);
+      else                    caja(0, BASE_TOP, r.x1-1, 61, 4, r.x2-r.x1+2, enc, 'x', null, 600);
+    });
+  }
+  if (back) modsPared(back, 'z');
+  if (left) modsPared(left, 'x');
+  if (right) modsPared(right, 'xr');
+
+  // isla al centro
+  if (isla){
+    const inst=_instanciasElevacion(isla);
+    const totW = inst.reduce((s,m)=>Math.max(s,m.x+m.w),0) || 120;
+    const ix0=(RW-totW)/2, iz0=RD*0.52, iprof=95;
+    inst.forEach(mi=>{
+      const fin=_paletaDe(mi.item)||PALETA_PG[estado.pg]||PALETA_PG[1];
+      caja(ix0+mi.x, mi.y, iz0, mi.w, mi.h, iprof, fin, 'z', mi.subtipo||'puerta');
+      const zf={f:'#26221e',f2:'#1d1a17'};
+      caja(ix0+mi.x+1, 0, iz0+2, mi.w-2, PLINTO, iprof-6, zf, 'z', null, -800);
+    });
+    const enc={f:'#3a322a',f2:'#2e2620'};
+    caja(ix0-4, BASE_TOP, iz0-3, totW+8, 4, iprof+8, enc, 'z', null, 600);
+  }
+
+  // ordenar cajas por profundidad (los muros/piso ya van primero en el array base)
+  const fondo = polys.slice(0,6);
+  const cajas = polys.slice(6).sort((a,b)=>(a.ord||0)-(b.ord||0));
+  const todos = fondo.concat(cajas);
+
+  // detalles de frentes (gaps y tiradores) — se dibujan después de su cara
+  function detalleFrente(d){
+    const {a,ux,w,h,fin,tipo}=d;
+    const pt=(t,y)=>P(a[0]+ux[0]*t, a[1]+y, a[2]+ux[2]*t);
+    let out='';
+    const line=(t1,y1,t2,y2,col,sw)=>{const p1=pt(t1,y1),p2=pt(t2,y2);return `<line x1="${p1.X.toFixed(1)}" y1="${p1.Y.toFixed(1)}" x2="${p2.X.toFixed(1)}" y2="${p2.Y.toFixed(1)}" stroke="${col}" stroke-width="${sw}"/>`;};
+    const gap=_shade(fin.f2,-38);
+    if (tipo==='cajonera'){ out+=line(2,h*0.72,w-2,h*0.72,gap,1); out+=line(2,h*0.42,w-2,h*0.42,gap,1); }
+    else if (tipo==='cocina'){ out+=line(2,h*0.5,w-2,h*0.5,gap,1); }
+    else if (tipo==='torre'){ if(w>=55){out+=line(w/2,4,w/2,h-4,gap,1);} out+=line(2,h*0.55,w-2,h*0.55,gap,0.8); }
+    else if (tipo==='aereo'){ if(w>=55){out+=line(w/2,3,w/2,h-3,gap,1);} }
+    else { if(w>=55){out+=line(w/2,3,w/2,h-3,gap,1);} }
+    if (estado.apertura === 'gola') {
+      const golaEs = _shade(estado.golaColor, -30);
+      if (tipo==='aereo') out += line(0,h-1.6,w,h-1.6,golaEs,2.4);
+      else                out += line(0,1.6,w,1.6,golaEs,2.4);
+    } else {
+      out += line(w*0.28,h-9,w*0.52,h-9,fin.h||'#8f8f8f',2.2);
+    }
+    return out;
+  }
+
+  // bounds
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  todos.forEach(p=>p.pts.forEach(q=>{minX=Math.min(minX,q.X);maxX=Math.max(maxX,q.X);minY=Math.min(minY,q.Y);maxY=Math.max(maxY,q.Y);}));
+  const pad=46, vb=`${(minX-pad).toFixed(0)} ${(minY-pad-24).toFixed(0)} ${(maxX-minX+pad*2).toFixed(0)} ${(maxY-minY+pad*2+24).toFixed(0)}`;
+
+  let s3='';
+  todos.forEach(p=>{
+    s3+=`<polygon points="${p.pts.map(q=>q.X.toFixed(1)+','+q.Y.toFixed(1)).join(' ')}" fill="${p.fill}" stroke="${p.stroke||'none'}" stroke-width="0.7" stroke-linejoin="round"/>`;
+    if(p.det) s3+=detalleFrente(p.det);
+  });
+  lineas3d.forEach(l=>{ s3=`${s3}`; });
+  s3+=`<text x="${minX-pad+8}" y="${minY-pad-4}" font-size="15" font-weight="700" fill="#1a1a1a" font-family="Lato,Segoe UI,Arial" letter-spacing="1.5">VISTA 3D DEL PROYECTO</text>`;
+  s3+=`<text x="${maxX+pad-8}" y="${minY-pad-4}" font-size="10" fill="#8a8378" text-anchor="end" font-family="Lato,Segoe UI,Arial">${back?_svgEsc(back.nombre)+' (fondo)':''}${left?' · '+_svgEsc(left.nombre)+' (izquierda)':''}${right?' · '+_svgEsc(right.nombre)+' (derecha)':''}${isla?' · Isla central':''} · Axonometría referencial</text>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="100%" style="background:#fdfcfa">${s3}</svg>`;
+}
+
+function abrirVista3D(){
+  recalcular();
+  const hay = estado.items.some(i=>i.tipo!=='accesorio');
+  let m=document.getElementById('modal-3d');
+  if(!m){ m=document.createElement('div'); m.id='modal-3d';
+    m.style.cssText='position:fixed;inset:0;background:rgba(20,18,15,0.85);z-index:9999;display:flex;flex-direction:column;padding:24px;overflow:auto';
+    document.body.appendChild(m);
+  }
+  const inner = hay ? `<div style="background:white;border:1px solid #ddd;border-radius:8px;padding:18px">${svgVista3D()}</div>`
+    : '<div style="color:#ccc;padding:40px;text-align:center;background:#2a2724;border-radius:8px">Agrega módulos a las elevaciones para ver el proyecto en 3D.</div>';
+  m.innerHTML=`<div style="max-width:1100px;margin:0 auto;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="color:white;font-size:16px;letter-spacing:2px">🧊 VISTA 3D — <span style="color:#fff">MODULACIÓN DEL PROYECTO</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secundario btn-sm" onclick="abrirVistaPremium()">🖼️ Elevaciones</button>
+        <button class="btn btn-secundario btn-sm" onclick="exportarPDF()">📄 Propuesta PDF</button>
+        <button class="btn btn-primario btn-sm" onclick="document.getElementById('modal-3d').style.display='none'">✕ Cerrar</button>
+      </div>
+    </div>
+    <div style="color:#a99;font-size:11px;margin-bottom:10px;color:#b5ab9d">Los muros se toman de la asignación hecha en la Planta (fondo / izquierda / derecha); la isla va al centro. Los acabados reflejan la terminación del proyecto o de cada módulo.</div>
+    ${inner}</div>`;
+  m.style.display='flex';
+}
+
+// =====================================================================
+// V2 — PROPUESTA EJECUTIVA PDF
+// =====================================================================
 function exportarPDF() {
-  // Construir contenido del PDF en ventana separada
+  recalcular();
+  const modoCli = !!estado.modoCliente;
   const cliente = document.getElementById('cliente').value || 'Cliente';
   const numCot = document.getElementById('num-cot').value;
   const fecha = document.getElementById('fecha').value;
@@ -3133,143 +4222,177 @@ function exportarPDF() {
   const costoImp = parseFloat(document.getElementById('costo-imp').value) || 1400000;
   const costoInst = parseFloat(document.getElementById('costo-inst').value) || 700000;
   const pg = GRUPOS_PRECIO.find(g => g.id === estado.pg);
+  const pal = PALETA_PG[estado.pg]||PALETA_PG[1];
 
-  let totalProductosCLP = estado.items.reduce((s, i) => s + i.precioClp, 0);
-  const conMargen = totalProductosCLP * (1 + margen);
-  const conDescuento = conMargen * (1 - descuento);
-  // Cubierta — leer del estado (ya calculado por recalcularCubierta)
-  const _cubTipo     = estado.cubierta?.tipo || 'ninguna';
-  const _cubM2Final  = estado.cubierta?.m2Total || 0;
-  const _cubPrecioM2 = parseFloat(document.getElementById('cub-precio-m2')?.value) || 350000;
-  const _totalCub    = estado.cubierta?.totalCubierta || 0;
-  const _cubNombres  = { quarzo: '💎 Quarzo', ultracompacto: '🪨 Ultra Compacto' };
-  const totalFinal = Math.round(conDescuento + costoImp + costoInst + _totalCub);
-  const totalPuntos = estado.items.reduce((s, i) => s + i.puntos, 0);
-  // Metros lineales
-  const _mlBase  = estado.items.filter(i=>i.tipo==='base').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
-  const _mlTorre = estado.items.filter(i=>i.tipo==='torre').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
-  const _mlAereo = estado.items.filter(i=>i.tipo==='aereo').reduce((s,i)=>s+(i.ancho*i.cantidad),0)/100;
-  const _mlTotal = _mlBase + _mlTorre;
-  const _precioMlTotal = _mlTotal>0 ? Math.round(totalFinal/_mlTotal) : 0;
-  const _precioMlMod   = _mlTotal>0 ? Math.round(conDescuento/_mlTotal) : 0;
+  const totalProductosCLP = estado.items.reduce((s,i)=>s+i.precioClp,0);
+  const conMargen = totalProductosCLP*(1+margen);
+  const conDescuento = conMargen*(1-descuento);
+  const _cubTipo = estado.cubierta?.tipo||'ninguna';
+  const _cubM2 = estado.cubierta?.m2Total||0;
+  const _cubM2P = parseFloat(document.getElementById('cub-precio-m2')?.value)||350000;
+  const _totalCub = estado.cubierta?.totalCubierta||0;
+  const _cubNom = {quarzo:'Cubierta Quarzo',ultracompacto:'Cubierta Ultra Compacto'};
+  const totalFinal = Math.round(conDescuento+costoImp+costoInst+_totalCub);
+  const fmt = n=>'$'+Math.round(n).toLocaleString('es-CL');
 
-  let itemsHtml = '';
-  const elevsPDF = [...estado.elevaciones];
-  elevsPDF.forEach(elev => {
-    const elevItems = estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
-    if (!elevItems.length) return;
-    itemsHtml += `<tr><td colspan="4" style="background:#595959;color:#fff;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">
-      ${elev.id==='isla'?'\uD83C\uDFDD\uFE0F':'\uD83D\uDCD0'} ${elev.nombre}
-    </td></tr>`;
+  const nMod = estado.items.filter(i=>i.tipo!=='accesorio').reduce((s,i)=>s+i.cantidad,0);
+  const _mlBajo = estado.items.filter(i=>['base','torre'].includes(i.tipo)).reduce((s,i)=>s+i.ancho*i.cantidad,0)/100;
+  const precioMl = _mlBajo>0? totalFinal/_mlBajo : 0;
+  const recargoTxt = (estado.pg===8&&estado.recargoPG8>0)?` · Recargo programa exclusivo +${Math.round(estado.recargoPG8*100)}%`:'';
+
+  // Páginas de elevaciones
+  let elevPages='';
+  estado.elevaciones.forEach(elev=>{
+    const eItems=estado.items.filter(i=>i.elevacion===elev.id && i.tipo!=='accesorio');
+    if(!eItems.length) return;
+    let rows='';
     ['torre','base','aereo'].forEach(tipo=>{
-      const sub = elevItems.filter(i=>i.tipo===tipo);
-      if (!sub.length) return;
-      const tl = {torre:'Torres/Columnas',base:'Muebles Bajos',aereo:'Muebles A\u00e9reos'}[tipo];
-      itemsHtml += `<tr><td colspan="4" style="background:#f5f5f5;font-weight:600;font-size:10px;padding:4px 10px;color:#666">${tl}</td></tr>`;
+      const sub=eItems.filter(i=>i.tipo===tipo); if(!sub.length) return;
+      const tl={torre:'Torres / Columnas',base:'Muebles Bajos',aereo:'Muebles Aéreos'}[tipo];
+      rows+=`<tr><td colspan="3" class="grp">${tl}</td></tr>`;
       sub.forEach(item=>{
-        let desc = '';
-        if (item.tipo==='torre') {
-          const _stT=(SUBTIPOS.torre||[]).find(s=>s.id===item.subtipo);
-          desc = `${_stT?_stT.icon+' '+_stT.nombre+' ':''}Torre ${item.ancho}cm \u00d7 ${item.altura_torre}cm${item.nombre?' \u2014 '+item.nombre:''} (\u00d7${item.cantidad})`;
-        } else {
-          const _stP=(SUBTIPOS[item.tipo]||[]).find(s=>s.id===item.subtipo);
-          desc = `${_stP?_stP.icon+' '+_stP.nombre+' ':''}${item.ancho}cm${item.nombre?' \u2014 '+item.nombre:''} (\u00d7${item.cantidad})`;
-        }
-        itemsHtml += `<tr>
-          <td>${desc}</td>
-          <td style="text-align:center">${item.puntos>0?item.puntos.toLocaleString()+' pts':'—'}</td>
-          <td style="text-align:center">${item.puntos>0?'\u20ac'+item.puntos.toLocaleString():'—'}</td>
-          <td style="text-align:right;font-weight:600">$${Math.round(item.precioClp).toLocaleString('es-CL')}</td>
-        </tr>`;
+        const stArr=SUBTIPOS[item.tipo]||[]; const st=stArr.find(s=>s.id===item.subtipo);
+        const desc = item.tipo==='torre'
+          ? `${st?st.nombre+' — ':''}Torre ${item.ancho} × ${item.altura_torre} cm${item.nombre?' · '+item.nombre:''}`
+          : `${st?st.nombre+' — ':''}${item.ancho} cm${item.nombre?' · '+item.nombre:''}`;
+        rows+=`<tr><td>${desc}</td><td style="text-align:center">×${item.cantidad}</td>${modoCli?'':`<td style="text-align:right;font-weight:600">${fmt(item.precioClp)}</td>`}</tr>`;
       });
     });
+    elevPages+=`<div class="page">
+      <div class="ph"><span class="phl">${elev.nombre.toUpperCase()}</span><span class="phr">${numCot} · ${cliente}</span></div>
+      <div style="border:1px solid #e2ddd4;border-radius:6px;padding:12px;background:#fdfcfa">${svgElevacionPremium(elev)}</div>
+      <table class="tItems"><thead><tr><th>Módulo</th><th style="text-align:center;width:60px">Cant.</th>${modoCli?'':'<th style="text-align:right;width:130px">Valor</th>'}</tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
   });
+
   // Accesorios
-  const accPDF = estado.items.filter(i=>i.tipo==='accesorio');
-  if (accPDF.length) {
-    itemsHtml += `<tr><td colspan="4" style="background:#555;color:#fff;font-weight:700;font-size:11px;padding:6px 10px;text-transform:uppercase;letter-spacing:1px">\uD83D\uDD27 Accesorios y Mes\u00f3n</td></tr>`;
-    accPDF.forEach(item=>{
-      itemsHtml += `<tr>
-        <td>${item.acc_nombre} \u00d7 ${item.acc_qty}</td>
-        <td style="text-align:center">—</td>
-        <td style="text-align:center">—</td>
-        <td style="text-align:right;font-weight:600">$${Math.round(item.precioClp).toLocaleString('es-CL')}</td>
-      </tr>`;
-    });
+  const accPDF=estado.items.filter(i=>i.tipo==='accesorio');
+  let accHtml='';
+  if(accPDF.length){
+    let r=''; accPDF.forEach(a=>{ r+=`<tr><td>${a.acc_nombre}</td><td style="text-align:center">×${a.acc_qty}</td>${modoCli?'':`<td style="text-align:right;font-weight:600">${fmt(a.precioClp)}</td>`}</tr>`; });
+    accHtml=`<table class="tItems"><thead><tr><th>Accesorios y Complementos</th><th style="text-align:center;width:60px">Cant.</th>${modoCli?'':'<th style="text-align:right;width:130px">Valor</th>'}</tr></thead><tbody>${r}</tbody></table>`;
   }
 
-  const win = window.open('', '_blank');
+  let pagina3D='';
+  try {
+    if (estado.items.some(i=>i.tipo!=='accesorio')) {
+      pagina3D = `<div class="page"><div class="ph"><span class="phl">VISTA 3D DEL PROYECTO</span><span class="phr">${numCot} · ${cliente}</span></div><div style="border:1px solid #e2ddd4;border-radius:6px;padding:12px;background:#fdfcfa">${svgVista3D()}</div><div style="font-size:10.5px;color:#999;margin-top:8px">Axonometría referencial de modulación. No representa el diseño final de interiorismo.</div></div>`;
+    }
+  } catch(e) { pagina3D=''; }
+
+  const win=window.open('','_blank');
   win.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-  <title>Cotización Atika — ${numCot}</title>
+  <title>Propuesta ${numCot} — ${cliente}</title>
   <style>
-    body{font-family:'Lato','Segoe UI',Arial,sans-serif;max-width:800px;margin:20px auto;color:#222;font-size:13px}
-    .header{background:#fff;color:#1a1a1a;padding:16px 24px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #cf0521}
-    .header .logo-atika{height:38px;width:auto;display:block}
-    .header .bajada{font-size:11px;color:#777;margin-top:8px;text-transform:uppercase;letter-spacing:1px}
-    table{width:100%;border-collapse:collapse;margin:16px 0}
-    th{background:#595959;color:white;padding:8px 10px;font-size:11px;text-align:left}
-    td{padding:7px 10px;border-bottom:1px solid #eee}
-    .total-row{background:#1a1a1a;color:white;font-size:16px;font-weight:300;border-top:2px solid #cf0521}
-    .total-row .num{color:#fff;font-size:20px;font-weight:600}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
-    .info-card{border:1px solid #ddd;padding:12px;border-radius:4px}
-    .info-card .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px}
-    .info-card .valor{font-size:14px;font-weight:600;margin-top:4px}
-    .nota{background:#fafafa;border:1px solid #e6e6e6;border-left:3px solid #cf0521;padding:12px;border-radius:4px;font-size:12px;color:#555;margin-top:12px}
-    @media print{body{margin:0}}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato','Segoe UI',Arial,sans-serif;color:#222;font-size:13px;background:#fff}
+    .page{max-width:860px;margin:0 auto;padding:26px 30px;page-break-after:always}
+    .page:last-child{page-break-after:auto}
+    /* PORTADA */
+    .cover{display:flex;flex-direction:column;min-height:95vh}
+    .cov-top{background:#fff;color:#1a1a1a;padding:30px 38px;border-bottom:4px solid #cf0521}
+    .cov-logo{height:44px;width:auto;display:block}
+    .cov-sub{font-size:12px;color:#777;letter-spacing:2px;margin-top:10px;text-transform:uppercase}
+    .cov-body{flex:1;padding:44px 38px;background:linear-gradient(180deg,#fafafa,#f2f2f2)}
+    .cov-tag{font-size:12px;letter-spacing:3px;color:#cf0521;text-transform:uppercase;font-weight:700}
+    .cov-cliente{font-size:34px;font-weight:300;margin:10px 0 4px;color:#1a1a1a}
+    .cov-info{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+    .ci{background:white;border:1px solid #e6e6e6;border-radius:8px;padding:14px}
+    .ci .l{font-size:9.5px;color:#999;text-transform:uppercase;letter-spacing:1px}
+    .ci .v{font-size:14px;font-weight:600;margin-top:5px}
+    .cov-total{margin-top:36px;background:#1a1a1a;border-left:4px solid #cf0521;border-radius:10px;padding:26px 30px;display:flex;justify-content:space-between;align-items:center}
+    .cov-total .l{color:#aaa;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+    .cov-total .n{color:#fff;font-size:38px;font-weight:300;letter-spacing:1px}
+    .cov-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .kpi{background:white;border:1px solid #e6e6e6;border-radius:8px;padding:12px;text-align:center}
+    .kpi .n{font-size:20px;font-weight:700;color:#1a1a1a}
+    .kpi .l{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+    .cov-foot{padding:18px 38px;font-size:11px;color:#999;border-top:1px solid #e6e6e6;display:flex;justify-content:space-between}
+    /* PÁGINAS */
+    .ph{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid #cf0521;padding-bottom:8px;margin-bottom:16px}
+    .phl{font-size:16px;font-weight:700;letter-spacing:2px}
+    .phr{font-size:11px;color:#999}
+    table.tItems{width:100%;border-collapse:collapse;margin-top:14px}
+    .tItems th{background:#595959;color:white;padding:7px 10px;font-size:10.5px;text-align:left;letter-spacing:1px;text-transform:uppercase}
+    .tItems td{padding:6px 10px;border-bottom:1px solid #eee;font-size:12px}
+    .tItems .grp{background:#f2f2f2;font-weight:700;font-size:10.5px;color:#595959;text-transform:uppercase;letter-spacing:1px}
+    /* RESUMEN */
+    .tRes{width:100%;border-collapse:collapse;margin-top:10px}
+    .tRes td{padding:9px 12px;border-bottom:1px solid #eee;font-size:13px}
+    .tRes .tot td{background:#1a1a1a;color:white;font-size:15px;padding:14px 12px;border-top:2px solid #cf0521}
+    .tRes .tot .n{color:#fff;font-size:22px;font-weight:600;text-align:right}
+    .nota{background:#fafafa;border:1px solid #e6e6e6;border-left:3px solid #cf0521;padding:12px 14px;border-radius:6px;font-size:11.5px;color:#555;margin-top:16px;line-height:1.5}
+    .firmas{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:56px}
+    .firma{border-top:1px solid #999;padding-top:8px;font-size:11px;color:#666;text-align:center}
+    @page{size:A4;margin:10mm}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:10px 6px}}
   </style></head><body>
-  <div class="header">
-    <div>
-      <img class="logo-atika" src="data:image/png;base64,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" alt="ATIKA">
-      <div class="bajada">Concept Home Chile — Anteproyecto de Cocina</div>
+
+  <div class="page cover">
+    <div class="cov-top">
+      <img class="cov-logo" src="data:image/png;base64,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" alt="ATIKA">
+      <div class="cov-sub">Propuesta de Cocina — Anteproyecto Valorizado</div>
     </div>
-    <div style="text-align:right;font-size:12px;color:#777">
-      <div style="font-size:15px;color:#1a1a1a;letter-spacing:1px">COTIZACIÓN N° ${numCot}</div><div style="margin-top:4px">${fecha}</div>
+    <div class="cov-body">
+      <div class="cov-tag">Propuesta exclusiva para</div>
+      <div class="cov-cliente">${cliente}</div>
+      <div style="color:#888;font-size:13px">${numCot} · ${fecha}${tienda?' · Tienda '+tienda:''}${vendedor?' · Atiende: '+vendedor:''}</div>
+      <div class="cov-info">
+        <div class="ci"><div class="l">Línea</div><div class="v">${estado.linea}</div></div>
+        <div class="ci"><div class="l">Estilo / Grupo</div><div class="v">PG${estado.pg} — ${pg?.nombre||''}</div></div>
+        <div class="ci"><div class="l">Acabado referencial</div><div class="v">${pal.nombre}${recargoTxt}</div></div>
+        <div class="ci"><div class="l">Carcasa</div><div class="v">${estado.carcasa} cm</div></div>
+      </div>
+      <div class="cov-total">
+        <div><div class="l">Inversión Total del Proyecto</div><div style="color:#777;font-size:11px;margin-top:4px">IVA no incluido · Válida 30 días</div></div>
+        <div class="n">${fmt(totalFinal)}</div>
+      </div>
+      <div class="cov-kpis">
+        <div class="kpi"><div class="n">${nMod}</div><div class="l">Módulos Leicht</div></div>
+        <div class="kpi"><div class="n">${_mlBajo.toFixed(1)} ml</div><div class="l">Metros lineales</div></div>
+        <div class="kpi"><div class="n">${_mlBajo>0?fmt(precioMl):'—'}</div><div class="l">Valor por ml</div></div>
+      </div>
+      ${obs?`<div style="margin-top:22px;background:white;border:1px solid #e6e6e6;border-radius:8px;padding:14px;font-size:12px"><b>Observaciones:</b> ${obs}</div>`:''}
     </div>
+    <div class="cov-foot"><span>ATIKA · atika.cl · Cocinas Leicht Küchen</span><span>${fecha}</span></div>
   </div>
 
-  <div class="info-grid" style="margin-top:16px">
-    <div class="info-card"><div class="label">Cliente</div><div class="valor">${cliente}</div></div>
-    <div class="info-card"><div class="label">Tienda / Vendedor</div><div class="valor">${tienda} · ${vendedor}</div></div>
-    <div class="info-card"><div class="label">Línea / Estilo</div><div class="valor">${estado.linea} · Carcasa ${estado.carcasa}cm</div></div>
-    <div class="info-card"><div class="label">Grupo de Precio</div><div class="valor">PG${estado.pg} — ${pg?.nombre || ''} (Índice ${pg?.indice || ''})</div></div>
-  </div>
+  ${elevPages}
 
-  ${obs ? `<div style="background:#fafafa;border:1px solid #ddd;padding:10px;border-radius:4px;margin-bottom:12px;font-size:12px"><strong>Observaciones:</strong> ${obs}</div>` : ''}
+  ${pagina3D}
 
-  <table>
-    <thead><tr>
-      <th>Módulo / Elemento</th>
-      <th style="text-align:center">Puntos</th>
-      <th style="text-align:center">Euros</th>
-      <th style="text-align:right">Precio CLP</th>
-    </tr></thead>
-    <tbody>${itemsHtml}
-    <tr><td colspan="4" style="height:8px"></td></tr>
-    <tr><td colspan="3" style="text-align:right;color:#666">Subtotal Productos</td><td style="text-align:right;font-weight:700">$${Math.round(totalProductosCLP).toLocaleString('es-CL')}</td></tr>
-    ${margen > 0 ? `<tr><td colspan="3" style="text-align:right;color:#666">Margen ${(margen*100).toFixed(0)}%</td><td style="text-align:right">+ $${Math.round(conMargen-totalProductosCLP).toLocaleString('es-CL')}</td></tr>` : ''}
-    ${descuento > 0 ? `<tr><td colspan="3" style="text-align:right;color:#c00">Descuento ${(descuento*100).toFixed(0)}%</td><td style="text-align:right;color:#c00">- $${Math.round(conMargen-conDescuento).toLocaleString('es-CL')}</td></tr>` : ''}
-    <tr><td colspan="3" style="text-align:right;color:#666">Importación Leicht Küchen (fijo)</td><td style="text-align:right">$${costoImp.toLocaleString('es-CL')}</td></tr>
-    <tr><td colspan="3" style="text-align:right;color:#666">Instalación (fijo)</td><td style="text-align:right">$${costoInst.toLocaleString('es-CL')}</td></tr>
-    ${_cubTipo !== 'ninguna' && _totalCub > 0 ? `<tr><td colspan="3" style="text-align:right;color:#666">Cubierta ${_cubNombres[_cubTipo]||_cubTipo} (${_cubM2Final.toFixed(1)} m² × $${_cubPrecioM2.toLocaleString('es-CL')}/m²)</td><td style="text-align:right;font-weight:600">$${_totalCub.toLocaleString('es-CL')}</td></tr>` : ''}
-    <tr class="total-row"><td colspan="2">TOTAL PROYECTO · ${totalPuntos.toLocaleString()} puntos = €${totalPuntos.toLocaleString()} · TC $${tc}/€</td><td colspan="2" style="text-align:right" class="num">$${totalFinal.toLocaleString('es-CL')}</td></tr>
-    </tbody>
-  </table>
-
-  <div class="nota">
-    <strong>⚠️ Importante:</strong> Este valor corresponde a un <strong>anteproyecto referencial</strong>. El precio final puede variar según la configuración exacta, acabados específicos, electrodomésticos y condiciones del sitio. IVA no incluido. Precios en pesos chilenos. Cotización válida por 30 días.
-  </div>
-
-  <div style="text-align:center;margin-top:24px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:12px">
-    ATIKA · atika.cl · Concept Home Chile · Cocinas Leicht Küchen · Generado ${fecha}
+  <div class="page">
+    <div class="ph"><span class="phl">RESUMEN DE INVERSIÓN</span><span class="phr">${numCot} · ${cliente}</span></div>
+    ${accHtml}
+    ${modoCli ? `
+    <table class="tRes">
+      <tr><td>Mobiliario Leicht Küchen — Cocina completa instalada (${estado.linea} · PG${estado.pg})</td><td style="text-align:right;font-weight:600">${fmt(conDescuento + costoImp + costoInst)}</td></tr>
+      ${_cubTipo!=='ninguna'&&_totalCub>0?`<tr><td>${_cubNom[_cubTipo]||'Cubierta'} (${_cubM2.toFixed(1)} m²)</td><td style="text-align:right;font-weight:600">${fmt(_totalCub)}</td></tr>`:''}
+      <tr class="tot"><td>INVERSIÓN TOTAL DEL PROYECTO</td><td class="n">${fmt(totalFinal)}</td></tr>
+    </table>` : `
+    <table class="tRes">
+      <tr><td>Módulos y mobiliario Leicht Küchen (${estado.linea} · PG${estado.pg})</td><td style="text-align:right;font-weight:600">${fmt(conMargen)}</td></tr>
+      ${descuento>0?`<tr><td style="color:#c0392b">Descuento comercial ${(descuento*100).toFixed(0)}%</td><td style="text-align:right;color:#c0392b">- ${fmt(conMargen-conDescuento)}</td></tr>`:''}
+      <tr><td>Importación y logística Leicht Küchen (Alemania → Chile)</td><td style="text-align:right">${fmt(costoImp)}</td></tr>
+      <tr><td>Instalación profesional y puesta en marcha</td><td style="text-align:right">${fmt(costoInst)}</td></tr>
+      ${_cubTipo!=='ninguna'&&_totalCub>0?`<tr><td>${_cubNom[_cubTipo]||'Cubierta'} (${_cubM2.toFixed(1)} m² × ${fmt(_cubM2P)}/m²)</td><td style="text-align:right">${fmt(_totalCub)}</td></tr>`:''}
+      <tr class="tot"><td>INVERSIÓN TOTAL DEL PROYECTO</td><td class="n">${fmt(totalFinal)}</td></tr>
+    </table>`}
+    <div class="nota"><b>Importante:</b> este documento corresponde a un <b>anteproyecto referencial</b>. El valor final puede variar según configuración definitiva, acabados específicos, electrodomésticos y condiciones del sitio. Valores en pesos chilenos, IVA no incluido. Propuesta válida por 30 días desde su emisión. Tipo de cambio referencial $${tc.toLocaleString('es-CL')}/€.</div>
+    <div class="firmas">
+      <div class="firma">${vendedor||'Asesor Atika'}<br>Atika</div>
+      <div class="firma">${cliente}<br>Cliente</div>
+    </div>
+    <div style="text-align:center;margin-top:36px;font-size:10.5px;color:#aaa;border-top:1px solid #eee;padding-top:10px">ATIKA · atika.cl · Cocinas Leicht Küchen · ${fecha}</div>
   </div>
   <script>window.print()<\/script>
   </body></html>`);
   win.document.close();
 }
 
+
 // =====================================================================
-// GESTIÓN DE ARCHIVOS / PLANOS
+// DROPZONE
 // =====================================================================
 function soltarArchivo(ev) {
   ev.preventDefault();

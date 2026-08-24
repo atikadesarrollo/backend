@@ -1,0 +1,7 @@
+<p>Estimados {{ proveedor }},</p>
+<p>Atika registró el pago del <strong>anteproyecto</strong> del proyecto <strong>{{ codigo }}</strong>.</p>
+<p>Pedido: <strong>{{ pedido }}</strong> · Monto: <strong>{{ monto }}</strong> · Fecha: {{ fecha }}</p>
+{% if facturas %}
+<p>Facturas: {{ facturas|join(', ') }}</p>
+{% endif %}
+<p>Con esto queda confirmado el anteproyecto y puede continuar con la siguiente etapa.</p>
