@@ -71,6 +71,12 @@ def notify(tipo):
                 destinatarios, payload.get('codigo', ''), payload.get('proveedor', ''),
                 payload.get('pedido', ''), payload.get('monto', ''),
                 payload.get('facturas') or [], payload.get('fecha', ''))
+        elif tipo == 'confirmacion-instalacion':
+            notificaciones.notificar_confirmacion_instalacion(
+                destinatarios, payload.get('codigo', ''), payload.get('proveedor', ''),
+                payload.get('pedido', ''), payload.get('total_pedido', ''),
+                payload.get('monto_pagado', ''), payload.get('facturas') or [],
+                payload.get('fecha', ''))
         elif tipo == 'cotizacion-confirmada':
             notificaciones.notificar_cotizacion_confirmada(
                 destinatarios, payload.get('codigo', ''),

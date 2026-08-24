@@ -1,0 +1,9 @@
+<p>Estimados {{ proveedor }},</p>
+<p>Queda <strong>confirmada la instalación</strong> del proyecto <strong>{{ codigo }}</strong>:
+la orden de venta está confirmada y su primer hito pagado.</p>
+<p>Orden de venta: <strong>{{ pedido }}</strong> · Total: {{ total_pedido }} ·
+Pagado: <strong>{{ monto_pagado }}</strong> · Fecha: {{ fecha }}</p>
+{% if facturas %}
+<p>Facturas: {{ facturas|join(', ') }}</p>
+{% endif %}
+<p>Pueden continuar con el proceso de instalación.</p>
