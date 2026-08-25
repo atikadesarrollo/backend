@@ -6,10 +6,21 @@
 
 CH_PROJECT_MODEL = 'project.project'
 CH_TASK_MODEL = 'project.task'
+# Oportunidad de CH: es donde alguien TECLEA el código, y el único modelo donde el
+# campo es escribible. Se consulta solo para saber si CH ya registró un proyecto que
+# todavía no existe de su lado (informativo, ver sync.py::_registrado_en_crm).
+CH_LEAD_MODEL = 'crm.lead'
 
-# Campo en project.project donde CH guarda nuestro código de proyecto (= name de Atika).
-# Se crea primero en crm.lead (Studio) y se hereda al convertir a proyecto — mismo
-# nombre técnico en ambos modelos. Reemplazó a x_studio_id_proyecto_externo (ya no existe).
+# Campo donde CH guarda nuestro código de proyecto (= name de Atika). Mismo nombre
+# técnico en crm.lead (escribible) y en project.project. Reemplazó a
+# x_studio_id_proyecto_externo (ya no existe).
+#
+# Verificado contra el Odoo real de CH el 2026-08-25: en project.project NO es una
+# copia, es `related` a `reinvoiced_sale_order_id.x_studio_related_field_381_1jsuut6m8`,
+# y ese campo del pedido es a su vez `related` a `opportunity_id`. Dos consecuencias:
+# (1) en el pedido el nombre técnico es OTRO, así que este no sirve para buscar ahí;
+# (2) el proyecto de CH recibe el código al confirmarse el pedido, no antes, y si el
+# proyecto queda sin `reinvoiced_sale_order_id` el código llega vacío.
 CH_FIELD_CODIGO_PROYECTO = 'x_studio_id_proyecto_atika'
 
 # Campo booleano de CH (project.task): solo las tareas visibles=True llegan a Atika.

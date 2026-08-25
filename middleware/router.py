@@ -17,8 +17,12 @@ def sync_proyecto(name_proyecto):
     try:
         data = obtener_estructura_proyecto(name_proyecto)
         return jsonify(data), 200
-    except ProyectoNoEncontradoEnCH:
-        return jsonify({'error': 'proyecto_no_encontrado_en_ch'}), 404
+    except ProyectoNoEncontradoEnCH as e:
+        # Sigue siendo 404 a propósito: si respondiera 200 con la lista de tareas
+        # vacía, el upsert de Atika lo tomaría por un snapshot completo y archivaría
+        # todo el espejo. La señal del CRM viaja en el cuerpo.
+        return jsonify({'error': 'proyecto_no_encontrado_en_ch',
+                        'registrado_en_crm': e.registrado_en_crm}), 404
     except Exception as e:
         logger.exception("Error sincronizando proyecto %s", name_proyecto)
         return jsonify({'error': str(e)}), 500
