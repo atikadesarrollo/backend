@@ -117,7 +117,15 @@ def notificar_confirmacion_instalacion(destinatarios, codigo, proveedor, pedido,
 
 
 def notificar_cotizacion_confirmada(destinatarios, codigo, pedido, lineas):
-    """Trazabilidad — cotización confirmada, detalle de líneas a ambas partes."""
+    """Trazabilidad — cotización confirmada, detalle de líneas a ambas partes.
+
+    El asunto nombra el PEDIDO además del proyecto: un proyecto externo confirma varias
+    cotizaciones (la del anteproyecto y la de instalación), y con el asunto anterior
+    ("Cotización confirmada: <proyecto>") llegaban dos correos de título idéntico que
+    solo se distinguían abriéndolos."""
     html = render_template('cotizacion_confirmada.html', codigo=codigo,
                            pedido=pedido, lineas=lineas)
-    enviar_email(destinatarios, f"Cotización confirmada: {codigo or pedido}", html)
+    asunto = f"Cotización confirmada: {pedido}" if pedido else "Cotización confirmada"
+    if codigo:
+        asunto += f" ({codigo})"
+    enviar_email(destinatarios, asunto, html)
