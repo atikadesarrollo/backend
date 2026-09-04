@@ -505,12 +505,6 @@
               <button class="btn btn-secundario btn-sm" onclick="abrirVistaPremium()">🖼️ Vista Presentación</button>
             </div>
           </div>
-          <div style="margin-top:8px;padding:8px 10px;background:#faf6ec;border:1px solid #e4d5aa;border-radius:6px">
-            <label style="display:flex;align-items:center;gap:6px;margin:0;font-size:11.5px;text-transform:none;cursor:pointer">
-              <input type="checkbox" id="modo-cliente" onchange="estado.modoCliente=this.checked" style="cursor:pointer">
-              <strong>Propuesta Cliente</strong> — oculta desglose por módulo, importación e instalación (solo total muebles + total cubiertas)
-            </label>
-          </div>
           <div id="elev-diagrama" style="margin-bottom:14px"></div>
           <div id="planta-proyecto" style="margin-bottom:14px"></div>
 
@@ -560,14 +554,13 @@
         <div style="margin-bottom:12px">
           <label style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Material</label>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="cub-pill activo" id="cub-pill-ninguna" onclick="setCubiertaTipo('ninguna')">— Sin cubierta</button>
-            <button class="cub-pill" id="cub-pill-quarzo" onclick="setCubiertaTipo('quarzo')">💎 Quarzo</button>
+            <button class="cub-pill activo" id="cub-pill-quarzo" onclick="setCubiertaTipo('quarzo')">💎 Quarzo</button>
             <button class="cub-pill" id="cub-pill-ultracompacto" onclick="setCubiertaTipo('ultracompacto')">🪨 Ultra Compacto</button>
           </div>
         </div>
 
         <!-- Parámetros de medición -->
-        <div id="cub-params" style="display:none">
+        <div id="cub-params">
           <div class="fila fila-3" style="margin-bottom:10px">
             <div>
               <label>Prof. mesón (cm)</label>
@@ -1442,7 +1435,6 @@ let estado = {
   acabadoProyecto: null,
   apertura: 'tirador',
   golaColor: '#8f8f8f',
-  modoCliente: false,
   deco: { piso: '#9a8060', cielo: '#d0ccc6' },
   items: [],
   contadorId: 0,
@@ -1454,7 +1446,7 @@ let estado = {
   elevacionActiva: 'E1',
   tipoTabActivo: 'base',
   archivos: [],
-  cubierta: { tipo: 'ninguna', precioM2: 350000 }
+  cubierta: { tipo: 'quarzo', precioM2: 350000 }
 };
 
 
@@ -1483,6 +1475,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPaleta();
   renderAcabados();
   aplicarDeco();
+  // La cubierta ya no es opcional: se calcula de entrada con el material por defecto.
+  recalcularCubierta();
 });
 
 function renderizarPG() {
@@ -2697,20 +2691,23 @@ function actualizarCampo(id, campo, valor) {
 function setCubiertaTipo(tipo) {
   estado.cubierta = estado.cubierta || {};
   estado.cubierta.tipo = tipo;
-  ['ninguna','quarzo','ultracompacto'].forEach(t => {
+  ['quarzo','ultracompacto'].forEach(t => {
     const el = document.getElementById('cub-pill-' + t);
     if (el) el.classList.toggle('activo', t === tipo);
   });
-  const params = document.getElementById('cub-params');
-  if (params) params.style.display = tipo !== 'ninguna' ? 'block' : 'none';
-  recalcularCubierta();
   recalcular();
 }
 
-// Calcula m² y total de cubierta sin tocar el diagrama
+// Puerta de entrada de los controles de la sección 6. El cálculo lo hace
+// recalcular(), que llama a calcularCubierta() antes de armar los totales.
 function recalcularCubierta() {
-  const cubTipo = estado.cubierta?.tipo || 'ninguna';
-  if (cubTipo === 'ninguna') { recalcular(); return; }
+  recalcular();
+}
+
+// Calcula m² y total de cubierta sin tocar el diagrama.
+// NO llama a recalcular(): la llama recalcular() a ella.
+function calcularCubierta() {
+  const cubTipo = estado.cubierta?.tipo || 'quarzo';
 
   const profCm    = parseFloat(document.getElementById('cub-prof-cm')?.value) || 60;
   const retTipo   = document.getElementById('cub-retorno-tipo')?.value || 'ninguno';
@@ -2768,11 +2765,13 @@ function recalcularCubierta() {
   set('cub-tipo-label', tipoLabels[cubTipo] || cubTipo);
   set('cub-m2-label',   m2Total.toFixed(2) + ' m² × $' + precioM2.toLocaleString('es-CL') + '/m²');
   set('cub-total-num',  '$' + totalCubierta.toLocaleString('es-CL'));
-
-  recalcular();
 }
 
 function recalcular() {
+  // La cubierta se mide contra los muebles, así que se recalcula en cada pasada:
+  // agregar o cambiar un módulo cambia los metros lineales del mesón.
+  calcularCubierta();
+
   const tc = parseFloat(document.getElementById('tc').value) || 1100;
   const margen = (parseFloat(document.getElementById('margen').value) || 0) / 100;
   const descuento = (parseFloat(document.getElementById('descuento').value) || 0) / 100;
@@ -2815,7 +2814,7 @@ function recalcular() {
   const conDescuento = conMargen * (1 - descuento);
 
   // ── Cubierta de trabajo: leer del estado (calculado por recalcularCubierta)
-  const cubTipo      = estado.cubierta?.tipo || 'ninguna';
+  const cubTipo      = estado.cubierta?.tipo || 'quarzo';
   const cubM2Final   = estado.cubierta?.m2Total || 0;
   const cubPrecioM2  = parseFloat(document.getElementById('cub-precio-m2')?.value) || 350000;
   const totalCubierta = estado.cubierta?.totalCubierta || 0;
@@ -2934,7 +2933,7 @@ function renderizarResumen({ totalPuntos, baseProductos, conMargen, conDescuento
   }
   html += `<div class="subtotal-linea fijo"><span>Importación Leicht (fijo)</span><span>+ $${costoImp.toLocaleString('es-CL')}</span></div>`;
   html += `<div class="subtotal-linea fijo"><span>Instalación (fijo)</span><span>+ $${costoInst.toLocaleString('es-CL')}</span></div>`;
-  if (cubTipo && cubTipo !== 'ninguna' && totalCubierta > 0) {
+  if (totalCubierta > 0) {
     const cubLbls = { quarzo: '💎 Quarzo', ultracompacto: '🪨 Ultra Compacto' };
     html += `<div class="subtotal-linea fijo"><span>${cubLbls[cubTipo]||cubTipo} (${(cubM2Final||0).toFixed(1)}m²)</span><span>+ $${totalCubierta.toLocaleString('es-CL')}</span></div>`;
   }
@@ -4209,7 +4208,6 @@ function abrirVista3D(){
 // =====================================================================
 function exportarPDF() {
   recalcular();
-  const modoCli = !!estado.modoCliente;
   const cliente = document.getElementById('cliente').value || 'Cliente';
   const numCot = document.getElementById('num-cot').value;
   const fecha = document.getElementById('fecha').value;
@@ -4227,11 +4225,7 @@ function exportarPDF() {
   const totalProductosCLP = estado.items.reduce((s,i)=>s+i.precioClp,0);
   const conMargen = totalProductosCLP*(1+margen);
   const conDescuento = conMargen*(1-descuento);
-  const _cubTipo = estado.cubierta?.tipo||'ninguna';
-  const _cubM2 = estado.cubierta?.m2Total||0;
-  const _cubM2P = parseFloat(document.getElementById('cub-precio-m2')?.value)||350000;
   const _totalCub = estado.cubierta?.totalCubierta||0;
-  const _cubNom = {quarzo:'Cubierta Quarzo',ultracompacto:'Cubierta Ultra Compacto'};
   const totalFinal = Math.round(conDescuento+costoImp+costoInst+_totalCub);
   const fmt = n=>'$'+Math.round(n).toLocaleString('es-CL');
 
@@ -4249,19 +4243,19 @@ function exportarPDF() {
     ['torre','base','aereo'].forEach(tipo=>{
       const sub=eItems.filter(i=>i.tipo===tipo); if(!sub.length) return;
       const tl={torre:'Torres / Columnas',base:'Muebles Bajos',aereo:'Muebles Aéreos'}[tipo];
-      rows+=`<tr><td colspan="3" class="grp">${tl}</td></tr>`;
+      rows+=`<tr><td colspan="2" class="grp">${tl}</td></tr>`;
       sub.forEach(item=>{
         const stArr=SUBTIPOS[item.tipo]||[]; const st=stArr.find(s=>s.id===item.subtipo);
         const desc = item.tipo==='torre'
           ? `${st?st.nombre+' — ':''}Torre ${item.ancho} × ${item.altura_torre} cm${item.nombre?' · '+item.nombre:''}`
           : `${st?st.nombre+' — ':''}${item.ancho} cm${item.nombre?' · '+item.nombre:''}`;
-        rows+=`<tr><td>${desc}</td><td style="text-align:center">×${item.cantidad}</td>${modoCli?'':`<td style="text-align:right;font-weight:600">${fmt(item.precioClp)}</td>`}</tr>`;
+        rows+=`<tr><td>${desc}</td><td style="text-align:center">×${item.cantidad}</td></tr>`;
       });
     });
     elevPages+=`<div class="page">
       <div class="ph"><span class="phl">${elev.nombre.toUpperCase()}</span><span class="phr">${numCot} · ${cliente}</span></div>
       <div style="border:1px solid #e2ddd4;border-radius:6px;padding:12px;background:#fdfcfa">${svgElevacionPremium(elev)}</div>
-      <table class="tItems"><thead><tr><th>Módulo</th><th style="text-align:center;width:60px">Cant.</th>${modoCli?'':'<th style="text-align:right;width:130px">Valor</th>'}</tr></thead><tbody>${rows}</tbody></table>
+      <table class="tItems"><thead><tr><th>Módulo</th><th style="text-align:center;width:60px">Cant.</th></tr></thead><tbody>${rows}</tbody></table>
     </div>`;
   });
 
@@ -4269,8 +4263,8 @@ function exportarPDF() {
   const accPDF=estado.items.filter(i=>i.tipo==='accesorio');
   let accHtml='';
   if(accPDF.length){
-    let r=''; accPDF.forEach(a=>{ r+=`<tr><td>${a.acc_nombre}</td><td style="text-align:center">×${a.acc_qty}</td>${modoCli?'':`<td style="text-align:right;font-weight:600">${fmt(a.precioClp)}</td>`}</tr>`; });
-    accHtml=`<table class="tItems"><thead><tr><th>Accesorios y Complementos</th><th style="text-align:center;width:60px">Cant.</th>${modoCli?'':'<th style="text-align:right;width:130px">Valor</th>'}</tr></thead><tbody>${r}</tbody></table>`;
+    let r=''; accPDF.forEach(a=>{ r+=`<tr><td>${a.acc_nombre}</td><td style="text-align:center">×${a.acc_qty}</td></tr>`; });
+    accHtml=`<table class="tItems"><thead><tr><th>Accesorios y Complementos</th><th style="text-align:center;width:60px">Cant.</th></tr></thead><tbody>${r}</tbody></table>`;
   }
 
   let pagina3D='';
@@ -4364,20 +4358,12 @@ function exportarPDF() {
   <div class="page">
     <div class="ph"><span class="phl">RESUMEN DE INVERSIÓN</span><span class="phr">${numCot} · ${cliente}</span></div>
     ${accHtml}
-    ${modoCli ? `
+    <!-- El proyecto se vende como un solo monto: sin desglose por partida.
+         El precio de la cubierta no puede ir separado, es lo que el cliente
+         saldría a cotizar afuera. -->
     <table class="tRes">
-      <tr><td>Mobiliario Leicht Küchen — Cocina completa instalada (${estado.linea} · PG${estado.pg})</td><td style="text-align:right;font-weight:600">${fmt(conDescuento + costoImp + costoInst)}</td></tr>
-      ${_cubTipo!=='ninguna'&&_totalCub>0?`<tr><td>${_cubNom[_cubTipo]||'Cubierta'} (${_cubM2.toFixed(1)} m²)</td><td style="text-align:right;font-weight:600">${fmt(_totalCub)}</td></tr>`:''}
       <tr class="tot"><td>INVERSIÓN TOTAL DEL PROYECTO</td><td class="n">${fmt(totalFinal)}</td></tr>
-    </table>` : `
-    <table class="tRes">
-      <tr><td>Módulos y mobiliario Leicht Küchen (${estado.linea} · PG${estado.pg})</td><td style="text-align:right;font-weight:600">${fmt(conMargen)}</td></tr>
-      ${descuento>0?`<tr><td style="color:#c0392b">Descuento comercial ${(descuento*100).toFixed(0)}%</td><td style="text-align:right;color:#c0392b">- ${fmt(conMargen-conDescuento)}</td></tr>`:''}
-      <tr><td>Importación y logística Leicht Küchen (Alemania → Chile)</td><td style="text-align:right">${fmt(costoImp)}</td></tr>
-      <tr><td>Instalación profesional y puesta en marcha</td><td style="text-align:right">${fmt(costoInst)}</td></tr>
-      ${_cubTipo!=='ninguna'&&_totalCub>0?`<tr><td>${_cubNom[_cubTipo]||'Cubierta'} (${_cubM2.toFixed(1)} m² × ${fmt(_cubM2P)}/m²)</td><td style="text-align:right">${fmt(_totalCub)}</td></tr>`:''}
-      <tr class="tot"><td>INVERSIÓN TOTAL DEL PROYECTO</td><td class="n">${fmt(totalFinal)}</td></tr>
-    </table>`}
+    </table>
     <div class="nota"><b>Importante:</b> este documento corresponde a un <b>anteproyecto referencial</b>. El valor final puede variar según configuración definitiva, acabados específicos, electrodomésticos y condiciones del sitio. Valores en pesos chilenos, IVA no incluido. Propuesta válida por 30 días desde su emisión. Tipo de cambio referencial $${tc.toLocaleString('es-CL')}/€.</div>
     <div class="firmas">
       <div class="firma">${vendedor||'Asesor Atika'}<br>Atika</div>
