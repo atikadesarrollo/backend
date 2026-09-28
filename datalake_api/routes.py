@@ -393,6 +393,7 @@ def get_facturacion_fechas(start_date, end_date):
                         ELSE [Grupo de ventas] 
                         END AS 'Grupo_de_Ventas'
                     ,[Tipo de despacho] as 'Tipo_despacho'
+                    ,[Direccion Despacho] as 'Direccion_despacho'
                     ,[Comuna]
                     ,[Codigo]
                     ,[Descripcion]
